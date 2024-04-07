@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_defs.h"
 #include "q2proto_error.h"
 #include "q2proto_protocol.h"
+#include "q2proto_struct_clc.h"
 #include "q2proto_struct_svc.h"
 
 #if defined(__cplusplus)
@@ -58,6 +59,14 @@ typedef struct q2proto_clientcontext_s q2proto_clientcontext_t;
  * "Client" context. Used for client communications with server.
  */
 struct q2proto_clientcontext_s {
+    /// Protocol & connection features
+    struct {
+        /// Protocol supports batch moves (Q2P_CLC_BATCH_MOVE)
+        bool batch_move;
+        /// Protocol supports userinfo delta (Q2P_CLC_USERINFO_DELTA)
+        bool userinfo_delta;
+    } features;
+
     /// Server protocol number
     q2proto_protocol_t Q2PROTO_PRIVATE_MEMBER(server_protocol);
 
@@ -67,6 +76,8 @@ struct q2proto_clientcontext_s {
     Q2PROTO_PRIVATE_FUNC_PTR(void, unpack_solid, q2proto_clientcontext_t *context, uint32_t solid, q2proto_vec3_t mins, q2proto_vec3_t maxs);
     /// Packet parsing function
     Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, client_read, q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
+    /// "Send client command" function
+    Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, client_write, q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message);
 };
 
 /**
@@ -94,6 +105,15 @@ q2proto_error_t q2proto_client_read(q2proto_clientcontext_t *context, uintptr_t 
  * \returns Error code.
  */
 q2proto_error_t q2proto_client_download_reset(q2proto_clientcontext_t *context);
+
+/**
+ * Write a message for sending from the client to the server.
+ * \param context Client communications context.
+ * \param io_arg "I/O argument", passed to externally provided I/O functions.
+ * \param clc_message Message data.
+ * \returns Error code.
+ */
+q2proto_error_t q2proto_client_write(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message);
 
 /**
  * Pack a bounding box into a q2proto_entity_state_delta_t::solid value

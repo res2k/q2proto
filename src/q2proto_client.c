@@ -100,12 +100,14 @@ q2proto_error_t q2proto_parse_challenge(const char *challenge_args, const q2prot
 }
 
 static q2proto_error_t default_client_packet_parse(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
+static q2proto_error_t default_client_send(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message);
 
 q2proto_error_t q2proto_init_clientcontext(q2proto_clientcontext_t* context)
 {
     memset(context, 0, sizeof(*context));
 
     context->client_read = default_client_packet_parse;
+    context->client_write = default_client_send;
 
     return Q2P_ERR_SUCCESS;
 }
@@ -158,6 +160,17 @@ static q2proto_error_t default_client_packet_parse(q2proto_clientcontext_t *cont
     return HANDLE_ERROR(client_read, io_arg, Q2P_ERR_PROTOCOL_NOT_SUPPORTED, "protocol unsupported: %d", protocol);
 }
 
+q2proto_error_t q2proto_client_download_reset(q2proto_clientcontext_t *context)
+{
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_client_write(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message)
+{
+    q2proto_clientcontext_t *ctx_internal = (q2proto_clientcontext_t *)context;
+    return ctx_internal->client_write(ctx_internal, io_arg, clc_message);
+}
+
 uint32_t q2proto_client_pack_solid(q2proto_clientcontext_t *context, const q2proto_vec3_t mins, const q2proto_vec3_t maxs)
 {
     return context->pack_solid(context, mins, maxs);
@@ -168,7 +181,11 @@ void q2proto_client_unpack_solid(q2proto_clientcontext_t *context, uint32_t soli
     context->unpack_solid(context, solid, mins, maxs);
 }
 
-q2proto_error_t q2proto_client_download_reset(q2proto_clientcontext_t *context)
+static q2proto_error_t default_client_send(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message)
 {
-    return Q2P_ERR_SUCCESS;
+    // stringcmds are sent before serverdata is received, handle this
+    if (clc_message->type != Q2P_CLC_STRINGCMD)
+        return HANDLE_ERROR(client_write, io_arg, Q2P_ERR_BAD_COMMAND, "unexpected message type %d", clc_message->type);
+
+    return q2proto_common_client_write_stringcmd(io_arg, &clc_message->stringcmd);
 }

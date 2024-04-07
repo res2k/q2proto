@@ -71,6 +71,10 @@ q2proto_error_t q2proto_common_server_write_stufftext(uintptr_t io_arg, const q2
 q2proto_error_t q2proto_common_server_write_configstring(uintptr_t io_arg, const q2proto_svc_configstring_t *configstring);
 q2proto_error_t q2proto_common_server_write_centerprint(uintptr_t io_arg, const q2proto_svc_centerprint_t *centerprint);
 
+q2proto_error_t q2proto_common_client_write_nop(uintptr_t io_arg);
+q2proto_error_t q2proto_common_client_write_userinfo(uintptr_t io_arg, const q2proto_clc_userinfo_t *userinfo);
+q2proto_error_t q2proto_common_client_write_stringcmd(uintptr_t io_arg, const q2proto_clc_stringcmd_t *stringcmd);
+
 q2proto_error_t q2proto_common_server_read_userinfo(uintptr_t io_arg, q2proto_clc_userinfo_t *userinfo);
 q2proto_error_t q2proto_common_server_read_stringcmd(uintptr_t io_arg, q2proto_clc_stringcmd_t *stringcmd);
 /** @} */

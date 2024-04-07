@@ -448,6 +448,29 @@ q2proto_error_t q2proto_common_server_write_centerprint(uintptr_t io_arg, const 
     return Q2P_ERR_SUCCESS;
 }
 
+q2proto_error_t q2proto_common_client_write_nop(uintptr_t io_arg)
+{
+    WRITE_CHECKED(client_write, io_arg, u8, clc_nop);
+    return Q2P_ERR_SUCCESS;
+}
+
+static q2proto_error_t client_write_strcmd(uintptr_t io_arg, uint8_t cmd, const q2proto_string_t *str)
+{
+    WRITE_CHECKED(client_write, io_arg, u8, cmd);
+    WRITE_CHECKED(client_write, io_arg, string, str);
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_common_client_write_userinfo(uintptr_t io_arg, const q2proto_clc_userinfo_t *userinfo)
+{
+    return client_write_strcmd(io_arg, clc_userinfo, &userinfo->str);
+}
+
+q2proto_error_t q2proto_common_client_write_stringcmd(uintptr_t io_arg, const q2proto_clc_stringcmd_t *stringcmd)
+{
+    return client_write_strcmd(io_arg, clc_stringcmd, &stringcmd->cmd);
+}
+
 q2proto_error_t q2proto_common_server_read_userinfo(uintptr_t io_arg, q2proto_clc_userinfo_t *userinfo)
 {
     READ_CHECKED(server_read, io_arg, userinfo->str, string);
