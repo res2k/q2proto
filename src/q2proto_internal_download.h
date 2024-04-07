@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /// Stateful download function table
 struct q2proto_download_funcs_s {
     /// Begin download. For protocol-specific adjustments. Can be \c NULL, in which case q2proto_download_common_begin() is used.
-    q2proto_error_t (*begin)(q2proto_servercontext_t *context, q2proto_server_download_state_t* state);
+    q2proto_error_t (*begin)(q2proto_servercontext_t *context, q2proto_server_download_state_t* state, q2proto_download_compress_t compress, q2protoio_deflate_args_t* deflate_args);
     /// Fill a download message with a chunk of data. \sa q2proto_server_download_data
     q2proto_error_t (*data)(q2proto_server_download_state_t *state, const uint8_t **data, size_t *remaining, size_t packet_remaining, q2proto_svc_download_t *svc_download);
     /// Fill a download message for a finished download. \sa q2proto_server_download_finished

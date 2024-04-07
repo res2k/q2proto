@@ -253,11 +253,11 @@ q2proto_error_t q2proto_server_write_gamestate(q2proto_servercontext_t *context,
     return context->server_write_gamestate(context, io_arg, gamestate);
 }
 
-q2proto_error_t q2proto_server_download_begin(q2proto_servercontext_t *context, size_t total_size, q2proto_server_download_state_t* state)
+q2proto_error_t q2proto_server_download_begin(q2proto_servercontext_t *context, size_t total_size, q2proto_download_compress_t compress, q2protoio_deflate_args_t* deflate_args, q2proto_server_download_state_t* state)
 {
     q2proto_download_common_begin(context, total_size, state);
     if (context->download_funcs->begin)
-        return context->download_funcs->begin(context, state);
+        return context->download_funcs->begin(context, state, compress, deflate_args);
     else
         return Q2P_ERR_SUCCESS;
 }

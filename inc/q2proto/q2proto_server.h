@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_defs.h"
 #include "q2proto_error.h"
 #include "q2proto_gametype.h"
+#include "q2proto_io.h"
 #include "q2proto_protocol.h"
 #include "q2proto_string.h"
 #include "q2proto_struct_clc.h"
@@ -206,14 +207,25 @@ typedef struct q2proto_server_download_state_s {
     size_t Q2PROTO_PRIVATE_MEMBER(total_size);
 } q2proto_server_download_state_t;
 
+/// Stateful download compression mode
+typedef enum
+{
+    /// Never compress
+    Q2PROTO_DOWNLOAD_COMPRESS_NEVER,
+    /// Compress, if supported
+    Q2PROTO_DOWNLOAD_COMPRESS_AUTO,
+} q2proto_download_compress_t;
+
 /**
  * Initialize stateful download.
  * \param context Server communications context.
  * \param total_size Total size of data to download.
+ * \param compress Compression mode.
+ * \param deflate_args Deflate arguments. Passed through to deflate initialization if compression is enabled.
  * \param state Download state object.
  * \returns Error code
  */
-q2proto_error_t q2proto_server_download_begin(q2proto_servercontext_t *context, size_t total_size, q2proto_server_download_state_t* state);
+q2proto_error_t q2proto_server_download_begin(q2proto_servercontext_t *context, size_t total_size, q2proto_download_compress_t compress, q2protoio_deflate_args_t* deflate_args, q2proto_server_download_state_t* state);
 /**
  * Finalize stateful download.
  * \param state Download state object.
