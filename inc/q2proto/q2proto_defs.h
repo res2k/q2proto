@@ -68,6 +68,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if !defined(Q2PROTO_EXTERNALLY_PROVIDED_DECL)
     #define Q2PROTO_EXTERNALLY_PROVIDED_DECL   extern
 #endif
+#if !defined(Q2PROTO_COMPRESSION_DEFLATE)
+    #define Q2PROTO_COMPRESSION_DEFLATE 0
+#endif
 /** @} */
 
 /* Macros to provide "hidden" struct members.

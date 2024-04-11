@@ -84,6 +84,80 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL void q2protoio_write_raw(uintptr_t io_arg, cons
  */
 Q2PROTO_EXTERNALLY_PROVIDED_DECL size_t q2protoio_write_available(uintptr_t io_arg);
 
+/// Opaque deflate options. Passed through to deflate functions
+typedef struct q2protoio_deflate_args_s q2protoio_deflate_args_t;
+
+#if Q2PROTO_COMPRESSION_DEFLATE
+/**
+ * Initialize inflate decompression.
+ *
+ * Intended usage:
+ * - Inflation is initialized by providing the "I/O argument" to obtain compressed data.
+ *   A new "I/O argument" is returned allowing access to the deflated data.
+ * - Raw compressed data is provided via q2protoio_inflate_data().
+ * - Inflated data is read via the earlier obtained new I/O argument.
+ *   You can assume all inflated data will be consumed before new compressed data is provided.
+ *   Inflated data not being completely consumed can be considered an error.
+ * - If processing the inflated data was successful, q2protoio_inflate_end() is called.
+ * \param io_arg "I/O argument" to source compressed data from.
+ * \param inflate_io_arg Receives I/O argument that will be used to retrieve the inflated data.
+ * \returns Error code
+ */
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_begin(uintptr_t io_arg, uintptr_t* inflate_io_arg);
+/**
+ * Inflate some data.
+ * \param io_arg "I/O argument" to source compressed data from.
+ * \param inflate_io_arg "I/O argument" to obtain uncompressed data from. Provided by q2protoio_inflate_begin().
+ * \param compressed_size Size of compressed data. May be -1, in which case all the remaining "source" data should be consumed.
+ * \param stream_end Returns whether the compressed stream ended after inflation.
+ * \returns Error code
+ */
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_data(uintptr_t io_arg, uintptr_t inflate_io_arg, size_t compressed_size);
+/**
+ * Returns whether the stream of inflated data ended.
+ * \param io_arg "I/O argument" to source compressed data from.
+ * \param inflate_io_arg "I/O argument" to obtain uncompressed data from. Provided by q2protoio_inflate_begin().
+ * \param stream_end Returns whether the compressed stream ended after inflation.
+ * \returns Error code
+ */
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_stream_ended(uintptr_t inflate_io_arg, bool *stream_end);
+/**
+ * End inflation.
+ * \param inflate_io_arg "I/O argument" to obtain uncompressed data from. Provided by q2protoio_inflate_begin().
+ * \returns Error code
+ */
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_end(uintptr_t inflate_io_arg);
+
+/**
+ * Begin deflation.
+ * \param deflate_args Deflation args. Passed through from functions providing deflation support.
+ * \param max_deflated Maximum size of deflated data.
+ * \param deflate_io_arg Receives an "I/O argument" used for deflation operation.
+ * \returns Error code
+ */
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_deflate_begin(q2protoio_deflate_args_t* deflate_args, size_t max_deflated, uintptr_t *deflate_io_arg);
+/**
+ * Retrieve deflated data.
+ * This function should deflate the data previously written to the deflate "I/O argument".
+ * The returned pointer to the data should be valid until the next time q2protoio_deflate_get_data() is called,
+ * something is written to the deflate "I/O argument", or q2protoio_deflate_end() is called.
+ * Consumers of the deflated data should be able to inflate all of the consumed input data without
+ * requiring any more data beyond what was output.
+ * \param deflate_io_arg Receives an "I/O argument" used for deflation operation.
+ * \param in_size Optional. Receives size of input (uncompressed) data.
+ * \param out Pointer to start of output data. Changed to point after the last written output byte.
+ * \param out_size Amount of output data written.
+ * \returns Error code
+ */
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_deflate_get_data(uintptr_t deflate_io_arg, size_t* in_size, const void **out, size_t *out_size);
+/**
+ * End deflation.
+ * \param deflate_handle "I/O argument" used for deflation operation.
+ * \returns Error code
+ */
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_deflate_end(uintptr_t deflate_io_arg);
+#endif
+
 #if Q2PROTO_SHOWNET
 /**
  * 'shownet' output.

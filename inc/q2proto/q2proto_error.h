@@ -56,6 +56,15 @@ typedef enum q2proto_error_e {
     Q2P_ERR_EXPECTED_SERVERDATA = -200,
     /// Client packet handling: Unsupported protocol
     Q2P_ERR_PROTOCOL_NOT_SUPPORTED = -201,
+
+    /// Deflate-compressed data is not supported
+    Q2P_ERR_DEFLATE_NOT_SUPPORTED = -300,
+    /// Not all deflated data was consumed
+    Q2P_ERR_MORE_DATA_DEFLATED = -301,
+    /// Failed to inflate data
+    Q2P_ERR_INFLATE_FAILED = -302,
+    /// Failed to deflate data
+    Q2P_ERR_DEFLATE_FAILED = -303,
 } q2proto_error_t;
 
 #if defined(__cplusplus)
