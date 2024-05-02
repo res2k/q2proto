@@ -244,6 +244,18 @@ typedef struct q2proto_svc_download_s {
     uint8_t percent;
     /// Download data
     const void *data;
+    /**
+     * Data is compressed.
+     * Note: Won't be set when reading a package.
+     * Is automatically set by q2proto_server_download_data().
+     */
+    bool compressed;
+    /**
+     * Uncompressed data size.
+     * Only used when compressed is \c true.
+     * May be -1 to indicate an unknown uncompressed size.
+     */
+    int16_t uncompressed_size;
 } q2proto_svc_download_t;
 
 /// Contents from a serverdata message
