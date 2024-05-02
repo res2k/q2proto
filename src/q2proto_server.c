@@ -264,6 +264,16 @@ q2proto_error_t q2proto_server_download_begin(q2proto_servercontext_t *context, 
 
 void q2proto_server_download_end(q2proto_server_download_state_t* state)
 {
+    if (!state)
+        return;
+
+#if Q2PROTO_COMPRESSION_DEFLATE
+    if (state->deflate_io_valid)
+    {
+        q2protoio_deflate_end(state->deflate_io);
+        state->deflate_io_valid = false;
+    }
+#endif
 }
 
 q2proto_error_t q2proto_server_download_data(q2proto_server_download_state_t *state, const uint8_t **data, size_t *remaining, size_t packet_remaining, q2proto_svc_download_t *svc_download)

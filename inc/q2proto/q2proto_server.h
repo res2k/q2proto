@@ -205,6 +205,14 @@ typedef struct q2proto_server_download_state_s {
     size_t Q2PROTO_PRIVATE_MEMBER(transferred);
     // Total size
     size_t Q2PROTO_PRIVATE_MEMBER(total_size);
+    // Whether download data should be compressed (deflated)
+    bool Q2PROTO_PRIVATE_MEMBER(compress);
+    // Deflate arguments, passed through to q2protoio_deflate_begin
+    q2protoio_deflate_args_t *Q2PROTO_PRIVATE_MEMBER(deflate_args);
+    // Currently/last used deflate I/O arg
+    uintptr_t Q2PROTO_PRIVATE_MEMBER(deflate_io);
+    // Whether deflate I/O arg is valid
+    bool Q2PROTO_PRIVATE_MEMBER(deflate_io_valid);
 } q2proto_server_download_state_t;
 
 /// Stateful download compression mode
