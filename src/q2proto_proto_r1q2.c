@@ -59,9 +59,7 @@ static q2proto_error_t r1q2_client_read_serverdata(q2proto_clientcontext_t *cont
 static q2proto_error_t r1q2_client_read_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, uint64_t bits, q2proto_entity_state_delta_t *entity_state);
 static q2proto_error_t r1q2_client_read_baseline(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_spawnbaseline_t *spawnbaseline);
 static q2proto_error_t r1q2_client_read_frame(q2proto_clientcontext_t *context, uintptr_t io_arg, uint8_t extrabits, q2proto_svc_frame_t *frame);
-static q2proto_error_t r1q2_client_read_zpacket(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
 static q2proto_error_t r1q2_client_read_zdownload(uintptr_t io_arg, q2proto_svc_download_t *download);
-static q2proto_error_t r1q2_client_read_setting(uintptr_t io_arg, q2proto_svc_setting_t *setting);
 
 static MAYBE_UNUSED const char* server_cmd_string(int command)
 {
@@ -537,7 +535,7 @@ static q2proto_error_t r1q2_client_read_frame(q2proto_clientcontext_t *context, 
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t r1q2_client_read_zpacket(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message)
+q2proto_error_t r1q2_client_read_zpacket(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message)
 {
 #if Q2PROTO_COMPRESSION_DEFLATE
     uint16_t compressed_len, uncompressed_len;
@@ -577,7 +575,7 @@ static q2proto_error_t r1q2_client_read_zdownload(uintptr_t io_arg, q2proto_svc_
 #endif
 }
 
-static q2proto_error_t r1q2_client_read_setting(uintptr_t io_arg, q2proto_svc_setting_t *setting)
+q2proto_error_t r1q2_client_read_setting(uintptr_t io_arg, q2proto_svc_setting_t *setting)
 {
     READ_CHECKED(client_read, io_arg, setting->index, i32);
     READ_CHECKED(client_read, io_arg, setting->value, i32);
@@ -589,7 +587,6 @@ static q2proto_error_t r1q2_client_read_setting(uintptr_t io_arg, q2proto_svc_se
 //
 
 static q2proto_error_t r1q2_client_write_move(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_move_t *move);
-static q2proto_error_t r1q2_client_write_setting(uintptr_t io_arg, const q2proto_clc_setting_t *setting);
 
 static q2proto_error_t r1q2_client_write(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message)
 {
@@ -739,7 +736,7 @@ static q2proto_error_t r1q2_client_write_move(q2proto_clientcontext_t *context, 
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t r1q2_client_write_setting(uintptr_t io_arg, const q2proto_clc_setting_t *setting)
+q2proto_error_t r1q2_client_write_setting(uintptr_t io_arg, const q2proto_clc_setting_t *setting)
 {
     WRITE_CHECKED(client_write, io_arg, u8, clc_r1q2_setting);
     WRITE_CHECKED(client_write, io_arg, i16, setting->index);

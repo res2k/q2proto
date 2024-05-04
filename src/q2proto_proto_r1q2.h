@@ -1,4 +1,7 @@
 /*
+Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2003-2011 Richard Stanway
+Copyright (C) 2003-2024 Andrey Nazarov
 Copyright (C) 2024 Frank Richter
 
 This program is free software; you can redistribute it and/or modify
@@ -31,6 +34,17 @@ q2proto_error_t q2proto_r1q2_continue_serverdata(q2proto_clientcontext_t *contex
 
 /// Server context setup
 q2proto_error_t q2proto_r1q2_init_servercontext(q2proto_servercontext_t *context, const q2proto_server_info_t *server_info, const q2proto_connect_t* connect_info);
+/** @} */
+
+/**\name R1Q2 protocol parts reused by Q2PRO
+ * @{ */
+/// Parse svc_r1q2_zpacket
+q2proto_error_t r1q2_client_read_zpacket(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
+/// Parse svc_r1q2_setting
+q2proto_error_t r1q2_client_read_setting(uintptr_t io_arg, q2proto_svc_setting_t *setting);
+
+/// Write clc_r1q2_setting
+q2proto_error_t r1q2_client_write_setting(uintptr_t io_arg, const q2proto_clc_setting_t *setting);
 /** @} */
 
 #endif // Q2PROTO_PROTO_R1Q2_H_
