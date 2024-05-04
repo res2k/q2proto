@@ -26,9 +26,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_internal_io.h"
 #include "q2proto_internal_protocol.h"
 
+static bool q2pro_extv2_handle_unknown_temp_ent(uintptr_t io_arg, q2proto_svc_temp_entity_t *temp_entity, q2proto_error_t *result)
+{
+    if (temp_entity->type != TE_Q2PRO_DAMAGE_DEALT)
+        return false;
+    READ_CHECKED(client_read, io_arg, temp_entity->count, i16);
+    *result = Q2P_ERR_SUCCESS;
+    return true;
+}
+
 #define READ_GAME_POSITION      read_short_coord
 #define READ_SOUND_NAME         vanilla_client_read_sound
 #define READ_TEMP_ENTITY_NAME   vanilla_client_read_temp_entity
+
+#include "q2proto_read_gamemsg.inc"
+
+#undef READ_TEMP_ENTITY_NAME
+#undef READ_SOUND_NAME
+#undef READ_GAME_POSITION
+
+#define READ_GAME_POSITION          read_int23_coord
+#define READ_SOUND_NAME             q2pro_extv2_read_sound
+#define READ_TEMP_ENTITY_NAME       q2pro_extv2_read_temp_entity
+#define HANDLE_UNKNOWN_TEMP_ENTITY  q2pro_extv2_handle_unknown_temp_ent
 
 #include "q2proto_read_gamemsg.inc"
 
@@ -128,7 +148,10 @@ q2proto_error_t q2proto_common_client_read_temp_entity(uintptr_t io_arg, q2proto
     switch(game_type)
     {
     case Q2PROTO_GAME_VANILLA:
+    case Q2PROTO_GAME_Q2PRO_EXTENDED:
         return vanilla_client_read_temp_entity(io_arg, temp_entity);
+    case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
+        return q2pro_extv2_read_temp_entity(io_arg, temp_entity);
     }
 
     // huh
@@ -157,7 +180,10 @@ q2proto_error_t q2proto_common_client_read_sound(uintptr_t io_arg, q2proto_game_
     switch(game_type)
     {
     case Q2PROTO_GAME_VANILLA:
+    case Q2PROTO_GAME_Q2PRO_EXTENDED:
         return vanilla_client_read_sound(io_arg, sound);
+    case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
+        return q2pro_extv2_read_sound(io_arg, sound);
     }
 
     // huh

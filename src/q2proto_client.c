@@ -157,6 +157,8 @@ static q2proto_error_t default_client_packet_parse(q2proto_clientcontext_t *cont
         return q2proto_vanilla_continue_serverdata(context, io_arg, &svc_message->serverdata);
     case PROTOCOL_R1Q2:
         return q2proto_r1q2_continue_serverdata(context, io_arg, &svc_message->serverdata);
+    case PROTOCOL_Q2PRO:
+        return q2proto_q2pro_continue_serverdata(context, io_arg, &svc_message->serverdata);
     }
 
     return HANDLE_ERROR(client_read, io_arg, Q2P_ERR_PROTOCOL_NOT_SUPPORTED, "protocol unsupported: %d", protocol);

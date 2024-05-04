@@ -137,7 +137,7 @@ void q2proto_debug_common_entity_delta_bits_to_str(char *buf, size_t size, uint6
 #undef S
 
     // Bits to ignore
-    bits &= ~(U_NUMBER16 | U_MOREBITS1 | U_MOREBITS2 | U_MOREBITS3 | U_MOREBITS4);
+    bits &= ~(U_NUMBER16 | U_MOREBITS1 | U_MOREBITS2 | U_MOREBITS3 | U_MOREBITS4 | U_ANGLE16);
 
     if (bits != 0 || first)
     {

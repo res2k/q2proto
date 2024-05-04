@@ -138,6 +138,25 @@ fail:
     return -1;
 }
 
+static inline uint64_t q2protoio_read_var_u64(uintptr_t io_arg)
+{
+    int shift = 0;
+    uint64_t v = 0;
+    uint8_t b;
+    do
+    {
+        b = q2protoio_read_u8(io_arg);
+        if (GET_IO_ERROR(io_arg) != Q2P_ERR_SUCCESS)
+            goto fail;
+        v |= ((uint64_t)b & 0x7f) << shift;
+        shift += 7;
+    } while (b & 0x80);
+    return v;
+
+fail:
+    return (uint64_t)-1;
+}
+
 /// Read a single component of a 16-bit encoded coordinate
 #define READ_CHECKED_VAR_COORD_COMP_16(SOURCE, IO_ARG, TARGET, COMP) \
     do                                                               \
@@ -308,6 +327,18 @@ static inline void q2protoio_write_q2pro_i23(uintptr_t io_arg, int32_t x, int32_
 static inline void q2protoio_write_i32(uintptr_t io_arg, int32_t x)
 {
     q2protoio_write_u32(io_arg, (uint32_t)x);
+}
+
+static inline void q2protoio_write_var_u64(uintptr_t io_arg, uint64_t x)
+{
+    do
+    {
+        uint8_t b = x & 0x7f;
+        x >>= 7;
+        if (x != 0)
+            b |= 0x80;
+        q2protoio_write_u8(io_arg, b);
+    } while (x != 0);
 }
 
 static inline void q2protoio_write_string(uintptr_t io_arg, const q2proto_string_t* str)

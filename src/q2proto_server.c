@@ -227,12 +227,13 @@ q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t* context, con
     {
     case Q2P_PROTOCOL_INVALID:
     case Q2P_PROTOCOL_OLD_DEMO:
-    case Q2P_PROTOCOL_Q2PRO:
         return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
     case Q2P_PROTOCOL_VANILLA:
         return q2proto_vanilla_init_servercontext(context, connect_info);
     case Q2P_PROTOCOL_R1Q2:
         return q2proto_r1q2_init_servercontext(context, connect_info);
+    case Q2P_PROTOCOL_Q2PRO:
+        return q2proto_q2pro_init_servercontext(context, connect_info);
     }
 
     return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
@@ -245,9 +246,18 @@ q2proto_error_t q2proto_server_fill_serverdata(q2proto_servercontext_t *context,
 
 q2proto_error_t q2proto_server_write_pos(const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_vec3_t pos)
 {
-    WRITE_CHECKED(server_write, io_arg, u16, _q2proto_valenc_coord2int(pos[0]));
-    WRITE_CHECKED(server_write, io_arg, u16, _q2proto_valenc_coord2int(pos[1]));
-    WRITE_CHECKED(server_write, io_arg, u16, _q2proto_valenc_coord2int(pos[2]));
+    if (server_info->game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
+    {
+        WRITE_CHECKED(server_write, io_arg, q2pro_i23, _q2proto_valenc_coord2int(pos[0]), 0);
+        WRITE_CHECKED(server_write, io_arg, q2pro_i23, _q2proto_valenc_coord2int(pos[1]), 0);
+        WRITE_CHECKED(server_write, io_arg, q2pro_i23, _q2proto_valenc_coord2int(pos[2]), 0);
+    }
+    else
+    {
+        WRITE_CHECKED(server_write, io_arg, u16, _q2proto_valenc_coord2int(pos[0]));
+        WRITE_CHECKED(server_write, io_arg, u16, _q2proto_valenc_coord2int(pos[1]));
+        WRITE_CHECKED(server_write, io_arg, u16, _q2proto_valenc_coord2int(pos[2]));
+    }
     return Q2P_ERR_SUCCESS;
 }
 

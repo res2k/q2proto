@@ -77,6 +77,9 @@ enum common_svc_cmds
     svc_r1q2_zpacket,
     svc_r1q2_zdownload,
     svc_r1q2_setting = 24,
+    svc_q2pro_gamestate = 23,
+    svc_q2pro_configstringstream = 25,
+    svc_q2pro_baselinestream,
 };
 
 #define SND_VOLUME      BIT(0)
@@ -103,6 +106,7 @@ enum common_svc_cmds
 #define U_ANGLE1        BIT_ULL(10)
 #define U_MODEL         BIT_ULL(11)
 #define U_RENDERFX8     BIT_ULL(12) // fullbright, etc
+#define U_ANGLE16       BIT_ULL(13) // Q2PRO: 'short' angles
 #define U_EFFECTS8      BIT_ULL(14) // autorotate, trails, etc
 #define U_MOREBITS2     BIT_ULL(15) // read one additional byte
 
@@ -205,6 +209,8 @@ typedef enum {
     TE_EXPLOSION2_NL,
 //[Paril-KEX]
 
+    TE_Q2PRO_DAMAGE_DEALT = 128,
+
     TE_NUM_ENTITIES
 } temp_event_t;
 
@@ -246,6 +252,9 @@ enum common_clc_cmds
     clc_userinfo,
     clc_stringcmd,
     clc_r1q2_setting,
+    clc_q2pro_move_nodelta = 10,
+    clc_q2pro_move_batched,
+    clc_q2pro_userinfo_delta,
 };
 
 #define CM_ANGLE1   BIT(0)
