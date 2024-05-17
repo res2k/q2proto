@@ -49,6 +49,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
         if (err != Q2P_ERR_SUCCESS)                                                       \
             return HANDLE_ERROR(SOURCE, (IO_ARG), err, "%s: failed %s", __func__, #EXPR); \
     } while (0)
+/**\def GET_IO_ERROR
+ * Get last error if Q2PROTO_RETURN_IO_ERROR_CODES is enabled.
+ */
+#if Q2PROTO_RETURN_IO_ERROR_CODES
+    #define GET_IO_ERROR(IO_ARG)    (q2protoio_get_error((IO_ARG)))
+#else
+    #define GET_IO_ERROR(IO_ARG)    Q2P_ERR_SUCCESS
+#endif
 /**\def CHECKED_IO
  * Perform expression \c EXPR, check I/O error afterwards if Q2PROTO_RETURN_IO_ERROR_CODES is enabled.
  * This is only suitable for use with "externally defined" `q2protoio_` functions, as those are defined to
