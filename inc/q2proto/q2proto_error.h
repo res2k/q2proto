@@ -67,6 +67,8 @@ typedef enum q2proto_error_e {
     Q2P_ERR_INFLATE_FAILED = -302,
     /// Failed to deflate data
     Q2P_ERR_DEFLATE_FAILED = -303,
+    /// Raw compressed download data not supported
+    Q2P_ERR_RAW_COMPRESS_NOT_SUPPORTED = -304,
 } q2proto_error_t;
 
 #if defined(__cplusplus)

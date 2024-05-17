@@ -24,6 +24,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "q2proto/q2proto.h"
 
+/// Possible values for q2proto_server_download_state_t::compress
+enum
+{
+    /// Send uncompressed data
+    Q2PROTO_DOWNLOAD_DATA_UNCOMPRESSED = 0,
+    /// Send compressed data
+    Q2PROTO_DOWNLOAD_DATA_COMPRESS,
+    /// Send raw deflate data
+    Q2PROTO_DOWNLOAD_DATA_RAW_DEFLATE,
+};
+
 /**\name Stateful download helpers
  * @{ */
 /// Stateful download function table

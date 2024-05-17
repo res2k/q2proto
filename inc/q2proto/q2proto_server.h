@@ -227,7 +227,7 @@ typedef struct q2proto_server_download_state_s {
     // Total size
     size_t Q2PROTO_PRIVATE_MEMBER(total_size);
     // Whether download data should be compressed (deflated)
-    bool Q2PROTO_PRIVATE_MEMBER(compress);
+    int Q2PROTO_PRIVATE_MEMBER(compress);
     // Deflate arguments, passed through to q2protoio_deflate_begin
     q2protoio_deflate_args_t *Q2PROTO_PRIVATE_MEMBER(deflate_args);
     // Currently/last used deflate I/O arg
@@ -243,6 +243,8 @@ typedef enum
     Q2PROTO_DOWNLOAD_COMPRESS_NEVER,
     /// Compress, if supported
     Q2PROTO_DOWNLOAD_COMPRESS_AUTO,
+    /// Pre-compressed data. Only supported if q2proto_servercontext_t::features.download_compress_raw is \c true.
+    Q2PROTO_DOWNLOAD_COMPRESS_RAW,
 } q2proto_download_compress_t;
 
 /**

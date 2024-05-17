@@ -1470,7 +1470,7 @@ static q2proto_error_t r1q2_download_begin(q2proto_servercontext_t *context, q2p
 {
     if (compress == Q2PROTO_DOWNLOAD_COMPRESS_AUTO && Q2PROTO_COMPRESSION_DEFLATE && context->features.enable_deflate && state->total_size > 0)
     {
-        state->compress = true;
+        state->compress = Q2PROTO_DOWNLOAD_DATA_COMPRESS;
         state->deflate_args = deflate_args;
     }
     return Q2P_ERR_SUCCESS;
