@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_coords.h"
 #include "q2proto_defs.h"
 #include "q2proto_error.h"
+#include "q2proto_gametype.h"
 #include "q2proto_protocol.h"
 #include "q2proto_struct_clc.h"
 #include "q2proto_struct_svc.h"
@@ -65,6 +66,8 @@ struct q2proto_clientcontext_s {
         bool batch_move;
         /// Protocol supports userinfo delta (Q2P_CLC_USERINFO_DELTA)
         bool userinfo_delta;
+        /// Type of game run by the server
+        q2proto_game_type_t server_game_type;
     } features;
 
     /// Server protocol number
