@@ -280,9 +280,17 @@ typedef struct q2proto_svc_serverdata_s {
         bool qw_mode;
         /// Q2PRO: Waterjump hack enabled
         bool waterjump_hack;
-        /// Q2PRO: Extensions enabled
+        /**
+         * Q2PRO: Extensions enabled
+         * Note: It's recommended you let q2proto_server_fill_serverdata() set this flag
+         * and use \c server_game_type stored in the client context to check the game type.
+         */
         bool extensions;
-        /// Q2PRO: "Extensions v2" enabled
+        /**
+         * Q2PRO: "Extensions v2" enabled
+         * Note: It's recommended you let q2proto_server_fill_serverdata() set this flag
+         * and use \c server_game_type stored in the client context to check the game type.
+         */
         bool extensions_v2;
     } q2pro;
 } q2proto_svc_serverdata_t;

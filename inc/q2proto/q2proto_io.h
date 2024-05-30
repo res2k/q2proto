@@ -112,6 +112,14 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL void q2protodbg_shownet(uintptr_t io_arg, int l
  * \returns Error code to return from q2proto function. Typically just \a err.
  */
 Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoerr_client_read(uintptr_t io_arg, q2proto_error_t err, const char *msg, ...);
+/**
+ * Handle a "server write" error.
+ * \param io_arg "I/O argument" as provided to q2proto function.
+ * \param err Error code
+ * \param msg Format string with additional information.
+ * \returns Error code to return from q2proto function. Typically just \a err.
+ */
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoerr_server_write(uintptr_t io_arg, q2proto_error_t err, const char *msg, ...);
 /** @} */
 #endif
 

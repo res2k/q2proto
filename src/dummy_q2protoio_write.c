@@ -16,21 +16,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/**\file
- * Vanilla protocol
- */
-#ifndef Q2PROTO_PROTO_VANILLA_H_
-#define Q2PROTO_PROTO_VANILLA_H_
-
 #include "q2proto/q2proto.h"
 
-/**\name Vanilla protocol
- * @{ */
-/// Client context setup
-q2proto_error_t q2proto_vanilla_continue_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata);
+// Dummy q2protoio_write_* function definitions to make linking work
 
-/// Server context setup
-q2proto_error_t q2proto_vanilla_init_servercontext(q2proto_servercontext_t *context, const q2proto_server_info_t *server_info, const q2proto_connect_t* connect_info);
-/** @} */
-
-#endif // Q2PROTO_PROTO_VANILLA_H_
+void q2protoio_write_u8(uintptr_t io_arg, uint8_t x) {}
+void q2protoio_write_u16(uintptr_t io_arg, uint16_t x) {}
+void q2protoio_write_u32(uintptr_t io_arg, uint32_t x) {}
+void *q2protoio_write_reserve_raw(uintptr_t io_arg, size_t size) { return NULL; }
+size_t q2protoio_write_available(uintptr_t io_arg) { return 0; }

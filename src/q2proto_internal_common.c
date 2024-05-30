@@ -80,6 +80,34 @@ int q2proto_common_entity_bits_size(uint64_t bits)
     return bits_size;
 }
 
+q2proto_error_t q2proto_common_server_write_entity_bits(uintptr_t io_arg, uint64_t bits, uint16_t entnum)
+{
+    if (entnum >= 256)
+        bits |= U_NUMBER16;
+
+    if (bits & 0xff00000000ull)
+        bits |= U_MOREBITS4 | U_MOREBITS3 | U_MOREBITS2 | U_MOREBITS1;
+    else if (bits & 0xff000000)
+        bits |= U_MOREBITS3 | U_MOREBITS2 | U_MOREBITS1;
+    else if (bits & 0x00ff0000)
+        bits |= U_MOREBITS2 | U_MOREBITS1;
+    else if (bits & 0x0000ff00)
+        bits |= U_MOREBITS1;
+
+    WRITE_CHECKED(server_write, io_arg, u8, bits & 0xff);
+    if (bits & U_MOREBITS1) WRITE_CHECKED(server_write, io_arg, u8, (bits >>  8) & 0xff);
+    if (bits & U_MOREBITS2) WRITE_CHECKED(server_write, io_arg, u8, (bits >> 16) & 0xff);
+    if (bits & U_MOREBITS3) WRITE_CHECKED(server_write, io_arg, u8, (bits >> 24) & 0xff);
+    if (bits & U_MOREBITS4) WRITE_CHECKED(server_write, io_arg, u8, (bits >> 32) & 0xff);
+
+    if (bits & U_NUMBER16)
+        WRITE_CHECKED(server_write, io_arg, u16, entnum);
+    else
+        WRITE_CHECKED(server_write, io_arg, u8, entnum);
+
+    return Q2P_ERR_SUCCESS;
+}
+
 q2proto_error_t q2proto_common_client_read_muzzleflash(uintptr_t io_arg, q2proto_svc_muzzleflash_t *muzzleflash, uint16_t silenced_mask)
 {
     READ_CHECKED(client_read, io_arg, muzzleflash->entity, i16);
@@ -347,5 +375,75 @@ q2proto_error_t q2proto_common_client_read_download(uintptr_t io_arg, q2proto_sv
     READ_CHECKED(client_read, io_arg, download->percent, u8);
     if (download->size > 0)
         READ_CHECKED(client_read, io_arg, download->data, raw, download->size, NULL);
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_common_server_write_nop(uintptr_t io_arg)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_nop);
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_common_server_write_disconnect(uintptr_t io_arg)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_disconnect);
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_common_server_write_reconnect(uintptr_t io_arg)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_reconnect);
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_common_server_write_sound(uintptr_t io_arg, const q2proto_svc_sound_t *sound)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_sound);
+    WRITE_CHECKED(server_write, io_arg, u8, sound->flags);
+    WRITE_CHECKED(server_write, io_arg, u8, sound->index);
+
+    if (sound->flags & SND_VOLUME)
+        WRITE_CHECKED(server_write, io_arg, u8, sound->volume);
+    if (sound->flags & SND_ATTENUATION)
+        WRITE_CHECKED(server_write, io_arg, u8, sound->attenuation);
+    if (sound->flags & SND_OFFSET)
+        WRITE_CHECKED(server_write, io_arg, u8, sound->timeofs);
+
+    if (sound->flags & SND_ENT)
+        WRITE_CHECKED(server_write, io_arg, u16, (sound->entity << 3) | (sound->channel & 0x7));
+
+    if (sound->flags & SND_POS)
+        WRITE_CHECKED(server_write, io_arg, var_coord_short, &sound->pos);
+
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_common_server_write_print(uintptr_t io_arg, const q2proto_svc_print_t *print)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_print);
+    WRITE_CHECKED(server_write, io_arg, u8, print->level);
+    WRITE_CHECKED(server_write, io_arg, string, &print->string);
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_common_server_write_stufftext(uintptr_t io_arg, const q2proto_svc_stufftext_t *stufftext)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_stufftext);
+    WRITE_CHECKED(server_write, io_arg, string, &stufftext->string);
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_common_server_write_configstring(uintptr_t io_arg, const q2proto_svc_configstring_t *configstring)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_configstring);
+    WRITE_CHECKED(server_write, io_arg, u16, configstring->index);
+    WRITE_CHECKED(server_write, io_arg, string, &configstring->value);
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_common_server_write_centerprint(uintptr_t io_arg, const q2proto_svc_centerprint_t *centerprint)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_centerprint);
+    WRITE_CHECKED(server_write, io_arg, string, &centerprint->message);
     return Q2P_ERR_SUCCESS;
 }

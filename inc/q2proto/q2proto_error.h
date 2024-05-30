@@ -33,7 +33,7 @@ typedef enum q2proto_error_e {
 
     /// When reading packets, indicates end of input was reached
     Q2P_ERR_NO_MORE_INPUT = 1,
-    /// Not enough space in packet for download data
+    /// Not enough space in remaining packet
     Q2P_ERR_NOT_ENOUGH_PACKET_SPACE = 2,
     /// Download is completed
     Q2P_ERR_DOWNLOAD_COMPLETE = 3,
@@ -46,6 +46,8 @@ typedef enum q2proto_error_e {
     Q2P_ERR_BAD_DATA = -3,
     /// Unsupported command
     Q2P_ERR_BAD_COMMAND = -4,
+    /// Unsupported gametype
+    Q2P_ERR_GAMETYPE_UNSUPPORTED = -5,
 
     /// Challenge parsing: no acceptable protocol found
     Q2P_ERR_NO_ACCEPTABLE_PROTOCOL = -100,

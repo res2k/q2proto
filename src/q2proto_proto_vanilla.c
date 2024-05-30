@@ -452,3 +452,488 @@ static void vanilla_unpack_solid(q2proto_clientcontext_t *context, uint32_t soli
 {
     q2proto_unpack_solid_16(solid, mins, maxs);
 }
+
+//
+// SERVER: INITIALIZATION
+//
+static q2proto_error_t vanilla_server_fill_serverdata(q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata);
+static q2proto_error_t vanilla_server_write(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
+static q2proto_error_t vanilla_server_write_gamestate(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
+
+static const struct q2proto_download_funcs_s vanilla_download_funcs = {
+    .begin = NULL,
+    .data = q2proto_download_common_data,
+    .finish = q2proto_download_common_finish,
+    .abort = q2proto_download_common_abort
+};
+
+q2proto_error_t q2proto_vanilla_init_servercontext(q2proto_servercontext_t *context, const q2proto_server_info_t *server_info, const q2proto_connect_t *connect_info)
+{
+    if (server_info->game_type != Q2PROTO_GAME_VANILLA)
+        return Q2P_ERR_GAMETYPE_UNSUPPORTED;
+
+    context->fill_serverdata = vanilla_server_fill_serverdata;
+    context->server_write = vanilla_server_write;
+    context->server_write_gamestate = vanilla_server_write_gamestate;
+    context->download_funcs = &vanilla_download_funcs;
+    return Q2P_ERR_SUCCESS;
+}
+
+static q2proto_error_t vanilla_server_fill_serverdata(q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata)
+{
+    serverdata->protocol = PROTOCOL_VANILLA;
+    return Q2P_ERR_SUCCESS;
+}
+
+static q2proto_error_t vanilla_server_write_serverdata(uintptr_t io_arg, const q2proto_svc_serverdata_t *serverdata);
+static q2proto_error_t vanilla_server_write_spawnbaseline(uintptr_t io_arg, const q2proto_svc_spawnbaseline_t *spawnbaseline);
+static q2proto_error_t vanilla_server_write_download(uintptr_t io_arg, const q2proto_svc_download_t *download);
+static q2proto_error_t vanilla_server_write_frame(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_frame_t *frame);
+static q2proto_error_t vanilla_server_write_frame_entity_delta(uintptr_t io_arg, const q2proto_svc_frame_entity_delta_t *frame_entity_delta);
+
+static q2proto_error_t vanilla_server_write(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message)
+{
+    switch(svc_message->type)
+    {
+    case Q2P_SVC_NOP:
+        return q2proto_common_server_write_nop(io_arg);
+
+    case Q2P_SVC_DISCONNECT:
+        return q2proto_common_server_write_disconnect(io_arg);
+
+    case Q2P_SVC_RECONNECT:
+        return q2proto_common_server_write_reconnect(io_arg);
+
+    case Q2P_SVC_SOUND:
+        return q2proto_common_server_write_sound(io_arg, &svc_message->sound);
+
+    case Q2P_SVC_PRINT:
+        return q2proto_common_server_write_print(io_arg, &svc_message->print);
+
+    case Q2P_SVC_STUFFTEXT:
+        return q2proto_common_server_write_stufftext(io_arg, &svc_message->stufftext);
+
+    case Q2P_SVC_SERVERDATA:
+        return vanilla_server_write_serverdata(io_arg, &svc_message->serverdata);
+
+    case Q2P_SVC_CONFIGSTRING:
+        return q2proto_common_server_write_configstring(io_arg, &svc_message->configstring);
+
+    case Q2P_SVC_SPAWNBASELINE:
+        return vanilla_server_write_spawnbaseline(io_arg, &svc_message->spawnbaseline);
+
+    case Q2P_SVC_CENTERPRINT:
+        return q2proto_common_server_write_centerprint(io_arg, &svc_message->centerprint);
+
+    case Q2P_SVC_DOWNLOAD:
+        return vanilla_server_write_download(io_arg, &svc_message->download);
+
+    case Q2P_SVC_FRAME:
+        return vanilla_server_write_frame(context, io_arg, &svc_message->frame);
+
+    case Q2P_SVC_FRAME_ENTITY_DELTA:
+        return vanilla_server_write_frame_entity_delta(io_arg, &svc_message->frame_entity_delta);
+
+    default:
+        break;
+    }
+
+    /* The following messages are currently not covered,
+     * as they're actually sent by game code:
+     *  muzzleflash
+     *  muzzleflash2
+     *  temp_entity
+     *  layout
+     *  inventory
+     */
+
+    return Q2P_ERR_NOT_IMPLEMENTED;
+}
+
+static q2proto_error_t vanilla_server_write_serverdata(uintptr_t io_arg, const q2proto_svc_serverdata_t *serverdata)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_serverdata);
+    WRITE_CHECKED(server_write, io_arg, i32, PROTOCOL_VANILLA);
+    WRITE_CHECKED(server_write, io_arg, i32, serverdata->servercount);
+    WRITE_CHECKED(server_write, io_arg, u8, serverdata->attractloop);
+    WRITE_CHECKED(server_write, io_arg, string, &serverdata->gamedir);
+    WRITE_CHECKED(server_write, io_arg, i16, serverdata->clientnum);
+    WRITE_CHECKED(server_write, io_arg, string, &serverdata->levelname);
+    return Q2P_ERR_SUCCESS;
+}
+
+static q2proto_error_t vanilla_server_write_entity_state_delta(uintptr_t io_arg, uint16_t entnum, const q2proto_entity_state_delta_t *entity_state_delta)
+{
+    uint32_t bits = 0;
+
+    unsigned origin_changes = q2proto_maybe_diff_coord_write_differs_int(&entity_state_delta->origin);
+    if (origin_changes & BIT(0))
+        bits |= U_ORIGIN1;
+    if (origin_changes & BIT(1))
+        bits |= U_ORIGIN2;
+    if (origin_changes & BIT(2))
+        bits |= U_ORIGIN3;
+
+    if (entity_state_delta->angle.delta_bits & BIT(0))
+        bits |= U_ANGLE1;
+    if (entity_state_delta->angle.delta_bits & BIT(1))
+        bits |= U_ANGLE2;
+    if (entity_state_delta->angle.delta_bits & BIT(2))
+        bits |= U_ANGLE3;
+
+    if (entity_state_delta->delta_bits & Q2P_ESD_SKINNUM)
+        bits |= q2proto_common_choose_width_flags(entity_state_delta->skinnum, U_SKIN8, U_SKIN16, false);
+
+    if (entity_state_delta->delta_bits & Q2P_ESD_FRAME)
+    {
+        if(entity_state_delta->frame >= 256)
+            bits |= U_FRAME16;
+        else
+            bits |= U_FRAME8;
+    }
+
+    if (entity_state_delta->delta_bits & Q2P_ESD_EFFECTS)
+        bits |= q2proto_common_choose_width_flags(entity_state_delta->effects, U_EFFECTS8, U_EFFECTS16, false);
+    if (entity_state_delta->delta_bits & Q2P_ESD_EFFECTS_MORE)
+        return Q2P_ERR_BAD_DATA;
+
+    if (entity_state_delta->delta_bits & Q2P_ESD_RENDERFX)
+        bits |= q2proto_common_choose_width_flags(entity_state_delta->renderfx, U_RENDERFX8, U_RENDERFX16, false);
+
+    if (entity_state_delta->delta_bits & Q2P_ESD_SOLID)
+        bits |= U_SOLID;
+
+    if (entity_state_delta->delta_bits & Q2P_ESD_EVENT)
+        bits |= U_EVENT;
+
+    if (entity_state_delta->delta_bits & Q2P_ESD_MODELINDEX)
+        bits |= U_MODEL;
+    if (entity_state_delta->delta_bits & Q2P_ESD_MODELINDEX2)
+        bits |= U_MODEL2;
+    if (entity_state_delta->delta_bits & Q2P_ESD_MODELINDEX3)
+        bits |= U_MODEL3;
+    if (entity_state_delta->delta_bits & Q2P_ESD_MODELINDEX4)
+        bits |= U_MODEL4;
+
+    if(entity_state_delta->delta_bits & Q2P_ESD_SOUND)
+        bits |= U_SOUND;
+
+    if(entity_state_delta->delta_bits & (Q2P_ESD_LOOP_ATTENUATION | Q2P_ESD_LOOP_VOLUME))
+        return Q2P_ERR_BAD_DATA;
+
+    if(entity_state_delta->delta_bits & Q2P_ESD_OLD_ORIGIN)
+        bits |= U_OLDORIGIN;
+
+    if (entity_state_delta->delta_bits & (Q2P_ESD_ALPHA | Q2P_ESD_SCALE))
+        return Q2P_ERR_BAD_DATA;
+
+    //----------
+
+    q2proto_common_server_write_entity_bits(io_arg, bits, entnum);
+
+    if (bits & U_MODEL)
+    {
+        if (entity_state_delta->modelindex > 255)
+            return Q2P_ERR_BAD_DATA;
+        WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->modelindex);
+    }
+    if (bits & U_MODEL2)
+    {
+        if (entity_state_delta->modelindex2 > 255)
+            return Q2P_ERR_BAD_DATA;
+        WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->modelindex2);
+    }
+    if (bits & U_MODEL3)
+    {
+        if (entity_state_delta->modelindex3 > 255)
+            return Q2P_ERR_BAD_DATA;
+        WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->modelindex3);
+    }
+    if (bits & U_MODEL4)
+    {
+        if (entity_state_delta->modelindex4 > 255)
+            return Q2P_ERR_BAD_DATA;
+        WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->modelindex4);
+    }
+
+    if (bits & U_FRAME16)
+        WRITE_CHECKED(server_write, io_arg, u16, entity_state_delta->frame);
+    else if (bits & U_FRAME8)
+        WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->frame);
+
+    if ((bits & U_SKIN32) == U_SKIN32)
+        WRITE_CHECKED(server_write, io_arg, u32, entity_state_delta->skinnum);
+    else if (bits & U_SKIN16)
+        WRITE_CHECKED(server_write, io_arg, u16, entity_state_delta->skinnum);
+    else if (bits & U_SKIN8)
+        WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->skinnum);
+
+    if ((bits & U_EFFECTS32) == U_EFFECTS32)
+        WRITE_CHECKED(server_write, io_arg, u32, entity_state_delta->effects);
+    else if (bits & U_EFFECTS16)
+        WRITE_CHECKED(server_write, io_arg, u16, entity_state_delta->effects);
+    else if (bits & U_EFFECTS8)
+        WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->effects);
+
+    if ((bits & U_RENDERFX32) == U_RENDERFX32)
+        WRITE_CHECKED(server_write, io_arg, u32, entity_state_delta->renderfx);
+    else if (bits & U_RENDERFX16)
+        WRITE_CHECKED(server_write, io_arg, u16, entity_state_delta->renderfx);
+    else if (bits & U_RENDERFX8)
+        WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->renderfx);
+
+    if (bits & U_ORIGIN1)
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&entity_state_delta->origin.write.current, 0));
+    if (bits & U_ORIGIN2)
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&entity_state_delta->origin.write.current, 1));
+    if (bits & U_ORIGIN3)
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&entity_state_delta->origin.write.current, 2));
+
+    if (bits & U_ANGLE1)
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_angle_get_char_comp(&entity_state_delta->angle.values, 0));
+    if (bits & U_ANGLE2)
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_angle_get_char_comp(&entity_state_delta->angle.values, 1));
+    if (bits & U_ANGLE3)
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_angle_get_char_comp(&entity_state_delta->angle.values, 2));
+
+    if (bits & U_OLDORIGIN)
+    {
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&entity_state_delta->old_origin, 0));
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&entity_state_delta->old_origin, 1));
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&entity_state_delta->old_origin, 2));
+    }
+
+    if (bits & U_SOUND)
+    {
+        if (entity_state_delta->sound > 255)
+            return Q2P_ERR_BAD_DATA;
+        WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->sound);
+        // ignore loop_volume, loop_attenuation
+    }
+    if (bits & U_EVENT)
+        WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->event);
+    if (bits & U_SOLID)
+        WRITE_CHECKED(server_write, io_arg, u16, entity_state_delta->solid);
+
+    return Q2P_ERR_SUCCESS;
+}
+
+static q2proto_error_t vanilla_server_write_spawnbaseline(uintptr_t io_arg, const q2proto_svc_spawnbaseline_t *spawnbaseline)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_spawnbaseline);
+    CHECKED(server_write, io_arg, vanilla_server_write_entity_state_delta(io_arg, spawnbaseline->entnum, &spawnbaseline->delta_state));
+    return Q2P_ERR_SUCCESS;
+}
+
+static q2proto_error_t vanilla_server_write_download(uintptr_t io_arg, const q2proto_svc_download_t *download)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_download);
+    WRITE_CHECKED(server_write, io_arg, i16, download->size);
+    WRITE_CHECKED(server_write, io_arg, u8, download->percent);
+    if (download->size > 0)
+    {
+        void *p;
+        CHECKED_IO(server_write, io_arg, p = q2protoio_write_reserve_raw(io_arg, download->size), "reserve download data");
+        memcpy(p, download->data, download->size);
+    }
+    return Q2P_ERR_SUCCESS;
+}
+
+static q2proto_error_t vanilla_server_write_playerstate(uintptr_t io_arg, const q2proto_svc_playerstate_t *playerstate)
+{
+    uint16_t flags = 0;
+
+    if(playerstate->delta_bits & Q2P_PSD_PM_TYPE)
+        flags |= PS_M_TYPE;
+    if(q2proto_maybe_diff_coord_write_differs_int(&playerstate->pm_origin))
+        flags |= PS_M_ORIGIN;
+    if(q2proto_maybe_diff_coord_write_differs_int(&playerstate->pm_velocity))
+        flags |= PS_M_VELOCITY;
+    if(playerstate->delta_bits & Q2P_PSD_PM_TIME)
+    {
+        flags |= PS_M_TIME;
+        if (playerstate->pm_time > UINT8_MAX)
+            return Q2P_ERR_BAD_DATA;
+    }
+    if(playerstate->delta_bits & Q2P_PSD_PM_FLAGS)
+    {
+        flags |= PS_M_FLAGS;
+        if (playerstate->pm_flags > UINT8_MAX)
+            return Q2P_ERR_BAD_DATA;
+    }
+    if(playerstate->delta_bits & Q2P_PSD_PM_GRAVITY)
+        flags |= PS_M_GRAVITY;
+    if(playerstate->delta_bits & Q2P_PSD_PM_DELTA_ANGLES)
+        flags |= PS_M_DELTA_ANGLES;
+    if(playerstate->delta_bits & Q2P_PSD_VIEWOFFSET)
+        flags |= PS_VIEWOFFSET;
+    if(playerstate->viewangles.delta_bits != 0)
+        flags |= PS_VIEWANGLES;
+    if(playerstate->delta_bits & Q2P_PSD_KICKANGLES)
+        flags |= PS_KICKANGLES;
+    if(playerstate->blend.delta_bits != 0)
+        flags |= PS_BLEND;
+    if(playerstate->damage_blend.delta_bits != 0)
+        return Q2P_ERR_BAD_DATA;
+    if(playerstate->delta_bits & Q2P_PSD_FOV)
+        flags |= PS_FOV;
+    if(playerstate->delta_bits & Q2P_PSD_RDFLAGS)
+        flags |= PS_RDFLAGS;
+    if(playerstate->delta_bits & Q2P_PSD_GUNINDEX)
+        flags |= PS_WEAPONINDEX;
+    if(playerstate->delta_bits & (Q2P_PSD_GUNFRAME | Q2P_PSD_GUNOFFSET | Q2P_PSD_GUNANGLES))
+        flags |= PS_WEAPONFRAME;
+    if(playerstate->delta_bits & Q2P_PSD_CLIENTNUM)
+        return Q2P_ERR_BAD_DATA;
+    if(playerstate->statbits > UINT32_MAX)
+        return Q2P_ERR_BAD_DATA;
+
+    //
+    // write it
+    //
+    WRITE_CHECKED(server_write, io_arg, u8, svc_playerinfo);
+    WRITE_CHECKED(server_write, io_arg, u16, flags);
+
+    if (flags & PS_M_TYPE)
+        WRITE_CHECKED(server_write, io_arg, u8, playerstate->pm_type);
+
+    if (flags & PS_M_ORIGIN)
+        WRITE_CHECKED(server_write, io_arg, var_coord_short, &playerstate->pm_origin.write.current);
+
+    if (flags & PS_M_VELOCITY)
+        WRITE_CHECKED(server_write, io_arg, var_coord_short, &playerstate->pm_velocity.write.current);
+
+    if (flags & PS_M_TIME)
+        WRITE_CHECKED(server_write, io_arg, u8, playerstate->pm_time);
+
+    if (flags & PS_M_FLAGS)
+        WRITE_CHECKED(server_write, io_arg, u8, playerstate->pm_flags);
+
+    if (flags & PS_M_GRAVITY)
+        WRITE_CHECKED(server_write, io_arg, i16, playerstate->pm_gravity);
+
+    if (flags & PS_M_DELTA_ANGLES)
+    {
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->pm_delta_angles, 0));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->pm_delta_angles, 1));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->pm_delta_angles, 2));
+    }
+
+    if (flags & PS_VIEWOFFSET)
+    {
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offset_get_char_comp(&playerstate->viewoffset, 0));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offset_get_char_comp(&playerstate->viewoffset, 1));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offset_get_char_comp(&playerstate->viewoffset, 2));
+    }
+
+    if (flags & PS_VIEWANGLES)
+    {
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->viewangles.values, 0));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->viewangles.values, 1));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->viewangles.values, 2));
+    }
+
+    if (flags & PS_KICKANGLES)
+    {
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->kick_angles, 0));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->kick_angles, 1));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->kick_angles, 2));
+    }
+
+    if (flags & PS_WEAPONINDEX)
+    {
+        if (playerstate->gunindex > 255)
+            return Q2P_ERR_BAD_DATA;
+        WRITE_CHECKED(server_write, io_arg, u8, playerstate->gunindex);
+    }
+
+    if (flags & PS_WEAPONFRAME)
+    {
+        WRITE_CHECKED(server_write, io_arg, u8, playerstate->gunframe);
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offset_get_char_comp(&playerstate->gunoffset, 0));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offset_get_char_comp(&playerstate->gunoffset, 1));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offset_get_char_comp(&playerstate->gunoffset, 2));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->gunangles, 0));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->gunangles, 1));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->gunangles, 2));
+    }
+
+    if (flags & PS_BLEND)
+    {
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&playerstate->blend.values, 0));
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&playerstate->blend.values, 1));
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&playerstate->blend.values, 2));
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&playerstate->blend.values, 3));
+    }
+    if (flags & PS_FOV)
+        WRITE_CHECKED(server_write, io_arg, u8, playerstate->fov);
+    if (flags & PS_RDFLAGS)
+        WRITE_CHECKED(server_write, io_arg, u8, playerstate->rdflags);
+
+    // send stats
+    WRITE_CHECKED(server_write, io_arg, u32, playerstate->statbits);
+    for (int i = 0; i < 32; i++)
+        if (playerstate->statbits & (1 << i))
+            WRITE_CHECKED(server_write, io_arg, i16, playerstate->stats[i]);
+
+    return Q2P_ERR_SUCCESS;
+}
+
+static q2proto_error_t vanilla_server_write_frame(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_frame_t *frame)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_frame);
+    WRITE_CHECKED(server_write, io_arg, i32, frame->serverframe);
+    WRITE_CHECKED(server_write, io_arg, i32, frame->deltaframe);
+    WRITE_CHECKED(server_write, io_arg, u8, frame->suppress_count);
+
+    // write areabits
+    WRITE_CHECKED(server_write, io_arg, u8, frame->areabits_len);
+    void *areabits;
+    CHECKED_IO(server_write, io_arg, areabits = q2protoio_write_reserve_raw(io_arg, frame->areabits_len), "reserve areabits");
+    memcpy(areabits, frame->areabits, frame->areabits_len);
+
+    CHECKED(server_write, io_arg, vanilla_server_write_playerstate(io_arg, &frame->playerstate));
+
+    WRITE_CHECKED(server_write, io_arg, u8, svc_packetentities);
+
+    return Q2P_ERR_SUCCESS;
+}
+
+static q2proto_error_t vanilla_server_write_frame_entity_delta(uintptr_t io_arg, const q2proto_svc_frame_entity_delta_t *frame_entity_delta)
+{
+    if (frame_entity_delta->remove)
+    {
+        q2proto_common_server_write_entity_bits(io_arg, U_REMOVE, frame_entity_delta->newnum);
+        return Q2P_ERR_SUCCESS;
+    }
+
+    if (frame_entity_delta->newnum == 0)
+    {
+        // special case: packetentities "terminator"
+        WRITE_CHECKED(server_write, io_arg, u8, 0); // bits
+        WRITE_CHECKED(server_write, io_arg, u8, 0); // entnum
+        return Q2P_ERR_SUCCESS;
+    }
+
+    return vanilla_server_write_entity_state_delta(io_arg, frame_entity_delta->newnum, &frame_entity_delta->entity_delta);
+}
+
+#define WRITE_GAMESTATE_FUNCTION_NAME   vanilla_server_write_gamestate
+#define WRITE_GAMESTATE_BASELINE_SIZE ( \
+      1 /* command byte */              \
+    + 6 /* bits & number */             \
+    + 4 /* model indices */             \
+    + 2 /* frame */                     \
+    + 4 /* skin */                      \
+    + 4 /* effects */                   \
+    + 4 /* renderfx */                  \
+    + 6 /* origin */                    \
+    + 3 /* angles */                    \
+    + 6 /* old_origin */                \
+    + 1 /* sound */                     \
+    + 1 /* event */                     \
+    + 2 /* solid */                     \
+)
+#define WRITE_GAMESTATE_BASELINE(C, I, S)   vanilla_server_write_spawnbaseline(I, S)
+
+#include "q2proto_write_gamestate.inc"

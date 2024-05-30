@@ -211,3 +211,82 @@ q2proto_error_t q2proto_parse_connect(const char *connect_args, const q2proto_pr
 
     return Q2P_ERR_SUCCESS;
 }
+
+q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t* context, const q2proto_server_info_t *server_info, const q2proto_connect_t* connect_info)
+{
+    memset(context, 0, sizeof(*context));
+
+    switch(connect_info->protocol)
+    {
+    case Q2P_PROTOCOL_INVALID:
+    case Q2P_PROTOCOL_OLD_DEMO:
+    case Q2P_PROTOCOL_R1Q2:
+    case Q2P_PROTOCOL_Q2PRO:
+        return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
+    case Q2P_PROTOCOL_VANILLA:
+        return q2proto_vanilla_init_servercontext(context, server_info, connect_info);
+    }
+
+    return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
+}
+
+q2proto_error_t q2proto_server_fill_serverdata(q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata)
+{
+    return context->fill_serverdata(context, serverdata);
+}
+
+q2proto_error_t q2proto_server_write_pos(const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_vec3_t pos)
+{
+    WRITE_CHECKED(server_write, io_arg, u16, _q2proto_valenc_coord2int(pos[0]));
+    WRITE_CHECKED(server_write, io_arg, u16, _q2proto_valenc_coord2int(pos[1]));
+    WRITE_CHECKED(server_write, io_arg, u16, _q2proto_valenc_coord2int(pos[2]));
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_server_write(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message)
+{
+    return context->server_write(context, io_arg, svc_message);
+}
+
+q2proto_error_t q2proto_server_write_gamestate(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_gamestate_t *gamestate)
+{
+    return context->server_write_gamestate(context, io_arg, gamestate);
+}
+
+q2proto_error_t q2proto_server_download_begin(q2proto_servercontext_t *context, size_t total_size, q2proto_server_download_state_t* state)
+{
+    q2proto_download_common_begin(context, total_size, state);
+    if (context->download_funcs->begin)
+        return context->download_funcs->begin(context, state);
+    else
+        return Q2P_ERR_SUCCESS;
+}
+
+void q2proto_server_download_end(q2proto_server_download_state_t* state)
+{
+}
+
+q2proto_error_t q2proto_server_download_data(q2proto_server_download_state_t *state, const uint8_t **data, size_t *remaining, size_t packet_remaining, q2proto_svc_download_t *svc_download)
+{
+    return state->context->download_funcs->data(state, data, remaining, packet_remaining, svc_download);
+}
+
+q2proto_error_t q2proto_server_download_finish(q2proto_server_download_state_t *state, q2proto_svc_download_t *svc_download)
+{
+    return state->context->download_funcs->finish(state, svc_download);
+}
+
+q2proto_error_t q2proto_server_download_abort(q2proto_server_download_state_t *state, q2proto_svc_download_t *svc_download)
+{
+    // Allow generating a "download abort" message even w/o state or context
+    if (state && state->context)
+        return state->context->download_funcs->abort(state, svc_download);
+    else
+        return q2proto_download_common_abort(state, svc_download);
+}
+
+void q2proto_server_download_get_progress(const q2proto_server_download_state_t *state, size_t *completed, size_t *total)
+{
+    *completed = state->transferred;
+    *total = state->total_size;
+}

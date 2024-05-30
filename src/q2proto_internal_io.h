@@ -202,6 +202,40 @@ static inline q2proto_error_t read_var_blend(uintptr_t io_arg, q2proto_var_blend
     return Q2P_ERR_SUCCESS;
 }
 
+static inline void q2protoio_write_i8(uintptr_t io_arg, int8_t x)
+{
+    q2protoio_write_u8(io_arg, (uint8_t)x);
+}
+
+static inline void q2protoio_write_i16(uintptr_t io_arg, int16_t x)
+{
+    q2protoio_write_u16(io_arg, (uint16_t)x);
+}
+
+static inline void q2protoio_write_i32(uintptr_t io_arg, int32_t x)
+{
+    q2protoio_write_u32(io_arg, (uint32_t)x);
+}
+
+static inline void q2protoio_write_string(uintptr_t io_arg, const q2proto_string_t* str)
+{
+    char *p = (char*)q2protoio_write_reserve_raw(io_arg, str->len + 1);
+    memcpy(p, str->str, str->len);
+    p[str->len] = 0;
+}
+
+static inline void q2protoio_write_var_coord_short(uintptr_t io_arg, const q2proto_var_coord_t* pos)
+{
+    q2protoio_write_i16(io_arg, q2proto_var_coord_get_int_comp(pos, 0));
+    q2protoio_write_i16(io_arg, q2proto_var_coord_get_int_comp(pos, 1));
+    q2protoio_write_i16(io_arg, q2proto_var_coord_get_int_comp(pos, 2));
+    /* Note: q2protoio_get_error() is defined to return the error from the "last I/O operation",
+     * so it's theoretically possible that one q2protoio_write_coord_short() fails, but the
+     * last one succeeds, keeping the "last error" as success...
+     * In practice, however, it's probably reasonable to assume that, if one write fails,
+     * the remaining writes will do so, as well. */
+}
+
 /** @} */
 
 /**\name Parsing helper
