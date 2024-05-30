@@ -16,20 +16,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef Q2PROTO_H_
-#define Q2PROTO_H_
+/**\file
+ * Server game type
+ */
+#ifndef Q2PROTO_GAMETYPE_H_
+#define Q2PROTO_GAMETYPE_H_
 
-#include "q2proto_client.h"
-#include "q2proto_coords.h"
-#include "q2proto_defs.h"
-#include "q2proto_error.h"
-#include "q2proto_gametype.h"
-#include "q2proto_io.h"
-#include "q2proto_protocol.h"
-#include "q2proto_server.h"
-#include "q2proto_solid.h"
-#include "q2proto_string.h"
-#include "q2proto_struct_svc.h"
-#include "q2proto_valenc.h"
+/// Type of game run by the server
+typedef enum q2proto_game_type_e
+{
+    /// Vanilla/original/v3 game
+    Q2PROTO_GAME_VANILLA = 0,
+} q2proto_game_type_t;
 
-#endif // Q2PROTO_H_
+#endif // Q2PROTO_GAMETYPE_H_

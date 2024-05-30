@@ -60,3 +60,154 @@ q2proto_error_t q2proto_get_challenge_extras(char *buf, size_t buf_size, const q
     }
     return Q2P_ERR_SUCCESS;
 }
+
+static q2proto_error_t next_connect_int(q2proto_string_t *connect_str, long *result)
+{
+    q2proto_string_t value_token;
+    if (!next_token(&value_token, connect_str, ' '))
+        return Q2P_ERR_BAD_DATA;
+
+    errno = 0;
+    *result = q2pstol(&value_token, 10);
+    if (errno != 0)
+        return Q2P_ERR_BAD_DATA;
+
+    return Q2P_ERR_SUCCESS;
+}
+
+static q2proto_error_t parse_connect_r1q2(q2proto_string_t* connect_str, q2proto_connect_t *parsed_connect)
+{
+    // set minor protocol version
+    q2proto_string_t protocol_ver_token = {0};
+    next_token(&protocol_ver_token, connect_str, ' ');
+    if (protocol_ver_token.len > 0) {
+        parsed_connect->version = q2pstol(&protocol_ver_token, 10);
+        if (parsed_connect->version < PROTOCOL_VERSION_R1Q2_MINIMUM)
+            parsed_connect->version = PROTOCOL_VERSION_R1Q2_MINIMUM;
+        else if (parsed_connect->version > PROTOCOL_VERSION_R1Q2_CURRENT)
+            parsed_connect->version = PROTOCOL_VERSION_R1Q2_CURRENT;
+    } else {
+        parsed_connect->version = PROTOCOL_VERSION_R1Q2_MINIMUM;
+    }
+    parsed_connect->has_zlib = true;
+
+    return Q2P_ERR_SUCCESS;
+}
+
+static q2proto_error_t parse_connect_q2pro(q2proto_string_t* connect_str, q2proto_connect_t *parsed_connect)
+{
+    q2proto_string_t netchan_token = {0};
+    next_token(&netchan_token, connect_str, ' ');
+    if (netchan_token.len > 0)
+        parsed_connect->q2pro_nctype = q2pstol(&netchan_token, 10);
+    else
+        parsed_connect->q2pro_nctype = 1; // NETCHAN_NEW
+
+    q2proto_string_t zlib_token = {0};
+    next_token(&zlib_token, connect_str, ' ');
+    parsed_connect->has_zlib = q2pstol(&zlib_token, 10) != 0;
+
+    // set minor protocol version
+    q2proto_string_t protocol_ver_token = {0};
+    next_token(&protocol_ver_token, connect_str, ' ');
+    if (protocol_ver_token.len > 0) {
+        parsed_connect->version = q2pstol(&protocol_ver_token, 10);
+        if (parsed_connect->version < PROTOCOL_VERSION_Q2PRO_MINIMUM)
+            parsed_connect->version = PROTOCOL_VERSION_Q2PRO_MINIMUM;
+        else if (parsed_connect->version > PROTOCOL_VERSION_Q2PRO_CURRENT)
+            parsed_connect->version = PROTOCOL_VERSION_Q2PRO_CURRENT;
+        if (parsed_connect->version == PROTOCOL_VERSION_Q2PRO_RESERVED)
+            parsed_connect->version--; // never use this version
+    } else {
+        parsed_connect->version = PROTOCOL_VERSION_Q2PRO_MINIMUM;
+    }
+
+    return Q2P_ERR_SUCCESS;
+}
+
+// Filter list of accepted protocols by restrictions from server info (mainly game type atm)
+static size_t filter_accepted_protocols(q2proto_protocol_t *new_accepted_protocols, const q2proto_protocol_t *accepted_protocols, size_t num_accepted_protocols, const q2proto_server_info_t *server_info)
+{
+    size_t out_num = 0;
+    for (size_t i = 0; i < num_accepted_protocols; i++)
+    {
+        switch (server_info->game_type)
+        {
+        case Q2PROTO_GAME_VANILLA:
+            new_accepted_protocols[out_num++] = accepted_protocols[i];
+            break;
+        }
+    }
+    return out_num;
+}
+
+q2proto_error_t q2proto_parse_connect(const char *connect_args, const q2proto_protocol_t *accepted_protocols, size_t num_accepted_protocols, const q2proto_server_info_t *server_info, q2proto_connect_t *parsed_connect)
+{
+    q2proto_protocol_t *new_accepted_protocols = alloca(sizeof(q2proto_protocol_t) * num_accepted_protocols);
+    size_t num_new_accepted_protocols = filter_accepted_protocols(new_accepted_protocols, accepted_protocols, num_accepted_protocols, server_info);
+
+    memset(parsed_connect, 0, sizeof(*parsed_connect));
+
+    q2proto_string_t connect_str = q2proto_make_string(connect_args);
+
+    q2proto_error_t parse_err;
+    // Parse challenge value
+    long protocol_value;
+    parse_err = next_connect_int(&connect_str, &protocol_value);
+    if (parse_err != Q2P_ERR_SUCCESS)
+        return parse_err;
+
+    parsed_connect->protocol = q2proto_protocol_from_netver(protocol_value);
+    bool proto_found = false;
+    for (size_t i = 0; i < num_new_accepted_protocols; i++)
+    {
+        if (new_accepted_protocols[i] == parsed_connect->protocol)
+        {
+            proto_found = true;
+            break;
+        }
+    }
+    if (!proto_found)
+        return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
+
+    long qport_value;
+    parse_err = next_connect_int(&connect_str, &qport_value);
+    if (parse_err != Q2P_ERR_SUCCESS)
+        return parse_err;
+    parsed_connect->qport = qport_value;
+
+    long challenge_value;
+    parse_err = next_connect_int(&connect_str, &challenge_value);
+    if (parse_err != Q2P_ERR_SUCCESS)
+        return parse_err;
+    parsed_connect->challenge = challenge_value;
+
+    if (!next_token(&parsed_connect->userinfo, &connect_str, ' '))
+        return Q2P_ERR_BAD_DATA;
+
+    long packet_length_value = server_info->default_packet_length;
+    if (parsed_connect->protocol >= Q2P_PROTOCOL_R1Q2)
+    {
+        q2proto_string_t packet_length_token = {0};
+        if (!next_token(&packet_length_token, &connect_str, ' '))
+            return Q2P_ERR_BAD_DATA;
+        if (packet_length_token.len > 0)
+            packet_length_value = q2pstol(&packet_length_token, 10);
+    }
+    parsed_connect->packet_length = packet_length_value;
+
+    switch(parsed_connect->protocol)
+    {
+    case Q2P_PROTOCOL_INVALID:
+        return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
+    case Q2P_PROTOCOL_OLD_DEMO:
+    case Q2P_PROTOCOL_VANILLA:
+        break;
+    case Q2P_PROTOCOL_R1Q2:
+        return parse_connect_r1q2(&connect_str, parsed_connect);
+    case Q2P_PROTOCOL_Q2PRO:
+        return parse_connect_q2pro(&connect_str, parsed_connect);
+    }
+
+    return Q2P_ERR_SUCCESS;
+}
