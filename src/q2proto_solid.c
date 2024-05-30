@@ -80,3 +80,34 @@ void q2proto_unpack_solid_32_r1q2(uint32_t solid, q2proto_vec3_t mins, q2proto_v
     maxs[1] =  x;
     maxs[2] =  zu;
 }
+
+// Assumes x/y are equal. Z does not have to be symmetric, and z maxs can be negative.
+uint32_t q2proto_pack_solid_32_q2pro_v2(const q2proto_vec3_t mins, const q2proto_vec3_t maxs)
+{
+    int x = maxs[0];
+    int y = maxs[1];
+    int zd = -mins[2];
+    int zu = maxs[2] + 32;
+
+    x = CLAMP(x, 1, 255);
+    y = CLAMP(y, 1, 255);
+    zd = CLAMP(zd, 0, 255);
+    zu = CLAMP(zu, 0, 255);
+
+    return (zu << 24) | (zd << 16) | (y << 8) | x;
+}
+
+void q2proto_unpack_solid_32_q2pro_v2(uint32_t solid, q2proto_vec3_t mins, q2proto_vec3_t maxs)
+{
+    int x = solid & 255;
+    int y = (solid >> 8) & 255;
+    int zd = (solid >> 16) & 255;
+    int zu = ((solid >> 24) & 255) - 32;
+
+    mins[0] = -x;
+    mins[1] = -y;
+    mins[2] = -zd;
+    maxs[0] =  x;
+    maxs[1] =  y;
+    maxs[2] =  zu;
+}

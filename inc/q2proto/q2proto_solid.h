@@ -39,6 +39,11 @@ void q2proto_unpack_solid_16(uint16_t solid, q2proto_vec3_t mins, q2proto_vec3_t
 uint32_t q2proto_pack_solid_32_r1q2(const q2proto_vec3_t mins, const q2proto_vec3_t maxs);
 /// Unpack a bounding box from a 32-bit integer (R1Q2 encoding)
 void q2proto_unpack_solid_32_r1q2(uint32_t solid, q2proto_vec3_t mins, q2proto_vec3_t maxs);
+
+/// Pack a bounding box into a 32-bit integer (Q2PROv2 encoding)
+uint32_t q2proto_pack_solid_32_q2pro_v2(const q2proto_vec3_t mins, const q2proto_vec3_t maxs);
+/// Unpack a bounding box from a 32-bit integer (Q2PROv2 encoding)
+void q2proto_unpack_solid_32_q2pro_v2(uint32_t solid, q2proto_vec3_t mins, q2proto_vec3_t maxs);
 /** @} */
 
 #if defined(__cplusplus)
