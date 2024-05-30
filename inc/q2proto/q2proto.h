@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_error.h"
 #include "q2proto_io.h"
 #include "q2proto_protocol.h"
+#include "q2proto_server.h"
 #include "q2proto_solid.h"
 #include "q2proto_string.h"
 #include "q2proto_struct_svc.h"
