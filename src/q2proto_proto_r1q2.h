@@ -1,5 +1,4 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
 Copyright (C) 2024 Frank Richter
 
 This program is free software; you can redistribute it and/or modify
@@ -17,20 +16,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef Q2PROTO_INTERNAL_H_
-#define Q2PROTO_INTERNAL_H_
+/**\file
+ * R1Q2 protocol
+ */
+#ifndef Q2PROTO_PROTO_R1Q2_H_
+#define Q2PROTO_PROTO_R1Q2_H_
 
 #include "q2proto/q2proto.h"
 
-#include "q2proto_internal_common.h"
-#include "q2proto_internal_defs.h"
-#include "q2proto_internal_debug.h"
-#include "q2proto_internal_download.h"
-#include "q2proto_internal_fmt.h"
-#include "q2proto_internal_io.h"
-#include "q2proto_internal_protocol.h"
-#include "q2proto_internal_string.h"
-#include "q2proto_proto_r1q2.h"
-#include "q2proto_proto_vanilla.h"
+/**\name R1Q2 protocol
+ * @{ */
+/// Client context setup
+q2proto_error_t q2proto_r1q2_continue_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata);
 
-#endif // Q2PROTO_INTERNAL_H_
+/// Server context setup
+q2proto_error_t q2proto_r1q2_init_servercontext(q2proto_servercontext_t *context, const q2proto_server_info_t *server_info, const q2proto_connect_t* connect_info);
+/** @} */
+
+#endif // Q2PROTO_PROTO_R1Q2_H_

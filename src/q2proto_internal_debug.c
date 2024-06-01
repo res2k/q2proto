@@ -185,5 +185,34 @@ void q2proto_debug_common_player_delta_bits_to_str(char *buf, size_t size, uint3
     }
 }
 
+void q2proto_debug_common_player_delta_extrabits_to_str(char *buf, size_t size, uint32_t bits)
+{
+    bool first = true;
+
+#define S(b, s)          \
+    if (bits & EPS_##b)   \
+    {                    \
+        SHOWBITS(s);     \
+        bits &= ~EPS_##b; \
+    }
+
+    S(GUNOFFSET,        "gunoffset");
+    S(GUNANGLES,        "gunangles");
+    S(M_VELOCITY2,      "pm_velocity2");
+    S(M_ORIGIN2,        "pm_origin2");
+    S(VIEWANGLE2,       "viewangle2");
+    S(STATS,            "stats");
+    S(CLIENTNUM,        "clientnum");
+#undef S
+
+    if (bits != 0 || first)
+    {
+        if (!first)
+            q2proto_snprintf_update(&buf, &size, " 0x%x", bits);
+        else
+            q2proto_snprintf_update(&buf, &size, "0x%x", bits);
+    }
+}
+
 #undef SHOWBITS
 

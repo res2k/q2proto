@@ -74,6 +74,9 @@ enum common_svc_cmds
     svc_playerinfo,
     svc_packetentities,
     svc_frame = 20,
+    svc_r1q2_zpacket,
+    svc_r1q2_zdownload,
+    svc_r1q2_setting = 24,
 };
 
 #define SND_VOLUME      BIT(0)
@@ -222,6 +225,17 @@ typedef enum {
 #define PS_WEAPONFRAME      BIT(13)
 #define PS_RDFLAGS          BIT(14)
 
+// r1q2 protocol specific extra flags
+#define EPS_GUNOFFSET       BIT(0)
+#define EPS_GUNANGLES       BIT(1)
+#define EPS_M_VELOCITY2     BIT(2)
+#define EPS_M_ORIGIN2       BIT(3)
+#define EPS_VIEWANGLE2      BIT(4)
+#define EPS_STATS           BIT(5)
+
+// Q2PRO protocol specific extra flags
+#define EPS_CLIENTNUM       BIT(6)
+
 /// Client command IDs
 enum common_clc_cmds
 {
@@ -230,6 +244,7 @@ enum common_clc_cmds
     clc_move,
     clc_userinfo,
     clc_stringcmd,
+    clc_r1q2_setting,
 };
 
 #define CM_ANGLE1   BIT(0)

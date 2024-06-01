@@ -47,6 +47,9 @@ void q2proto_debug_common_entity_delta_bits_to_str(char *buf, size_t size, uint6
 
 /// Stringify player delta bits (PS_xxx) to buffer
 void q2proto_debug_common_player_delta_bits_to_str(char *buf, size_t size, uint32_t bits);
+
+/// Stringify extra player delta bits (EPS_xxx) to buffer
+void q2proto_debug_common_player_delta_extrabits_to_str(char *buf, size_t size, uint32_t bits);
 /** @} */
 
 

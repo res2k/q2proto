@@ -69,6 +69,13 @@ struct q2proto_clientcontext_s {
 
     /// Server protocol number
     q2proto_protocol_t Q2PROTO_PRIVATE_MEMBER(server_protocol);
+    /// Protocol version (for R1Q2/Q2PRO)
+    int Q2PROTO_PRIVATE_MEMBER(protocol_version);
+
+    /// Whether a "inflate" ioarg should be used to read packets
+    bool Q2PROTO_PRIVATE_MEMBER(has_inflate_io_arg);
+    /// inflate ioarg
+    uintptr_t Q2PROTO_PRIVATE_MEMBER(inflate_io_arg);
 
     /// "Pack solid" function
     Q2PROTO_PRIVATE_FUNC_PTR(uint32_t, pack_solid, q2proto_clientcontext_t *context, const q2proto_vec3_t mins, const q2proto_vec3_t maxs);

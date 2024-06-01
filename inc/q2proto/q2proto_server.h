@@ -109,7 +109,14 @@ struct q2proto_servercontext_s {
         bool has_beam_old_origin_fix;
         /// The q2proto_svc_playerstate_t::clientnum field is supported
         bool playerstate_clientnum;
+        /// Enable deflate compression (for R1Q2/Q2PRO)
+        bool enable_deflate;
+        /// Q2PROTO_DOWNLOAD_COMPRESS_RAW is supported for downloads
+        bool download_compress_raw;
     } features;
+
+    /// Protocol version (for R1Q2/Q2PRO)
+    int Q2PROTO_PRIVATE_MEMBER(protocol_version);
 
     /// serverdata filling
     Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, fill_serverdata, q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata);
