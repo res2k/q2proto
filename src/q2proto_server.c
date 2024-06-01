@@ -290,3 +290,8 @@ void q2proto_server_download_get_progress(const q2proto_server_download_state_t 
     *completed = state->transferred;
     *total = state->total_size;
 }
+
+q2proto_error_t q2proto_server_read(q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_message_t *clc_message)
+{
+    return context->server_read(context, io_arg, clc_message);
+}

@@ -124,6 +124,15 @@ static inline q2proto_error_t read_var_coord_short(uintptr_t io_arg, q2proto_var
     return Q2P_ERR_SUCCESS;
 }
 
+/// Read a single component of a 16-bit coordinate (no encoding)
+#define READ_CHECKED_VAR_COORD_COMP_16_UNSCALED(SOURCE, IO_ARG, TARGET, COMP) \
+    do                                                                        \
+    {                                                                         \
+        int16_t coord;                                                        \
+        READ_CHECKED(SOURCE, (IO_ARG), coord, i16);                           \
+        q2proto_var_coord_set_short_unscaled_comp(TARGET, COMP, coord);       \
+    } while (0)
+
 /// Read a single component of a 16-bit encoded angle
 #define READ_CHECKED_VAR_ANGLE_COMP_16(SOURCE, IO_ARG, TARGET, COMP) \
     do                                                               \

@@ -447,3 +447,15 @@ q2proto_error_t q2proto_common_server_write_centerprint(uintptr_t io_arg, const 
     WRITE_CHECKED(server_write, io_arg, string, &centerprint->message);
     return Q2P_ERR_SUCCESS;
 }
+
+q2proto_error_t q2proto_common_server_read_userinfo(uintptr_t io_arg, q2proto_clc_userinfo_t *userinfo)
+{
+    READ_CHECKED(server_read, io_arg, userinfo->str, string);
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_common_server_read_stringcmd(uintptr_t io_arg, q2proto_clc_stringcmd_t *stringcmd)
+{
+    READ_CHECKED(server_read, io_arg, stringcmd->cmd, string);
+    return Q2P_ERR_SUCCESS;
+}

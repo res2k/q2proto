@@ -91,6 +91,14 @@ _GENERATE_VARIANT_FUNCTIONS(var_coord, int, int32_t, 3)
  * @{ */
 _GENERATE_VARIANT_FUNCTIONS(var_coord, short, int16_t, 3)
 /** @}  */
+/** 'Variant coordinate' functions for integer values (no encoding)
+ * @{ */
+_GENERATE_VARIANT_FUNCTIONS(var_coord, int_unscaled, int32_t, 3)
+/** @}  */
+/** 'Variant coordinate' functions for short values (no encoding)
+ * @{ */
+_GENERATE_VARIANT_FUNCTIONS(var_coord, short_unscaled, int16_t, 3)
+/** @}  */
 
 /// 'Variant angle', storing an angle as either float, or encoded into 16 bit
 typedef struct q2proto_var_angle_s {

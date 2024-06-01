@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_gametype.h"
 #include "q2proto_protocol.h"
 #include "q2proto_string.h"
+#include "q2proto_struct_clc.h"
 #include "q2proto_struct_svc.h"
 
 #include <stdbool.h>
@@ -115,6 +116,8 @@ struct q2proto_servercontext_s {
     Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, server_write, q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
     /// write gamestate
     Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, server_write_gamestate, q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
+    /// read message
+    Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, server_read, q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_message_t *clc_message);
 
     /// Pointer to download function implementations
     const struct q2proto_download_funcs_s *Q2PROTO_PRIVATE_MEMBER(download_funcs);
@@ -251,6 +254,15 @@ q2proto_error_t q2proto_server_download_abort(q2proto_server_download_state_t *s
  * \param total Receives total number of bytes to transfer
  */
 void q2proto_server_download_get_progress(const q2proto_server_download_state_t *state, size_t *completed, size_t *total);
+
+/**
+ * Read a message sent from the client to the server.
+ * \param context Server communications context.
+ * \param io_arg "I/O argument", passed to externally provided I/O functions.
+ * \param clc_message Will be filled with message data.
+ * \returns Error code
+ */
+q2proto_error_t q2proto_server_read(q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_message_t *clc_message);
 /** @} */
 
 #if defined(__cplusplus)

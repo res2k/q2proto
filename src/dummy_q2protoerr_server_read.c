@@ -16,21 +16,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef Q2PROTO_H_
-#define Q2PROTO_H_
+#include "q2proto/q2proto.h"
 
-#include "q2proto_client.h"
-#include "q2proto_coords.h"
-#include "q2proto_defs.h"
-#include "q2proto_error.h"
-#include "q2proto_gametype.h"
-#include "q2proto_io.h"
-#include "q2proto_protocol.h"
-#include "q2proto_server.h"
-#include "q2proto_solid.h"
-#include "q2proto_string.h"
-#include "q2proto_struct_clc.h"
-#include "q2proto_struct_svc.h"
-#include "q2proto_valenc.h"
+// Dummy q2protoerr_server_read function definition to make linking work
 
-#endif // Q2PROTO_H_
+q2proto_error_t q2protoerr_server_read(uintptr_t io_arg, q2proto_error_t err, const char *msg, ...) { return err; }

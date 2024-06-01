@@ -459,6 +459,7 @@ static void vanilla_unpack_solid(q2proto_clientcontext_t *context, uint32_t soli
 static q2proto_error_t vanilla_server_fill_serverdata(q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata);
 static q2proto_error_t vanilla_server_write(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
 static q2proto_error_t vanilla_server_write_gamestate(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
+static q2proto_error_t vanilla_server_read(q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_message_t *clc_message);
 
 static const struct q2proto_download_funcs_s vanilla_download_funcs = {
     .begin = NULL,
@@ -475,6 +476,7 @@ q2proto_error_t q2proto_vanilla_init_servercontext(q2proto_servercontext_t *cont
     context->fill_serverdata = vanilla_server_fill_serverdata;
     context->server_write = vanilla_server_write;
     context->server_write_gamestate = vanilla_server_write_gamestate;
+    context->server_read = vanilla_server_read;
     context->download_funcs = &vanilla_download_funcs;
     return Q2P_ERR_SUCCESS;
 }
@@ -937,3 +939,83 @@ static q2proto_error_t vanilla_server_write_frame_entity_delta(uintptr_t io_arg,
 #define WRITE_GAMESTATE_BASELINE(C, I, S)   vanilla_server_write_spawnbaseline(I, S)
 
 #include "q2proto_write_gamestate.inc"
+
+static q2proto_error_t vanilla_server_read_move(uintptr_t io_arg, q2proto_clc_move_t *move);
+
+static q2proto_error_t vanilla_server_read(q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_message_t *clc_message)
+{
+    memset(clc_message, 0, sizeof(*clc_message));
+
+    size_t command_read = 0;
+    const void *command_ptr = NULL;
+    READ_CHECKED(client_read, io_arg, command_ptr, raw, 1, &command_read);
+    if (command_read == 0)
+        return Q2P_ERR_NO_MORE_INPUT;
+
+    uint8_t command = *(const uint8_t *)command_ptr;
+
+    switch(command)
+    {
+    case clc_nop:
+        clc_message->type = Q2P_CLC_NOP;
+        return Q2P_ERR_SUCCESS;
+
+    case clc_move:
+        clc_message->type = Q2P_CLC_MOVE;
+        return vanilla_server_read_move(io_arg, &clc_message->move);
+
+    case clc_userinfo:
+        clc_message->type = Q2P_CLC_USERINFO;
+        return q2proto_common_server_read_userinfo(io_arg, &clc_message->userinfo);
+
+    case clc_stringcmd:
+        clc_message->type = Q2P_CLC_STRINGCMD;
+        return q2proto_common_server_read_stringcmd(io_arg, &clc_message->stringcmd);
+    }
+
+    return HANDLE_ERROR(client_read, io_arg, Q2P_ERR_BAD_COMMAND, "%s: bad server command %d", __func__, command);
+}
+
+static q2proto_error_t vanilla_server_read_move_delta(uintptr_t io_arg, q2proto_clc_move_delta_t *move_delta)
+{
+    uint8_t bits;
+    READ_CHECKED(server_read, io_arg, bits, u8);
+
+    if (delta_bits_check(bits, CM_ANGLE1, &move_delta->delta_bits, Q2P_CMD_ANGLE0))
+        READ_CHECKED_VAR_ANGLE_COMP_16(server_read, io_arg, &move_delta->angles, 0);
+    if (delta_bits_check(bits, CM_ANGLE2, &move_delta->delta_bits, Q2P_CMD_ANGLE1))
+        READ_CHECKED_VAR_ANGLE_COMP_16(server_read, io_arg, &move_delta->angles, 1);
+    if (delta_bits_check(bits, CM_ANGLE3, &move_delta->delta_bits, Q2P_CMD_ANGLE2))
+        READ_CHECKED_VAR_ANGLE_COMP_16(server_read, io_arg, &move_delta->angles, 2);
+
+    if (delta_bits_check(bits, CM_FORWARD, &move_delta->delta_bits, Q2P_CMD_MOVE_FORWARD))
+        READ_CHECKED_VAR_COORD_COMP_16_UNSCALED(server_read, io_arg, &move_delta->move, 0);
+    if (delta_bits_check(bits, CM_SIDE, &move_delta->delta_bits, Q2P_CMD_MOVE_SIDE))
+        READ_CHECKED_VAR_COORD_COMP_16_UNSCALED(server_read, io_arg, &move_delta->move, 1);
+    if (delta_bits_check(bits, CM_UP, &move_delta->delta_bits, Q2P_CMD_MOVE_UP))
+        READ_CHECKED_VAR_COORD_COMP_16_UNSCALED(server_read, io_arg, &move_delta->move, 2);
+
+    if (delta_bits_check(bits, CM_BUTTONS, &move_delta->delta_bits, Q2P_CMD_BUTTONS))
+        READ_CHECKED(client_write, io_arg, move_delta->buttons, u8);
+    if (delta_bits_check(bits, CM_IMPULSE, &move_delta->delta_bits, Q2P_CMD_IMPULSE))
+        READ_CHECKED(client_write, io_arg, move_delta->impulse, u8);
+
+    READ_CHECKED(client_write, io_arg, move_delta->msec, u8);
+    READ_CHECKED(client_write, io_arg, move_delta->lightlevel, u8);
+
+    return Q2P_ERR_SUCCESS;
+}
+
+static q2proto_error_t vanilla_server_read_move(uintptr_t io_arg, q2proto_clc_move_t *move)
+{
+    CHECKED_IO(server_read, io_arg, q2protoio_read_u8(io_arg), "skip checksum byte");
+
+    READ_CHECKED(server_read, io_arg, move->lastframe, i32);
+
+    for (int i = 0; i < 3; i++)
+    {
+        CHECKED(server_read, io_arg, vanilla_server_read_move_delta(io_arg, &move->moves[i]));
+    }
+
+    return Q2P_ERR_SUCCESS;
+}
