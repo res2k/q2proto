@@ -123,7 +123,7 @@ struct q2proto_servercontext_s {
     /// write message
     Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, server_write, q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
     /// write gamestate
-    Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, server_write_gamestate, q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
+    Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, server_write_gamestate, q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
     /// read message
     Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, server_read, q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_message_t *clc_message);
 
@@ -195,6 +195,7 @@ struct q2proto_gamestate_s {
 /**
  * Write a full gamestate from the server to the client, in the most efficient way the protocol allows.
  * \param context Server communications context.
+ * \param deflate_args Deflate arguments to compress gamestate data (if supported by protocol).
  * \param io_arg "I/O argument", passed to externally provided I/O functions.
  * \param gamestate Gamestate to write.
  * \returns Q2P_ERR_SUCCESS if the gamestate was successfully written, or Q2P_ERR_NOT_ENOUGH_PACKET_SPACE
@@ -202,7 +203,7 @@ struct q2proto_gamestate_s {
  * q2proto_server_write_gamestate() called again with the same gamestate to continue writing.
  * Error code otherwise.
  */
-q2proto_error_t q2proto_server_write_gamestate(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
+q2proto_error_t q2proto_server_write_gamestate(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
 
 /// State for download handling
 typedef struct q2proto_server_download_state_s {

@@ -559,7 +559,7 @@ static void vanilla_unpack_solid(q2proto_clientcontext_t *context, uint32_t soli
 //
 static q2proto_error_t vanilla_server_fill_serverdata(q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata);
 static q2proto_error_t vanilla_server_write(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
-static q2proto_error_t vanilla_server_write_gamestate(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
+static q2proto_error_t vanilla_server_write_gamestate(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
 static q2proto_error_t vanilla_server_read(q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_message_t *clc_message);
 
 static const struct q2proto_download_funcs_s vanilla_download_funcs = {

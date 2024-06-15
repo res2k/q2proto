@@ -766,7 +766,7 @@ static void r1q2_unpack_solid(q2proto_clientcontext_t *context, uint32_t solid, 
 
 static q2proto_error_t r1q2_server_fill_serverdata(q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata);
 static q2proto_error_t r1q2_server_write(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
-static q2proto_error_t r1q2_server_write_gamestate(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
+static q2proto_error_t r1q2_server_write_gamestate(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
 static q2proto_error_t r1q2_server_read(q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_message_t *clc_message);
 
 static q2proto_error_t r1q2_download_begin(q2proto_servercontext_t *context, q2proto_server_download_state_t* state, q2proto_download_compress_t compress, q2protoio_deflate_args_t* deflate_args);
@@ -1314,6 +1314,7 @@ static q2proto_error_t r1q2_server_write_frame_entity_delta(q2proto_servercontex
     + 4 /* solid */                     \
 )
 #define WRITE_GAMESTATE_BASELINE r1q2_server_write_spawnbaseline
+#define WRITE_GAMESTATE_ENABLE_DEFLATE
 
 #include "q2proto_write_gamestate.inc"
 
