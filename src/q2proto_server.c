@@ -254,6 +254,46 @@ q2proto_error_t q2proto_server_write_gamestate(q2proto_servercontext_t *context,
     return context->server_write_gamestate(context, deflate_args, io_arg, gamestate);
 }
 
+q2proto_error_t q2proto_server_write_zpacket(q2proto_servercontext_t *context, q2protoio_deflate_args_t *deflate_args, uintptr_t io_arg, const void *packet_data, size_t packet_len)
+{
+#if Q2PROTO_COMPRESSION_DEFLATE
+    if (!context->features.enable_deflate)
+        return Q2P_ERR_DEFLATE_NOT_SUPPORTED;
+
+    // Don't double-compress messages...
+    uint8_t message_type = *(const uint8_t *)packet_data;
+    if (message_type == svc_r1q2_zpacket)
+        return Q2P_ERR_ALREADY_COMPRESSED;
+
+    size_t deflate_io_arg;
+    size_t max_deflated = q2protoio_write_available(io_arg);
+    CHECKED(server_write, io_arg, q2protoio_deflate_begin(deflate_args, max_deflated, &deflate_io_arg));
+    WRITE_CHECKED(server_write, deflate_io_arg, raw, packet_data, packet_len, NULL);
+    const void *compressed_data;
+    size_t uncompressed_len, compressed_len;
+    CHECKED(server_write, io_arg, q2protoio_deflate_get_data(deflate_io_arg, &uncompressed_len, &compressed_data, &compressed_len));
+
+    // Data didn't compress very well. No point to wrap it.
+    if (compressed_len > uncompressed_len + 5)
+    {
+        q2protoio_deflate_end(deflate_io_arg);
+        return Q2P_ERR_ALREADY_COMPRESSED;
+    }
+
+    WRITE_CHECKED(server_write, io_arg, u8, svc_r1q2_zpacket);
+    WRITE_CHECKED(server_write, io_arg, u16, compressed_len);
+    WRITE_CHECKED(server_write, io_arg, u16, packet_len);
+    WRITE_CHECKED(server_write, io_arg, raw, compressed_data, compressed_len, NULL);
+
+    CHECKED(server_write, io_arg, q2protoio_deflate_end(deflate_io_arg));
+
+    return Q2P_ERR_SUCCESS;
+
+#else
+    return Q2P_ERR_DEFLATE_NOT_SUPPORTED;
+#endif
+}
+
 q2proto_error_t q2proto_server_download_begin(q2proto_servercontext_t *context, size_t total_size, q2proto_download_compress_t compress, q2protoio_deflate_args_t* deflate_args, q2proto_server_download_state_t* state)
 {
     q2proto_download_common_begin(context, total_size, state);

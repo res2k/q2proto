@@ -37,6 +37,8 @@ typedef enum q2proto_error_e {
     Q2P_ERR_NOT_ENOUGH_PACKET_SPACE = 2,
     /// Download is completed
     Q2P_ERR_DOWNLOAD_COMPLETE = 3,
+    /// Message is already compressed
+    Q2P_ERR_ALREADY_COMPRESSED = 4,
 
     /// Function not implemented
     Q2P_ERR_NOT_IMPLEMENTED = -1,

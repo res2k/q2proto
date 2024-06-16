@@ -205,6 +205,19 @@ struct q2proto_gamestate_s {
  */
 q2proto_error_t q2proto_server_write_gamestate(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
 
+/**
+ * Compress packet data into a "zpacket".
+ * \param context Server communications context.
+ * \param deflate_args Deflate arguments to compress packet data.
+ * \param io_arg "I/O argument", passed to externally provided I/O functions, used to write compressed data.
+ * \param packet_data Pointer to uncompressed packet data.
+ * \param packet_len Length of uncompressed packet data.
+ * \returns May return Q2P_ERR_ALREADY_COMPRESSED, which indicates that either zpacket data was passed in,
+ * or the data didn't compress very well. Either way, the original data should be sent.
+ * Error code in case of error.
+ */
+q2proto_error_t q2proto_server_write_zpacket(q2proto_servercontext_t *context, q2protoio_deflate_args_t *deflate_args, uintptr_t io_arg, const void *packet_data, size_t packet_len);
+
 /// State for download handling
 typedef struct q2proto_server_download_state_s {
     // Server communications context.
