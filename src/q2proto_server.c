@@ -131,10 +131,15 @@ static size_t filter_accepted_protocols(q2proto_protocol_t *new_accepted_protoco
     size_t out_num = 0;
     for (size_t i = 0; i < num_accepted_protocols; i++)
     {
+        q2proto_protocol_t protocol = accepted_protocols[i];
         switch (server_info->game_type)
         {
         case Q2PROTO_GAME_VANILLA:
-            new_accepted_protocols[out_num++] = accepted_protocols[i];
+            new_accepted_protocols[out_num++] = protocol;
+            break;
+        case Q2PROTO_GAME_Q2PRO_EXTENDED:
+            if (protocol == Q2P_PROTOCOL_Q2PRO)
+                new_accepted_protocols[out_num++] = protocol;
             break;
         }
     }
