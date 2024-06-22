@@ -80,6 +80,11 @@ struct q2proto_clientcontext_s {
     /// inflate ioarg
     uintptr_t Q2PROTO_PRIVATE_MEMBER(inflate_io_arg);
 
+    /// Whether we have a zdownload inflate io_arg
+    bool Q2PROTO_PRIVATE_MEMBER(has_zdownload_inflate_io_arg);
+    /// zdownload inflate ioarg
+    uintptr_t Q2PROTO_PRIVATE_MEMBER(zdownload_inflate_io_arg);
+
     /// "Pack solid" function
     Q2PROTO_PRIVATE_FUNC_PTR(uint32_t, pack_solid, q2proto_clientcontext_t *context, const q2proto_vec3_t mins, const q2proto_vec3_t maxs);
     /// "Unpack solid" function
@@ -108,7 +113,7 @@ q2proto_error_t q2proto_client_read(q2proto_clientcontext_t *context, uintptr_t 
 
 /**
  * Reset/clean up client download state.
- * The client context may hold some download-related state.
+ * The client context may hold some download-related state (currently, when the server sends compressed download packages).
  * After a download was completed or aborted, the state should be reset to free up resources that may have
  * been used for handling download packets.
  * \param context Client communications context.
