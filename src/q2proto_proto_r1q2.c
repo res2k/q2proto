@@ -762,6 +762,8 @@ static void r1q2_unpack_solid(q2proto_clientcontext_t *context, uint32_t solid, 
 //
 
 static q2proto_error_t r1q2_server_fill_serverdata(q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata);
+static void r1q2_server_make_entity_state_delta(q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, q2proto_entity_state_delta_t *delta);
+static void r1q2_server_make_player_state_delta(q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta);
 static q2proto_error_t r1q2_server_write(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
 static q2proto_error_t r1q2_server_write_gamestate(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
 static q2proto_error_t r1q2_server_read(q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_message_t *clc_message);
@@ -786,6 +788,8 @@ q2proto_error_t q2proto_r1q2_init_servercontext(q2proto_servercontext_t *context
     context->features.has_beam_old_origin_fix = true;
 
     context->fill_serverdata = r1q2_server_fill_serverdata;
+    context->make_entity_state_delta = r1q2_server_make_entity_state_delta;
+    context->make_player_state_delta = r1q2_server_make_player_state_delta;
     context->server_write = r1q2_server_write;
     context->server_write_gamestate = r1q2_server_write_gamestate;
     context->server_read = r1q2_server_read;
@@ -798,6 +802,16 @@ static q2proto_error_t r1q2_server_fill_serverdata(q2proto_servercontext_t *cont
     serverdata->protocol = PROTOCOL_R1Q2;
     serverdata->protocol_version = context->protocol_version;
     return Q2P_ERR_SUCCESS;
+}
+
+static void r1q2_server_make_entity_state_delta(q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, q2proto_entity_state_delta_t *delta)
+{
+    q2proto_packing_make_entity_state_delta(from, to, write_old_origin, false, delta);
+}
+
+static void r1q2_server_make_player_state_delta(q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta)
+{
+    q2proto_packing_make_player_state_delta(from, to, delta);
 }
 
 static q2proto_error_t r1q2_server_write_serverdata(uintptr_t io_arg, const q2proto_svc_serverdata_t *serverdata);

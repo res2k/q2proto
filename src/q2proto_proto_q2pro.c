@@ -1276,6 +1276,8 @@ static q2proto_error_t q2proto_server_write_maybe_diff_coord_comp(q2proto_server
 }
 
 static q2proto_error_t q2pro_server_fill_serverdata(q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata);
+static void q2pro_server_make_entity_state_delta(q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, q2proto_entity_state_delta_t *delta);
+static void q2pro_server_make_player_state_delta(q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta);
 static q2proto_error_t q2pro_server_write(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
 static q2proto_error_t q2pro_server_write_gamestate_stream(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
 static q2proto_error_t q2pro_server_write_gamestate_mono(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
@@ -1303,6 +1305,8 @@ q2proto_error_t q2proto_q2pro_init_servercontext(q2proto_servercontext_t *contex
     context->features.playerstate_clientnum = true;
 
     context->fill_serverdata = q2pro_server_fill_serverdata;
+    context->make_entity_state_delta = q2pro_server_make_entity_state_delta;
+    context->make_player_state_delta = q2pro_server_make_player_state_delta;
     context->server_write = q2pro_server_write;
     // Write configstringstream, baselinestream if supported by protocol
     if (context->protocol_version >= PROTOCOL_VERSION_Q2PRO_EXTENDED_LIMITS)
@@ -1321,6 +1325,16 @@ static q2proto_error_t q2pro_server_fill_serverdata(q2proto_servercontext_t *con
     serverdata->q2pro.extensions = context->server_info->game_type >= Q2PROTO_GAME_Q2PRO_EXTENDED;
     serverdata->q2pro.extensions_v2 = context->server_info->game_type >= Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
     return Q2P_ERR_SUCCESS;
+}
+
+static void q2pro_server_make_entity_state_delta(q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, q2proto_entity_state_delta_t *delta)
+{
+    q2proto_packing_make_entity_state_delta(from, to, write_old_origin, context->server_info->game_type != Q2PROTO_GAME_VANILLA, delta);
+}
+
+static void q2pro_server_make_player_state_delta(q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta)
+{
+    q2proto_packing_make_player_state_delta(from, to, delta);
 }
 
 static q2proto_error_t q2pro_server_write_serverdata(uintptr_t io_arg, const q2proto_svc_serverdata_t *serverdata);

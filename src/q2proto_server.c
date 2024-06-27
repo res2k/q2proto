@@ -244,6 +244,16 @@ q2proto_error_t q2proto_server_fill_serverdata(q2proto_servercontext_t *context,
     return context->fill_serverdata(context, serverdata);
 }
 
+void q2proto_server_make_entity_state_delta(q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, q2proto_entity_state_delta_t *delta)
+{
+    context->make_entity_state_delta(context, from, to, write_old_origin, delta);
+}
+
+void q2proto_server_make_player_state_delta(q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta)
+{
+    context->make_player_state_delta(context, from, to, delta);
+}
+
 q2proto_error_t q2proto_server_write_pos(const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_vec3_t pos)
 {
     if (server_info->game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)

@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_internal_fmt.h"
 #include "q2proto_internal_io.h"
 #include "q2proto_internal_maybe_zpacket.h"
+#include "q2proto_internal_packing.h"
 #include "q2proto_internal_protocol.h"
 #include "q2proto_internal_string.h"
 #include "q2proto_proto_q2pro.h"

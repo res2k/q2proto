@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_error.h"
 #include "q2proto_gametype.h"
 #include "q2proto_io.h"
+#include "q2proto_packing.h"
 #include "q2proto_protocol.h"
 #include "q2proto_string.h"
 #include "q2proto_struct_clc.h"
@@ -120,6 +121,12 @@ struct q2proto_servercontext_s {
 
     /// serverdata filling
     Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, fill_serverdata, q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata);
+
+    /// Protocol-specific entity state delta message creation
+    Q2PROTO_PRIVATE_FUNC_PTR(void, make_entity_state_delta, q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, q2proto_entity_state_delta_t *delta);
+    /// Protocol-specific player state delta message creation
+    Q2PROTO_PRIVATE_FUNC_PTR(void, make_player_state_delta, q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta);
+
     /// write message
     Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, server_write, q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
     /// write gamestate
@@ -151,6 +158,26 @@ q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t* context, con
  * \returns Error code
  */
 q2proto_error_t q2proto_server_fill_serverdata(q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata);
+
+/**
+ * Fill an "entity state delta" message based on difference between packed entities.
+ * The "from", or "old" entity state plus the "delta" allow to recreate the "to", or "new", entity state.
+ * \param context Server communications context.
+ * \param from The "from", or "old", packed entity state. Can be \c NULL (which is the same as passing a zero-initialized packed entity state).
+ * \param to The "to", or "new", packed entity state.
+ * \param write_old_origin Whether the "old origin" field should be included in the delta. Due to complicated rules this isn't determined automatically.
+ * \param delta Structure receiving delta between packed entity states.
+ */
+void q2proto_server_make_entity_state_delta(q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, q2proto_entity_state_delta_t *delta);
+/**
+ * Fill a "player state delta" message based on difference between packed player states.
+ * The "from", or "old" player state plus the "delta" allow to recreate the "to", or "new", player state.
+ * \param context Server communications context.
+ * \param from The "from", or "old", packed player state. Can be \c NULL (which is the same as passing a zero-initialized packed player state).
+ * \param to The "to", or "new", player entity state.
+ * \param delta Structure receiving delta between packed player states.
+ */
+void q2proto_server_make_player_state_delta(q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta);
 
 /**
  * Write a message for "multicast" server communications, ie send the same binary message to multiple clients.
