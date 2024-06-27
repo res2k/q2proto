@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 q2proto_error_t q2proto_r1q2_continue_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata);
 
 /// Server context setup
-q2proto_error_t q2proto_r1q2_init_servercontext(q2proto_servercontext_t *context, const q2proto_server_info_t *server_info, const q2proto_connect_t* connect_info);
+q2proto_error_t q2proto_r1q2_init_servercontext(q2proto_servercontext_t *context, const q2proto_connect_t* connect_info);
 /** @} */
 
 /**\name R1Q2 protocol parts reused by Q2PRO

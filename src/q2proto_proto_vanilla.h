@@ -33,7 +33,7 @@ q2proto_error_t q2proto_vanilla_continue_serverdata(q2proto_clientcontext_t *con
 q2proto_error_t q2proto_block_sequence_crc_byte(const uint8_t *base, size_t length, int sequence, uint8_t *result);
 
 /// Server context setup
-q2proto_error_t q2proto_vanilla_init_servercontext(q2proto_servercontext_t *context, const q2proto_server_info_t *server_info, const q2proto_connect_t* connect_info);
+q2proto_error_t q2proto_vanilla_init_servercontext(q2proto_servercontext_t *context, const q2proto_connect_t* connect_info);
 /** @} */
 
 #endif // Q2PROTO_PROTO_VANILLA_H_

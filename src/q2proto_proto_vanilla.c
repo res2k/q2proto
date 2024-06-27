@@ -569,9 +569,9 @@ static const struct q2proto_download_funcs_s vanilla_download_funcs = {
     .abort = q2proto_download_common_abort
 };
 
-q2proto_error_t q2proto_vanilla_init_servercontext(q2proto_servercontext_t *context, const q2proto_server_info_t *server_info, const q2proto_connect_t *connect_info)
+q2proto_error_t q2proto_vanilla_init_servercontext(q2proto_servercontext_t *context, const q2proto_connect_t *connect_info)
 {
-    if (server_info->game_type != Q2PROTO_GAME_VANILLA)
+    if (context->server_info->game_type != Q2PROTO_GAME_VANILLA)
         return Q2P_ERR_GAMETYPE_UNSUPPORTED;
 
     context->fill_serverdata = vanilla_server_fill_serverdata;

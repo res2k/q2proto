@@ -221,6 +221,7 @@ q2proto_error_t q2proto_parse_connect(const char *connect_args, const q2proto_pr
 q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t* context, const q2proto_server_info_t *server_info, const q2proto_connect_t* connect_info)
 {
     memset(context, 0, sizeof(*context));
+    context->server_info = server_info;
 
     switch(connect_info->protocol)
     {
@@ -229,9 +230,9 @@ q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t* context, con
     case Q2P_PROTOCOL_Q2PRO:
         return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
     case Q2P_PROTOCOL_VANILLA:
-        return q2proto_vanilla_init_servercontext(context, server_info, connect_info);
+        return q2proto_vanilla_init_servercontext(context, connect_info);
     case Q2P_PROTOCOL_R1Q2:
-        return q2proto_r1q2_init_servercontext(context, server_info, connect_info);
+        return q2proto_r1q2_init_servercontext(context, connect_info);
     }
 
     return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;

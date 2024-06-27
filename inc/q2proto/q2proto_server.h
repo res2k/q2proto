@@ -103,8 +103,6 @@ typedef struct q2proto_gamestate_s q2proto_gamestate_t;
 struct q2proto_servercontext_s {
     /// Protocol & connection features
     struct {
-        /// Type of game run by the server
-        q2proto_game_type_t server_game_type;
         /// Protocol identifies client which should supports "RF_BEAM old_origin fix"
         bool has_beam_old_origin_fix;
         /// The q2proto_svc_playerstate_t::clientnum field is supported
@@ -115,6 +113,8 @@ struct q2proto_servercontext_s {
         bool download_compress_raw;
     } features;
 
+    /// Server information
+    const q2proto_server_info_t *Q2PROTO_PRIVATE_MEMBER(server_info);
     /// Protocol version (for R1Q2/Q2PRO)
     int Q2PROTO_PRIVATE_MEMBER(protocol_version);
 
@@ -137,7 +137,7 @@ struct q2proto_servercontext_s {
 /**
  * Set up a context for server communications with a single client.
  * \param context Context structure, filled with context-specific data.
- * \param server_info Server info.
+ * \param server_info Server info. Pointer will be stored in the server context for use by protocols.
  * \param connect_info Connection info. Usually produced by q2proto_parse_connect().
  * \returns Error code
  */
