@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define Q2PROTO_STRUCT_SVC_H_
 
 #include "q2proto_coords.h"
+#include "q2proto_limits.h"
 #include "q2proto_string.h"
 
 #include <stdbool.h>
@@ -34,8 +35,6 @@ extern "C" {
 
 /// Supported number of inventory items
 #define Q2PROTO_INVENTORY_ITEMS 256
-/// Supported number of stats
-#define Q2PROTO_STATS           64
 
 /// Flag bits for fields set in a q2proto_entity_state_delta_t structure
 enum q2proto_entity_state_delta_flags
