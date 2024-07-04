@@ -313,12 +313,12 @@ q2proto_error_t q2proto_common_client_read_sound(uintptr_t io_arg, q2proto_svc_s
     if (sound->flags & SND_VOLUME)
         READ_CHECKED(client_read, io_arg, sound->volume, u8);
     else
-        sound->volume = 255;
+        sound->volume = SOUND_DEFAULT_VOLUME;
 
     if (sound->flags & SND_ATTENUATION)
         READ_CHECKED(client_read, io_arg, sound->attenuation, u8);
     else
-        sound->attenuation = 64;
+        sound->attenuation = SOUND_DEFAULT_ATTENUATION;
 
     if (sound->flags & SND_OFFSET)
         READ_CHECKED(client_read, io_arg, sound->timeofs, u8);

@@ -47,4 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define BIT(n)          (1U << (n))
 #define BIT_ULL(n)      (1ULL << (n))
 
+#define SOUND_DEFAULT_VOLUME        255
+#define SOUND_DEFAULT_ATTENUATION   64
+
 #endif // Q2PROTO_INTERNAL_DEFS_H_
