@@ -308,7 +308,10 @@ q2proto_error_t q2proto_common_client_read_inventory(uintptr_t io_arg, q2proto_s
 q2proto_error_t q2proto_common_client_read_sound(uintptr_t io_arg, q2proto_svc_sound_t *sound)
 {
     READ_CHECKED(client_read, io_arg, sound->flags, u8);
-    READ_CHECKED(client_read, io_arg, sound->index, u8);
+    if (sound->flags & SND_INDEX16)
+        READ_CHECKED(client_read, io_arg, sound->index, u16);
+    else
+        READ_CHECKED(client_read, io_arg, sound->index, u8);
 
     if (sound->flags & SND_VOLUME)
         READ_CHECKED(client_read, io_arg, sound->volume, u8);
@@ -400,7 +403,10 @@ q2proto_error_t q2proto_common_server_write_sound(uintptr_t io_arg, const q2prot
 {
     WRITE_CHECKED(server_write, io_arg, u8, svc_sound);
     WRITE_CHECKED(server_write, io_arg, u8, sound->flags);
-    WRITE_CHECKED(server_write, io_arg, u8, sound->index);
+    if (sound->flags & SND_INDEX16)
+        WRITE_CHECKED(server_write, io_arg, u16, sound->index);
+    else
+        WRITE_CHECKED(server_write, io_arg, u8, sound->index);
 
     if (sound->flags & SND_VOLUME)
         WRITE_CHECKED(server_write, io_arg, u8, sound->volume);

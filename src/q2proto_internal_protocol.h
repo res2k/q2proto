@@ -84,6 +84,7 @@ enum common_svc_cmds
 #define SND_POS         BIT(2)
 #define SND_ENT         BIT(3)
 #define SND_OFFSET      BIT(4)
+#define SND_INDEX16     BIT(5) // Q2PRO extended
 
 #define DEFAULT_SOUND_PACKET_VOLUME         1.0f
 #define DEFAULT_SOUND_PACKET_ATTENUATION    1.0f
