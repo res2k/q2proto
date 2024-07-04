@@ -54,4 +54,14 @@ void q2proto_sound_decode_message(const q2proto_svc_sound_t *sound_msg, q2proto_
 void q2proto_sound_encode_message(const q2proto_sound_t *sound_data, q2proto_svc_sound_t *sound_msg);
 /** @} */
 
+/**\name Loop attenuation
+ * For compatibility reasons, the Q2PRO extended/remaster "loop attenuation" is encoded a bit weirdly.
+ * These functions take care of that.
+ * @{ */
+/// Decode a loop attenuation sent over network
+float q2proto_sound_decode_loop_attenuation(uint8_t protocol_loop_attenuation);
+/// Encode a loop attenuation for sending over network
+uint8_t q2proto_sound_encode_loop_attenuation(float loop_attenuation);
+/** @} */
+
 #endif // Q2PROTO_SOUND_H_

@@ -1,5 +1,6 @@
 /*
 Copyright (C) 2024 Frank Richter
+Copyright (C) 2003-2024 Andrey Nazarov
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -92,4 +93,32 @@ void q2proto_sound_encode_message(const q2proto_sound_t *sound_data, q2proto_svc
         sound_msg->flags |= SND_OFFSET;
     }
 
+}
+
+#define ATTN_LOOP_NONE  -1
+
+float q2proto_sound_decode_loop_attenuation(uint8_t protocol_loop_attenuation)
+{
+    if (protocol_loop_attenuation == 192)
+        return -1;
+    else
+        return protocol_loop_attenuation / 64.0f;
+    /* Note: a 0 loop_attenuation is supposed to be treated as default,
+     * ie ATTN_LOOP_STATIC, which is 3, encoded as 192.
+     * Hence we don't need to handle the case 'protocol_loop_attenuation == 0'
+     * here. */
+}
+
+uint8_t q2proto_sound_encode_loop_attenuation(float loop_attenuation)
+{
+    uint8_t out_loop_attenuation;
+    // encode ATTN_STATIC (192) as 0, and ATTN_LOOP_NONE (-1) as 192
+    if (loop_attenuation == ATTN_LOOP_NONE) {
+        out_loop_attenuation = 192;
+    } else {
+        out_loop_attenuation = (uint8_t)CLAMP(loop_attenuation * 64.0f, 0, 255);
+        if (out_loop_attenuation == 192)
+            out_loop_attenuation = 0;
+    }
+    return out_loop_attenuation;
 }
