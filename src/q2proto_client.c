@@ -152,9 +152,11 @@ static q2proto_error_t default_client_packet_parse(q2proto_clientcontext_t *cont
     svc_message->serverdata.protocol = protocol;
     switch (protocol)
     {
-    case PROTOCOL_OLD_DEMO:
-    case PROTOCOL_VANILLA:
-        return q2proto_vanilla_continue_serverdata(context, io_arg, &svc_message->serverdata);
+    default:
+        // Allow a range of versions to support old demos
+        if (protocol >= PROTOCOL_OLD_DEMO && protocol <= PROTOCOL_VANILLA)
+            return q2proto_vanilla_continue_serverdata(context, io_arg, &svc_message->serverdata);
+        break;
     case PROTOCOL_R1Q2:
         return q2proto_r1q2_continue_serverdata(context, io_arg, &svc_message->serverdata);
     case PROTOCOL_Q2PRO:
