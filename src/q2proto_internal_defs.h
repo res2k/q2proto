@@ -38,6 +38,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * \warning Evaluates \c X, \c Y multiple times!
  */
 #define MIN(X, Y)  ((X) < (Y) ? (X) : (Y))
+/**\def MAX
+ * Helper: Maximum of X and Y
+ * \warning Evaluates \c X, \c Y multiple times!
+ */
+#define MAX(X, Y)  ((X) > (Y) ? (X) : (Y))
 /**\def CLAMP
  * Helper: clamp \c X between \c MIN and \c MAX.
  * \warning Evaluates \c X, \c MIN, \c MAX multiple times!

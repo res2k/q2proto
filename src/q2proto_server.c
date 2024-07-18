@@ -244,6 +244,34 @@ q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t* context, con
     return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
 }
 
+#define MIN_DEMO_PACKET     512 // from Q2PRO MIN_PACKETLEN
+
+q2proto_error_t q2proto_init_servercontext_demo(q2proto_servercontext_t* context, const q2proto_server_info_t *server_info, size_t* max_msg_len)
+{
+    q2proto_connect_t connect_info;
+    memset(&connect_info, 0, sizeof(connect_info));
+
+    size_t demo_packet_size = server_info->default_packet_length ? server_info->default_packet_length : 1390; // Default to Vanilla Q2 limit if none is given
+    demo_packet_size = MAX(server_info->default_packet_length, MIN_DEMO_PACKET); // ensure a minimal packet size
+    connect_info.packet_length = demo_packet_size;
+    switch(server_info->game_type)
+    {
+    case Q2PROTO_GAME_VANILLA:
+        connect_info.protocol = Q2P_PROTOCOL_VANILLA;
+        *max_msg_len = demo_packet_size;
+        break;
+    case Q2PROTO_GAME_Q2PRO_EXTENDED:
+        connect_info.protocol = Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO;
+        *max_msg_len = 0x8000; // Write packets to the limit supported by Q2PRO
+        break;
+    case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
+        connect_info.protocol = Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO;
+        *max_msg_len = 0x8000; // Write packets to the limit supported by Q2PRO
+        break;
+    }
+    return q2proto_init_servercontext(context, server_info, &connect_info);
+}
+
 q2proto_error_t q2proto_server_fill_serverdata(q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata)
 {
     return context->fill_serverdata(context, serverdata);

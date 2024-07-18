@@ -151,6 +151,19 @@ struct q2proto_servercontext_s {
 q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t* context, const q2proto_server_info_t *server_info, const q2proto_connect_t* connect_info);
 
 /**
+ * Set up a context for writing messages for a demo.
+ * \param context Context structure, filled with context-specific data.
+ * \param server_info Server info, configures demo recording protocol. Pointer will be stored in the server context for use by protocols.
+ *   The \c default_packet_length member controls the packet length that should be written.
+ *   Be aware that different clients support different maximum demo packet lengths.
+ *   A default packet length of 0 will choose a conservative default.
+ * \param max_msg_len Actual packet length limit. This may differ from the requested default packet length due to protocol-specific
+ *   reasons.
+ * \returns Error code
+ */
+q2proto_error_t q2proto_init_servercontext_demo(q2proto_servercontext_t* context, const q2proto_server_info_t *server_info, size_t* max_msg_len);
+
+/**
  * Fill a serverdata structure with protocol-dependent values.
  * Also sets the correct flags for the game type specified in the server info.
  * \param context Server communications context.
