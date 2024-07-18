@@ -140,30 +140,9 @@ static q2proto_error_t bitreader_read(bitreader_t* bitreader, int bits, int* val
 /// Max. configstrings for "q2pro extended" games/servers
 #define MAX_CONFIGSTRINGS_EXTENDED      13630
 
-#define SOUND_FLAG_VOLUME           BIT(14)
-#define SOUND_FLAG_ATTENUATION      BIT(15)
-
 //
 // CLIENT: PARSE MESSAGES FROM SERVER
 //
-
-static q2proto_error_t q2proto_client_read_maybe_diff_coord_comp(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_maybe_diff_coord_t *coord, int comp)
-{
-    int val;
-    if (context->features.server_game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
-    {
-        bool is_diff;
-        READ_CHECKED(client_read, io_arg, val, q2pro_i23, &is_diff);
-        if (is_diff)
-            coord->read.diff_bits |= BIT(comp);
-    }
-    else
-    {
-        READ_CHECKED(client_read, io_arg, val, i16);
-    }
-    q2proto_var_coord_set_int_comp(&coord->read.value.values, comp, val);
-    return Q2P_ERR_SUCCESS;
-}
 
 static q2proto_error_t q2pro_client_read(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
 static q2proto_error_t q2pro_client_next_frame_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_frame_entity_delta_t *frame_entity_delta);
@@ -181,6 +160,7 @@ q2proto_error_t q2proto_q2pro_continue_serverdata(q2proto_clientcontext_t *conte
     READ_CHECKED(client_read, io_arg, serverdata->gamedir, string);
     READ_CHECKED(client_read, io_arg, serverdata->clientnum, i16);
     READ_CHECKED(client_read, io_arg, serverdata->levelname, string);
+
     READ_CHECKED(client_read, io_arg, serverdata->protocol_version, u16);
     READ_CHECKED(client_read, io_arg, serverdata->q2pro.server_state, u8);
     if (serverdata->protocol_version >= PROTOCOL_VERSION_Q2PRO_EXTENDED_LIMITS)
@@ -218,7 +198,6 @@ q2proto_error_t q2proto_q2pro_continue_serverdata(q2proto_clientcontext_t *conte
 }
 
 static q2proto_error_t q2pro_client_read_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata);
-static q2proto_error_t q2pro_client_read_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, uint64_t bits, q2proto_entity_state_delta_t *entity_state);
 static q2proto_error_t q2pro_client_read_baseline(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_spawnbaseline_t *spawnbaseline);
 static q2proto_error_t q2pro_client_read_muzzleflash2(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_muzzleflash_t *muzzleflash);
 static q2proto_error_t q2pro_client_read_frame(q2proto_clientcontext_t *context, uintptr_t io_arg, uint8_t extrabits, q2proto_svc_frame_t *frame);
@@ -423,7 +402,7 @@ static q2proto_error_t q2pro_client_next_frame_entity_delta(q2proto_clientcontex
         return Q2P_ERR_SUCCESS;
     }
 
-    return q2pro_client_read_entity_delta(context, io_arg, bits, &frame_entity_delta->entity_delta);
+    return q2proto_q2pro_client_read_entity_delta(context, io_arg, bits, &frame_entity_delta->entity_delta);
 }
 
 static q2proto_error_t q2pro_client_read_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata)
@@ -439,7 +418,7 @@ static q2proto_error_t q2pro_client_read_serverdata(q2proto_clientcontext_t *con
     return q2proto_q2pro_continue_serverdata(context, io_arg, serverdata);
 }
 
-static q2proto_error_t q2pro_client_read_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, uint64_t bits, q2proto_entity_state_delta_t *entity_state)
+q2proto_error_t q2proto_q2pro_client_read_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, uint64_t bits, q2proto_entity_state_delta_t *entity_state)
 {
     bool has_q2pro_extensions = context->features.server_game_type != Q2PROTO_GAME_VANILLA;
     bool has_q2pro_extensions_v2 = context->features.server_game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
@@ -511,17 +490,17 @@ static q2proto_error_t q2pro_client_read_entity_delta(q2proto_clientcontext_t *c
     entity_state->origin.read.value.delta_bits = 0;
     if (bits & U_ORIGIN1)
     {
-        CHECKED(client_read, io_arg, q2proto_client_read_maybe_diff_coord_comp(context, io_arg, &entity_state->origin, 0));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &entity_state->origin, 0));
         entity_state->origin.read.value.delta_bits |= BIT(0);
     }
     if (bits & U_ORIGIN2)
     {
-        CHECKED(client_read, io_arg, q2proto_client_read_maybe_diff_coord_comp(context, io_arg, &entity_state->origin, 1));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &entity_state->origin, 1));
         entity_state->origin.read.value.delta_bits |= BIT(1);
     }
     if (bits & U_ORIGIN3)
     {
-        CHECKED(client_read, io_arg, q2proto_client_read_maybe_diff_coord_comp(context, io_arg, &entity_state->origin, 2));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &entity_state->origin, 2));
         entity_state->origin.read.value.delta_bits |= BIT(2);
     }
 
@@ -627,7 +606,7 @@ static q2proto_error_t q2pro_client_read_baseline(q2proto_clientcontext_t *conte
     }
 #endif
 
-    return q2pro_client_read_entity_delta(context, io_arg, bits, &spawnbaseline->delta_state);
+    return q2proto_q2pro_client_read_entity_delta(context, io_arg, bits, &spawnbaseline->delta_state);
 }
 
 static q2proto_error_t q2pro_client_read_playerstate(q2proto_clientcontext_t *context, uintptr_t io_arg, uint8_t extraflags, q2proto_svc_playerstate_t *playerstate)
@@ -654,25 +633,25 @@ static q2proto_error_t q2pro_client_read_playerstate(q2proto_clientcontext_t *co
 
     if (flags & PS_M_ORIGIN)
     {
-        CHECKED(client_read, io_arg, q2proto_client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_origin, 0));
-        CHECKED(client_read, io_arg, q2proto_client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_origin, 1));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_origin, 0));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_origin, 1));
         playerstate->pm_origin.read.value.delta_bits |= BIT(0) | BIT(1);
     }
     if (extraflags & EPS_M_ORIGIN2)
     {
-        CHECKED(client_read, io_arg, q2proto_client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_origin, 2));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_origin, 2));
         playerstate->pm_origin.read.value.delta_bits |= BIT(2);
     }
 
     if (flags & PS_M_VELOCITY)
     {
-        CHECKED(client_read, io_arg, q2proto_client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_velocity, 0));
-        CHECKED(client_read, io_arg, q2proto_client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_velocity, 1));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_velocity, 0));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_velocity, 1));
         playerstate->pm_velocity.read.value.delta_bits |= BIT(0) | BIT(1);
     }
     if (extraflags & EPS_M_VELOCITY2)
     {
-        CHECKED(client_read, io_arg, q2proto_client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_velocity, 2));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_velocity, 2));
         playerstate->pm_velocity.read.value.delta_bits |= BIT(2);
     }
 
@@ -738,26 +717,7 @@ static q2proto_error_t q2pro_client_read_playerstate(q2proto_clientcontext_t *co
     if (flags & PS_BLEND)
     {
         if (has_q2pro_extensions_v2)
-        {
-            uint8_t blend_bits;
-            READ_CHECKED(client_read, io_arg, blend_bits, u8);
-            for (int i = 0; i < 4; i++)
-            {
-                if (blend_bits & BIT(i))
-                {
-                    READ_CHECKED_VAR_BLEND_COMP(client_read, io_arg, &playerstate->blend.values, i);
-                    playerstate->blend.delta_bits |= BIT(i);
-                }
-            }
-            for (int i = 0; i < 4; i++)
-            {
-                if (blend_bits & BIT(i + 4))
-                {
-                    READ_CHECKED_VAR_BLEND_COMP(client_read, io_arg, &playerstate->damage_blend.values, i);
-                    playerstate->damage_blend.delta_bits |= BIT(i);
-                }
-            }
-        }
+            CHECKED(client_read, io_arg, client_read_q2pro_extv2_blends(io_arg, &playerstate->blend, &playerstate->damage_blend));
         else
         {
             CHECKED(client_read, io_arg, read_var_blend(io_arg, &playerstate->blend.values));
@@ -903,7 +863,7 @@ static q2proto_error_t q2pro_client_read_streamed_baseline(q2proto_clientcontext
     svc_message->type = Q2P_SVC_SPAWNBASELINE;
     memset(&svc_message->spawnbaseline, 0, sizeof(svc_message->spawnbaseline));
     svc_message->spawnbaseline.entnum = entnum;
-    return q2pro_client_read_entity_delta(context, io_arg, bits, &svc_message->spawnbaseline.delta_state);
+    return q2proto_q2pro_client_read_entity_delta(context, io_arg, bits, &svc_message->spawnbaseline.delta_state);
 }
 
 static q2proto_error_t q2pro_client_read_gamestate_baseline(q2proto_clientcontext_t *context, uintptr_t raw_io_arg, q2proto_svc_message_t *svc_message)
@@ -1435,7 +1395,7 @@ static q2proto_error_t q2pro_server_write_serverdata(uintptr_t io_arg, const q2p
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t q2pro_server_write_entity_state_delta(q2proto_servercontext_t *context, uintptr_t io_arg, uint16_t entnum, const q2proto_entity_state_delta_t *entity_state_delta)
+q2proto_error_t q2proto_q2pro_server_write_entity_state_delta(q2proto_servercontext_t *context, uintptr_t io_arg, uint16_t entnum, const q2proto_entity_state_delta_t *entity_state_delta)
 {
     bool has_q2pro_extensions = context->server_info->game_type != Q2PROTO_GAME_VANILLA;
     bool has_q2pro_extensions_v2 = context->server_info->game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
@@ -1661,7 +1621,7 @@ static q2proto_error_t q2pro_server_write_entity_state_delta(q2proto_serverconte
 static q2proto_error_t q2pro_server_write_spawnbaseline(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_spawnbaseline_t *spawnbaseline)
 {
     WRITE_CHECKED(server_write, io_arg, u8, svc_spawnbaseline);
-    CHECKED(server_write, io_arg, q2pro_server_write_entity_state_delta(context, io_arg, spawnbaseline->entnum, &spawnbaseline->delta_state));
+    CHECKED(server_write, io_arg, q2proto_q2pro_server_write_entity_state_delta(context, io_arg, spawnbaseline->entnum, &spawnbaseline->delta_state));
     return Q2P_ERR_SUCCESS;
 }
 
@@ -1848,20 +1808,7 @@ static q2proto_error_t q2pro_server_write_playerstate(q2proto_servercontext_t *c
     if (flags & PS_BLEND)
     {
         if (has_q2pro_extensions_v2)
-        {
-            uint8_t blend_bits = (playerstate->blend.delta_bits & 0xf) | (playerstate->damage_blend.delta_bits & 0xf) << 4;
-            WRITE_CHECKED(server_write, io_arg, u8, blend_bits);
-            for (int i = 0; i < 4; i++)
-            {
-                if(playerstate->blend.delta_bits & BIT(i))
-                    WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&playerstate->blend.values, i));
-            }
-            for (int i = 0; i < 4; i++)
-            {
-                if(playerstate->damage_blend.delta_bits & BIT(i))
-                    WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&playerstate->damage_blend.values, i));
-            }
-        }
+            CHECKED(server_write, io_arg, server_write_q2pro_extv2_blends(io_arg, &playerstate->blend, &playerstate->damage_blend));
         else
         {
             WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&playerstate->blend.values, 0));
@@ -1960,28 +1907,10 @@ static q2proto_error_t q2pro_server_write_frame_entity_delta(q2proto_serverconte
         return Q2P_ERR_SUCCESS;
     }
 
-    return q2pro_server_write_entity_state_delta(context, io_arg, frame_entity_delta->newnum, &frame_entity_delta->entity_delta);
+    return q2proto_q2pro_server_write_entity_state_delta(context, io_arg, frame_entity_delta->newnum, &frame_entity_delta->entity_delta);
 }
 
-#define WRITE_GAMESTATE_BASELINE_SIZE ( \
-      1 /* command byte */              \
-    + 7 /* bits & number */             \
-    + 8 /* model indices */             \
-    + 2 /* frame */                     \
-    + 4 /* skin */                      \
-    + 4 /* effects */                   \
-    + 8 /* renderfx + morefx */         \
-    + 9 /* origin */                    \
-    + 6 /* angles */                    \
-    + 9 /* old_origin */                \
-    + 2 /* sound */                     \
-    + 1 /* loop volume */               \
-    + 1 /* loop attenuation */          \
-    + 1 /* event */                     \
-    + 4 /* solid */                     \
-    + 1 /* alpha */                     \
-    + 1 /* scale */                     \
-)
+#define WRITE_GAMESTATE_BASELINE_SIZE   Q2PRO_WRITE_GAMESTATE_BASELINE_SIZE
 
 static q2proto_error_t q2pro_server_write_gamestate_stream(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate)
 {
@@ -2029,7 +1958,7 @@ static q2proto_error_t q2pro_server_write_gamestate_stream(q2proto_servercontext
                 goto not_enough_packet_space;
             }
 
-            CHECKED(server_write, io_arg, q2pro_server_write_entity_state_delta(context, io_arg, baseline->entnum, &baseline->delta_state));
+            CHECKED(server_write, io_arg, q2proto_q2pro_server_write_entity_state_delta(context, io_arg, baseline->entnum, &baseline->delta_state));
             context->gamestate_pos++;
         }
 
@@ -2072,7 +2001,7 @@ static q2proto_error_t q2pro_server_write_gamestate_mono(q2proto_servercontext_t
     for (size_t i = 0; i < gamestate->num_spawnbaselines; i++)
     {
         const q2proto_svc_spawnbaseline_t *baseline = gamestate->spawnbaselines + i;
-        CHECKED(server_write, io_arg, q2pro_server_write_entity_state_delta(context, io_arg, baseline->entnum, &baseline->delta_state));
+        CHECKED(server_write, io_arg, q2proto_q2pro_server_write_entity_state_delta(context, io_arg, baseline->entnum, &baseline->delta_state));
     }
     WRITE_CHECKED(server_write, io_arg, u16, 0); // zero bits + entnum
 

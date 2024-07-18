@@ -38,6 +38,10 @@ int q2proto_get_protocol_netver(q2proto_protocol_t protocol)
         return PROTOCOL_R1Q2;
     case Q2P_PROTOCOL_Q2PRO:
         return PROTOCOL_Q2PRO;
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
+        return PROTOCOL_Q2PRO_EXTENDED_DEMO;
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
+        return PROTOCOL_Q2PRO_EXTENDED_V2_DEMO;
     }
 
     return 0;
@@ -55,6 +59,10 @@ q2proto_protocol_t q2proto_protocol_from_netver(int version)
         return Q2P_PROTOCOL_R1Q2;
     case PROTOCOL_Q2PRO:
         return Q2P_PROTOCOL_Q2PRO;
+    case PROTOCOL_Q2PRO_EXTENDED_DEMO:
+        return Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO;
+    case PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
+        return Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO;
     }
 
     return Q2P_PROTOCOL_INVALID;

@@ -52,6 +52,17 @@ static bool q2pro_extv2_handle_unknown_temp_ent(uintptr_t io_arg, q2proto_svc_te
 
 #include "q2proto_read_gamemsg.inc"
 
+#undef HANDLE_UNKNOWN_TEMP_ENTITY
+#undef READ_TEMP_ENTITY_NAME
+#undef READ_SOUND_NAME
+#undef READ_GAME_POSITION
+
+#define READ_GAME_POSITION          read_float_coord
+#define READ_TEMP_ENTITY_NAME       rerelease_read_temp_entity
+#define READ_SOUND_NAME             rerelease_read_sound
+
+#include "q2proto_read_gamemsg.inc"
+
 q2proto_error_t q2proto_common_client_read_entity_bits(uintptr_t io_arg, uint64_t *bits, uint16_t *entnum)
 {
     uint64_t total;

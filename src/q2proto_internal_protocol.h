@@ -26,10 +26,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_internal_defs.h"
 
 // Protocol major version numbers
-#define PROTOCOL_OLD_DEMO   26
-#define PROTOCOL_VANILLA    34
-#define PROTOCOL_R1Q2       35
-#define PROTOCOL_Q2PRO      36
+#define PROTOCOL_OLD_DEMO               26
+#define PROTOCOL_VANILLA                34
+#define PROTOCOL_R1Q2                   35
+#define PROTOCOL_Q2PRO                  36
+#define PROTOCOL_Q2PRO_EXTENDED_DEMO    3434
+#define PROTOCOL_Q2PRO_EXTENDED_V2_DEMO 3435
 
 // Protocol revision numbers used by R1Q2 and Q2PRO
 #define PROTOCOL_VERSION_R1Q2_MINIMUM           1903    // b6377
@@ -265,6 +267,32 @@ enum common_clc_cmds
 #define CM_UP       BIT(5)
 #define CM_BUTTONS  BIT(6)
 #define CM_IMPULSE  BIT(7)
+
+// Flag for extended sound value: loop volume is present
+#define SOUND_FLAG_VOLUME           BIT(14)
+// Flag for extended sound value: loop attenuation is present
+#define SOUND_FLAG_ATTENUATION      BIT(15)
+
+// Max size of a Q2PRO (possibly extended) entity baseline
+#define Q2PRO_WRITE_GAMESTATE_BASELINE_SIZE ( \
+      1 /* command byte */              \
+    + 7 /* bits & number */             \
+    + 8 /* model indices */             \
+    + 2 /* frame */                     \
+    + 4 /* skin */                      \
+    + 4 /* effects */                   \
+    + 8 /* renderfx + morefx */         \
+    + 9 /* origin */                    \
+    + 6 /* angles */                    \
+    + 9 /* old_origin */                \
+    + 2 /* sound */                     \
+    + 1 /* loop volume */               \
+    + 1 /* loop attenuation */          \
+    + 1 /* event */                     \
+    + 4 /* solid */                     \
+    + 1 /* alpha */                     \
+    + 1 /* scale */                     \
+)
 
 /** @} */
 

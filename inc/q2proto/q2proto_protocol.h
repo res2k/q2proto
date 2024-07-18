@@ -40,6 +40,10 @@ typedef enum q2proto_protocol_e {
     Q2P_PROTOCOL_R1Q2,
     /// Q2PRO protocol
     Q2P_PROTOCOL_Q2PRO,
+    /// Q2PRO extended demo (not used for network communication)
+    Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO,
+    /// Q2PRO extended v2 demo (not used for network communication)
+    Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO,
 } q2proto_protocol_t;
 
 /// Map from q2proto_protocol_t value to protocol version number communicated over network

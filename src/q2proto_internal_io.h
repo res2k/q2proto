@@ -300,6 +300,47 @@ static inline q2proto_error_t read_int23_coord(uintptr_t io_arg, float coord[3])
     return Q2P_ERR_SUCCESS;
 }
 
+static inline q2proto_error_t client_read_maybe_diff_coord_comp(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_maybe_diff_coord_t *coord, int comp)
+{
+    int val;
+    if (context->features.server_game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
+    {
+        bool is_diff;
+        READ_CHECKED(client_read, io_arg, val, q2pro_i23, &is_diff);
+        if (is_diff)
+            coord->read.diff_bits |= BIT(comp);
+    }
+    else
+    {
+        READ_CHECKED(client_read, io_arg, val, i16);
+    }
+    q2proto_var_coord_set_int_comp(&coord->read.value.values, comp, val);
+    return Q2P_ERR_SUCCESS;
+}
+
+static inline q2proto_error_t client_read_q2pro_extv2_blends(uintptr_t io_arg, q2proto_blend_delta_t *blend, q2proto_blend_delta_t *damage_blend)
+{
+    uint8_t blend_bits;
+    READ_CHECKED(client_read, io_arg, blend_bits, u8);
+    for (int i = 0; i < 4; i++)
+    {
+        if (blend_bits & BIT(i))
+        {
+            READ_CHECKED_VAR_BLEND_COMP(client_read, io_arg, &blend->values, i);
+            blend->delta_bits |= BIT(i);
+        }
+    }
+    for (int i = 0; i < 4; i++)
+    {
+        if (blend_bits & BIT(i + 4))
+        {
+            READ_CHECKED_VAR_BLEND_COMP(client_read, io_arg, &damage_blend->values, i);
+            damage_blend->delta_bits |= BIT(i);
+        }
+    }
+    return Q2P_ERR_SUCCESS;
+}
+
 static inline void q2protoio_write_i8(uintptr_t io_arg, int8_t x)
 {
     q2protoio_write_u8(io_arg, (uint8_t)x);
@@ -365,6 +406,23 @@ static inline void q2protoio_write_var_coord_q2pro_i23(uintptr_t io_arg, const q
     q2protoio_write_q2pro_i23(io_arg, q2proto_var_coord_get_int_comp(pos, 0), 0);
     q2protoio_write_q2pro_i23(io_arg, q2proto_var_coord_get_int_comp(pos, 1), 0);
     q2protoio_write_q2pro_i23(io_arg, q2proto_var_coord_get_int_comp(pos, 2), 0);
+}
+
+static inline q2proto_error_t server_write_q2pro_extv2_blends(uintptr_t io_arg, const q2proto_blend_delta_t *blend, const q2proto_blend_delta_t *damage_blend)
+{
+    uint8_t blend_bits = (blend->delta_bits & 0xf) | (damage_blend->delta_bits & 0xf) << 4;
+    WRITE_CHECKED(server_write, io_arg, u8, blend_bits);
+    for (int i = 0; i < 4; i++)
+    {
+        if(blend->delta_bits & BIT(i))
+            WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&blend->values, i));
+    }
+    for (int i = 0; i < 4; i++)
+    {
+        if(damage_blend->delta_bits & BIT(i))
+            WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&damage_blend->values, i));
+    }
+    return Q2P_ERR_SUCCESS;
 }
 
 /** @} */
