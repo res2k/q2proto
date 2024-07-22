@@ -1386,6 +1386,9 @@ static q2proto_error_t q2pro_server_write(q2proto_servercontext_t *context, uint
     case Q2P_SVC_FRAME_ENTITY_DELTA:
         return q2pro_server_write_frame_entity_delta(context, io_arg, &svc_message->frame_entity_delta);
 
+    case Q2P_SVC_LAYOUT:
+        return q2proto_common_server_write_layout(io_arg, &svc_message->layout);
+
     default:
         break;
     }
@@ -1395,8 +1398,8 @@ static q2proto_error_t q2pro_server_write(q2proto_servercontext_t *context, uint
      *  muzzleflash
      *  muzzleflash2
      *  temp_entity
-     *  layout
      *  inventory
+     * 'layout' is needed for demo writing, so handle it here as well.
      */
 
     return Q2P_ERR_NOT_IMPLEMENTED;

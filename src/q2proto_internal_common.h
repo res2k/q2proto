@@ -63,6 +63,7 @@ q2proto_error_t q2proto_common_client_read_centerprint(uintptr_t io_arg, q2proto
 q2proto_error_t q2proto_common_client_read_download(uintptr_t io_arg, q2proto_svc_download_t *download);
 q2proto_error_t q2proto_common_client_read_packed_direction(uintptr_t io_arg, float dir[3]);
 
+q2proto_error_t q2proto_common_server_write_layout(uintptr_t io_arg, const q2proto_svc_layout_t *layout);
 q2proto_error_t q2proto_common_server_write_nop(uintptr_t io_arg);
 q2proto_error_t q2proto_common_server_write_disconnect(uintptr_t io_arg);
 q2proto_error_t q2proto_common_server_write_reconnect(uintptr_t io_arg);

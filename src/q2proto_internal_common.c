@@ -242,7 +242,13 @@ q2proto_error_t q2proto_common_client_read_packed_direction(uintptr_t io_arg, fl
     if (dir_idx < 0 || dir_idx >= NUMVERTEXNORMALS)
         return Q2P_ERR_BAD_DATA;
     memcpy(dir, bytedirs[dir_idx], sizeof(q2proto_vec3_t));
+    return Q2P_ERR_SUCCESS;
+}
 
+q2proto_error_t q2proto_common_server_write_layout(uintptr_t io_arg, const q2proto_svc_layout_t *layout)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_layout);
+    WRITE_CHECKED(server_write, io_arg, string, &layout->layout_str);
     return Q2P_ERR_SUCCESS;
 }
 
