@@ -138,6 +138,7 @@ static size_t filter_accepted_protocols(q2proto_protocol_t *new_accepted_protoco
             new_accepted_protocols[out_num++] = protocol;
             break;
         case Q2PROTO_GAME_Q2PRO_EXTENDED:
+        case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
             if (protocol == Q2P_PROTOCOL_Q2PRO)
                 new_accepted_protocols[out_num++] = protocol;
             break;

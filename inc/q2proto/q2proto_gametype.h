@@ -29,6 +29,8 @@ typedef enum q2proto_game_type_e
     Q2PROTO_GAME_VANILLA = 0,
     /// "Q2PRO extended" game
     Q2PROTO_GAME_Q2PRO_EXTENDED,
+    /// "Q2PRO extended v2" game
+    Q2PROTO_GAME_Q2PRO_EXTENDED_V2,
 } q2proto_game_type_t;
 
 #endif // Q2PROTO_GAMETYPE_H_
