@@ -219,6 +219,17 @@ static inline q2proto_error_t read_var_blend(uintptr_t io_arg, q2proto_var_blend
     return Q2P_ERR_SUCCESS;
 }
 
+static inline q2proto_error_t read_short_coord(uintptr_t io_arg, float coord[3])
+{
+    for (int i = 0; i < 3; i++)
+    {
+        int16_t c;
+        READ_CHECKED(client_read, io_arg, c, i16);
+        coord[i] = _q2proto_valenc_int2coord(c);
+    }
+    return Q2P_ERR_SUCCESS;
+}
+
 static inline void q2protoio_write_i8(uintptr_t io_arg, int8_t x)
 {
     q2protoio_write_u8(io_arg, (uint8_t)x);

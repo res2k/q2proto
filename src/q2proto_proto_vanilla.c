@@ -112,7 +112,7 @@ static q2proto_error_t vanilla_client_read(q2proto_clientcontext_t *context, uin
 
     case svc_sound:
         svc_message->type = Q2P_SVC_SOUND;
-        return q2proto_common_client_read_sound(io_arg, &svc_message->sound);
+        return q2proto_common_client_read_sound(io_arg, Q2PROTO_GAME_VANILLA, &svc_message->sound);
 
     case svc_spawnbaseline:
         svc_message->type = Q2P_SVC_SPAWNBASELINE;
@@ -120,7 +120,7 @@ static q2proto_error_t vanilla_client_read(q2proto_clientcontext_t *context, uin
 
     case svc_temp_entity:
         svc_message->type = Q2P_SVC_TEMP_ENTITY;
-        return q2proto_common_client_read_temp_entity(io_arg, &svc_message->temp_entity);
+        return q2proto_common_client_read_temp_entity(io_arg, Q2PROTO_GAME_VANILLA, &svc_message->temp_entity);
 
     case svc_muzzleflash:
         svc_message->type = Q2P_SVC_MUZZLEFLASH;
