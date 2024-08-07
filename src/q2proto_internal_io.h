@@ -115,6 +115,29 @@ static inline bool q2protoio_read_bool(uintptr_t io_arg)
     return q2protoio_read_u8(io_arg) != 0;
 }
 
+static inline int q2protoio_read_q2pro_i23(uintptr_t io_arg, bool *is_diff)
+{
+    int32_t c = q2protoio_read_i16(io_arg);
+    if (GET_IO_ERROR(io_arg) != Q2P_ERR_SUCCESS)
+        goto fail;
+    if (is_diff)
+        *is_diff = (c & 1) == 0;
+    if (c & 1)
+    {
+        int32_t b = q2protoio_read_i8(io_arg);
+        if (GET_IO_ERROR(io_arg) != Q2P_ERR_SUCCESS)
+            goto fail;
+        c = (c & 0xffff) | (b << 16);
+        return c >> 1;
+    }
+    return c >> 1;
+
+fail:
+    if (is_diff)
+        *is_diff = false;
+    return -1;
+}
+
 /// Read a single component of a 16-bit encoded coordinate
 #define READ_CHECKED_VAR_COORD_COMP_16(SOURCE, IO_ARG, TARGET, COMP) \
     do                                                               \
@@ -140,6 +163,23 @@ static inline q2proto_error_t read_var_coord_short(uintptr_t io_arg, q2proto_var
         READ_CHECKED(SOURCE, (IO_ARG), coord, i16);                           \
         q2proto_var_coord_set_short_unscaled_comp(TARGET, COMP, coord);       \
     } while (0)
+
+/// Read a single component of a Q2PRO variably encoded coordinate
+#define READ_CHECKED_VAR_COORD_COMP_Q2PRO_I23(SOURCE, IO_ARG, TARGET, COMP) \
+    do                                                                      \
+    {                                                                       \
+        int coord;                                                          \
+        READ_CHECKED(SOURCE, (IO_ARG), coord, q2pro_i23, NULL);             \
+        q2proto_var_coord_set_int_comp(TARGET, COMP, coord);                \
+    } while (0)
+
+static inline q2proto_error_t read_var_coord_q2pro_i23(uintptr_t io_arg, q2proto_var_coord_t* pos)
+{
+    READ_CHECKED_VAR_COORD_COMP_Q2PRO_I23(client_read, io_arg, pos, 0);
+    READ_CHECKED_VAR_COORD_COMP_Q2PRO_I23(client_read, io_arg, pos, 1);
+    READ_CHECKED_VAR_COORD_COMP_Q2PRO_I23(client_read, io_arg, pos, 2);
+    return Q2P_ERR_SUCCESS;
+}
 
 /// Read a single component of a 16-bit encoded angle
 #define READ_CHECKED_VAR_ANGLE_COMP_16(SOURCE, IO_ARG, TARGET, COMP) \
@@ -230,6 +270,17 @@ static inline q2proto_error_t read_short_coord(uintptr_t io_arg, float coord[3])
     return Q2P_ERR_SUCCESS;
 }
 
+static inline q2proto_error_t read_int23_coord(uintptr_t io_arg, float coord[3])
+{
+    for (int i = 0; i < 3; i++)
+    {
+        int32_t c;
+        READ_CHECKED(client_read, io_arg, c, q2pro_i23, NULL);
+        coord[i] = _q2proto_valenc_int2coord(c);
+    }
+    return Q2P_ERR_SUCCESS;
+}
+
 static inline void q2protoio_write_i8(uintptr_t io_arg, int8_t x)
 {
     q2protoio_write_u8(io_arg, (uint8_t)x);
@@ -238,6 +289,20 @@ static inline void q2protoio_write_i8(uintptr_t io_arg, int8_t x)
 static inline void q2protoio_write_i16(uintptr_t io_arg, int16_t x)
 {
     q2protoio_write_u16(io_arg, (uint16_t)x);
+}
+
+static inline void q2protoio_write_q2pro_i23(uintptr_t io_arg, int32_t x, int32_t prev)
+{
+    int delta = x - prev;
+    if(delta >= -0x4000 && delta < 0x4000)
+        q2protoio_write_u16(io_arg, (uint16_t)delta << 1);
+    else
+    {
+        uint32_t write_val = (uint32_t)((x << 1) | 1);
+        q2protoio_write_u8(io_arg, (uint8_t)(write_val & 0xff));
+        q2protoio_write_u8(io_arg, (uint8_t)((write_val >> 8) & 0xff));
+        q2protoio_write_u8(io_arg, (uint8_t)((write_val >> 16) & 0xff));
+    }
 }
 
 static inline void q2protoio_write_i32(uintptr_t io_arg, int32_t x)
@@ -262,6 +327,13 @@ static inline void q2protoio_write_var_coord_short(uintptr_t io_arg, const q2pro
      * last one succeeds, keeping the "last error" as success...
      * In practice, however, it's probably reasonable to assume that, if one write fails,
      * the remaining writes will do so, as well. */
+}
+
+static inline void q2protoio_write_var_coord_q2pro_i23(uintptr_t io_arg, const q2proto_var_coord_t* pos)
+{
+    q2protoio_write_q2pro_i23(io_arg, q2proto_var_coord_get_int_comp(pos, 0), 0);
+    q2protoio_write_q2pro_i23(io_arg, q2proto_var_coord_get_int_comp(pos, 1), 0);
+    q2protoio_write_q2pro_i23(io_arg, q2proto_var_coord_get_int_comp(pos, 2), 0);
 }
 
 /** @} */
