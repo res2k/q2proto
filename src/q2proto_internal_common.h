@@ -66,7 +66,7 @@ q2proto_error_t q2proto_common_client_read_packed_direction(uintptr_t io_arg, fl
 q2proto_error_t q2proto_common_server_write_nop(uintptr_t io_arg);
 q2proto_error_t q2proto_common_server_write_disconnect(uintptr_t io_arg);
 q2proto_error_t q2proto_common_server_write_reconnect(uintptr_t io_arg);
-q2proto_error_t q2proto_common_server_write_sound(uintptr_t io_arg, const q2proto_svc_sound_t *sound);
+q2proto_error_t q2proto_common_server_write_sound(uintptr_t io_arg, q2proto_game_type_t game_type, const q2proto_svc_sound_t *sound);
 q2proto_error_t q2proto_common_server_write_print(uintptr_t io_arg, const q2proto_svc_print_t *print);
 q2proto_error_t q2proto_common_server_write_stufftext(uintptr_t io_arg, const q2proto_svc_stufftext_t *stufftext);
 q2proto_error_t q2proto_common_server_write_configstring(uintptr_t io_arg, const q2proto_svc_configstring_t *configstring);

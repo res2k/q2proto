@@ -238,7 +238,7 @@ q2proto_error_t q2proto_common_server_write_reconnect(uintptr_t io_arg)
     return Q2P_ERR_SUCCESS;
 }
 
-q2proto_error_t q2proto_common_server_write_sound(uintptr_t io_arg, const q2proto_svc_sound_t *sound)
+q2proto_error_t q2proto_common_server_write_sound(uintptr_t io_arg, q2proto_game_type_t game_type, const q2proto_svc_sound_t *sound)
 {
     WRITE_CHECKED(server_write, io_arg, u8, svc_sound);
     WRITE_CHECKED(server_write, io_arg, u8, sound->flags);
@@ -258,7 +258,18 @@ q2proto_error_t q2proto_common_server_write_sound(uintptr_t io_arg, const q2prot
         WRITE_CHECKED(server_write, io_arg, u16, (sound->entity << 3) | (sound->channel & 0x7));
 
     if (sound->flags & SND_POS)
-        WRITE_CHECKED(server_write, io_arg, var_coord_short, &sound->pos);
+    {
+        switch(game_type)
+        {
+        case Q2PROTO_GAME_VANILLA:
+        case Q2PROTO_GAME_Q2PRO_EXTENDED:
+            WRITE_CHECKED(server_write, io_arg, var_coord_short, &sound->pos);
+            break;
+        case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
+            WRITE_CHECKED(server_write, io_arg, var_coord_q2pro_i23, &sound->pos);
+            break;
+        }
+    }
 
     return Q2P_ERR_SUCCESS;
 }

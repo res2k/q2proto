@@ -36,7 +36,7 @@ q2proto_error_t q2proto_server_multicast_write(const q2proto_server_info_t *serv
         return q2proto_common_server_write_reconnect(io_arg);
 
     case Q2P_SVC_SOUND:
-        return q2proto_common_server_write_sound(io_arg, &svc_message->sound);
+        return q2proto_common_server_write_sound(io_arg, server_info->game_type, &svc_message->sound);
 
     case Q2P_SVC_PRINT:
         return q2proto_common_server_write_print(io_arg, &svc_message->print);
