@@ -25,6 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "q2proto/q2proto.h"
 
+extern const q2proto_packed_entity_state_t q2proto_null_packed_entity_state;
+extern const q2proto_packed_player_state_t q2proto_null_packed_player_state;
+
 /**
  * Compute delta message from changes between two entity states.
  * Vanilla, R1Q2, Q2PRO, Q2PRO extended are relatively similar and can be handled with a single function.

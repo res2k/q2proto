@@ -125,6 +125,17 @@ static q2proto_error_t parse_connect_q2pro(q2proto_string_t* connect_str, q2prot
     return Q2P_ERR_SUCCESS;
 }
 
+static q2proto_error_t parse_connect_q2repro(q2proto_string_t* connect_str, q2proto_connect_t *parsed_connect)
+{
+    parsed_connect->q2pro_nctype = 1; // NETCHAN_NEW
+
+    q2proto_string_t zlib_token = {0};
+    next_token(&zlib_token, connect_str, ' ');
+    parsed_connect->has_zlib = q2pstol(&zlib_token, 10) != 0;
+
+    return Q2P_ERR_SUCCESS;
+}
+
 // Filter list of accepted protocols by restrictions from server info (mainly game type atm)
 static size_t filter_accepted_protocols(q2proto_protocol_t *new_accepted_protocols, const q2proto_protocol_t *accepted_protocols, size_t num_accepted_protocols, const q2proto_server_info_t *server_info)
 {
@@ -139,10 +150,12 @@ static size_t filter_accepted_protocols(q2proto_protocol_t *new_accepted_protoco
             break;
         case Q2PROTO_GAME_Q2PRO_EXTENDED:
         case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
-            if (protocol == Q2P_PROTOCOL_Q2PRO)
+            if (protocol >= Q2P_PROTOCOL_Q2PRO)
                 new_accepted_protocols[out_num++] = protocol;
             break;
         case Q2PROTO_GAME_RERELEASE:
+            if (protocol == Q2P_PROTOCOL_Q2REPRO)
+                new_accepted_protocols[out_num++] = protocol;
             break;
         }
     }
@@ -217,6 +230,8 @@ q2proto_error_t q2proto_parse_connect(const char *connect_args, const q2proto_pr
         return parse_connect_r1q2(&connect_str, parsed_connect);
     case Q2P_PROTOCOL_Q2PRO:
         return parse_connect_q2pro(&connect_str, parsed_connect);
+    case Q2P_PROTOCOL_Q2REPRO:
+        return parse_connect_q2repro(&connect_str, parsed_connect);
     }
 
     return Q2P_ERR_SUCCESS;
@@ -242,6 +257,8 @@ q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t* context, con
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
         return q2proto_q2pro_extdemo_init_servercontext(context, connect_info);
+    case Q2P_PROTOCOL_Q2REPRO:
+        return q2proto_q2repro_init_servercontext(context, connect_info);
     }
 
     return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
@@ -272,7 +289,9 @@ q2proto_error_t q2proto_init_servercontext_demo(q2proto_servercontext_t* context
         *max_msg_len = 0x8000; // Write packets to the limit supported by Q2PRO
         break;
     case Q2PROTO_GAME_RERELEASE:
-        return Q2P_ERR_NOT_IMPLEMENTED;
+        connect_info.protocol = Q2P_PROTOCOL_Q2REPRO;
+        *max_msg_len = 0x8000; // Write packets to the limit supported by Q2PRO
+        break;
     }
     return q2proto_init_servercontext(context, server_info, &connect_info);
 }

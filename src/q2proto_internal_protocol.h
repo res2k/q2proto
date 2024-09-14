@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef Q2PROTO_INTERNAL_PROTOCOL_H_
 #define Q2PROTO_INTERNAL_PROTOCOL_H_
 
+#include "q2proto/q2proto_gametype.h"
 #include "q2proto_internal_defs.h"
 
 // Protocol major version numbers
@@ -32,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PROTOCOL_Q2PRO                  36
 #define PROTOCOL_Q2PRO_EXTENDED_DEMO    3434
 #define PROTOCOL_Q2PRO_EXTENDED_V2_DEMO 3435
+#define PROTOCOL_Q2REPRO                1038
 
 // Protocol revision numbers used by R1Q2 and Q2PRO
 #define PROTOCOL_VERSION_R1Q2_MINIMUM           1903    // b6377
@@ -82,6 +84,18 @@ enum common_svc_cmds
     svc_q2pro_gamestate = 23,
     svc_q2pro_configstringstream = 25,
     svc_q2pro_baselinestream,
+    svc_rr_damage = 25,
+    svc_rr_fog = 27,
+    svc_rr_poi = 30,
+    svc_rr_help_path,
+    svc_rr_muzzleflash3,
+    svc_rr_achievement,
+    svc_q2repro_zpacket = 34,
+    svc_q2repro_zdownload,
+    svc_q2repro_gamestate,
+    svc_q2repro_setting,
+    svc_q2repro_configstringstream,
+    svc_q2repro_baselinestream,
 };
 
 #define SND_VOLUME      BIT(0)
@@ -233,6 +247,7 @@ typedef enum {
 #define PS_WEAPONINDEX      BIT(12)
 #define PS_WEAPONFRAME      BIT(13)
 #define PS_RDFLAGS          BIT(14)
+#define PS_VIEWHEIGHT       BIT(15) // re-release
 
 // r1q2 protocol specific extra flags
 #define EPS_GUNOFFSET       BIT(0)
@@ -244,6 +259,8 @@ typedef enum {
 
 // Q2PRO protocol specific extra flags
 #define EPS_CLIENTNUM       BIT(6)
+// KEX
+#define EPS_GUNRATE         BIT(7)
 
 /// Client command IDs
 enum common_clc_cmds
@@ -293,6 +310,37 @@ enum common_clc_cmds
     + 1 /* alpha */                     \
     + 1 /* scale */                     \
 )
+
+// Q2PRO/Q2rePRO protocol flags
+#define Q2PRO_PF_STRAFEJUMP_HACK    BIT(0)
+#define Q2PRO_PF_QW_MODE            BIT(1)
+#define Q2PRO_PF_WATERJUMP_HACK     BIT(2)
+#define Q2PRO_PF_EXTENSIONS         BIT(3)
+#define Q2PRO_PF_EXTENSIONS_2       BIT(4)
+#define Q2REPRO_PF_GAME3_COMPAT     BIT(15) // This indicates the server game library is a version 3 game
+
+/// Max. configstrings for "version 3" games/servers
+#define MAX_CONFIGSTRINGS_V3            2080
+/// Max. configstrings for "q2pro extended" games/servers
+#define MAX_CONFIGSTRINGS_EXTENDED      13630
+/// Max. configstrings for "rerelease" games/servers
+#define MAX_CONFIGSTRINGS_RERELEASE     12448
+
+static inline unsigned int max_configstrings_for_game(q2proto_game_type_t game)
+{
+    switch(game)
+    {
+    case Q2PROTO_GAME_VANILLA:
+        return MAX_CONFIGSTRINGS_V3;
+    case Q2PROTO_GAME_Q2PRO_EXTENDED:
+    case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
+        return MAX_CONFIGSTRINGS_EXTENDED;
+    case Q2PROTO_GAME_RERELEASE:
+        return MAX_CONFIGSTRINGS_RERELEASE;
+    }
+    // shouldn't happen...
+    return MAX_CONFIGSTRINGS_V3;
+}
 
 /** @} */
 

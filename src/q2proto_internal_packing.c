@@ -22,15 +22,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_internal_defs.h"
 #include "q2proto_internal_io.h"
 
-static const q2proto_packed_entity_state_t null_packed_entity_state;
-static const q2proto_packed_player_state_t null_packed_player_state;
+const q2proto_packed_entity_state_t q2proto_null_packed_entity_state;
+const q2proto_packed_player_state_t q2proto_null_packed_player_state;
 
 void q2proto_packing_make_entity_state_delta(const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, bool extended_state, q2proto_entity_state_delta_t *delta)
 {
     memset(delta, 0, sizeof(*delta));
 
     if (!from)
-        from = &null_packed_entity_state;
+        from = &q2proto_null_packed_entity_state;
 
     q2proto_var_coord_set_int(&delta->origin.write.prev, from->origin);
     q2proto_var_coord_set_int(&delta->origin.write.current, to->origin);
@@ -158,7 +158,7 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
     memset(delta, 0, sizeof(*delta));
 
     if (!from)
-        from = &null_packed_player_state;
+        from = &q2proto_null_packed_player_state;
 
     if (to->pm_type != from->pm_type)
     {
@@ -274,11 +274,16 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
 
 void _q2proto_pack_entity_state_dispatch(q2proto_servercontext_t *context, const _q2proto_packing_entity_dispatch_t *dispatch, const void *entity_state_p, q2proto_packed_entity_state_t *entity_packed)
 {
-    dispatch->vanilla(entity_state_p, context->server_info->game_type, entity_packed);
+    if (context->protocol == Q2P_PROTOCOL_Q2REPRO)
+        dispatch->q2repro(entity_state_p, entity_packed);
+    else
+        dispatch->vanilla(entity_state_p, context->server_info->game_type, entity_packed);
 }
 
 void _q2proto_pack_player_state_dispatch(q2proto_servercontext_t *context, const _q2proto_packing_player_dispatch_t *dispatch, const void *player_state_p, q2proto_packed_player_state_t *player_packed)
 {
-    (void)context;
-    dispatch->vanilla(player_state_p, player_packed);
+    if (context->protocol == Q2P_PROTOCOL_Q2REPRO)
+        dispatch->q2repro(player_state_p, player_packed);
+    else
+        dispatch->vanilla(player_state_p, player_packed);
 }

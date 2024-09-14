@@ -51,6 +51,27 @@ static inline void _q2p_packing_coord_float_to_int(int32_t *packed_coord, const 
     packed_coord[2] = _q2proto_valenc_coord2int(src[2]);
 }
 
+static inline void _q2p_packing_coord_short_to_floatbits(int32_t *packed_coord, const int16_t *src)
+{
+    packed_coord[0] = _q2proto_valenc_float2bits(_q2proto_valenc_int2coord(src[0]));
+    packed_coord[1] = _q2proto_valenc_float2bits(_q2proto_valenc_int2coord(src[1]));
+    packed_coord[2] = _q2proto_valenc_float2bits(_q2proto_valenc_int2coord(src[2]));
+}
+
+static inline void _q2p_packing_coord_int_to_floatbits(int32_t *packed_coord, const int32_t *src)
+{
+    packed_coord[0] = _q2proto_valenc_float2bits(_q2proto_valenc_int2coord(src[0]));
+    packed_coord[1] = _q2proto_valenc_float2bits(_q2proto_valenc_int2coord(src[1]));
+    packed_coord[2] = _q2proto_valenc_float2bits(_q2proto_valenc_int2coord(src[2]));
+}
+
+static inline void _q2p_packing_coord_float_to_floatbits(int32_t *packed_coord, const float *src)
+{
+    packed_coord[0] = _q2proto_valenc_float2bits(src[0]);
+    packed_coord[1] = _q2proto_valenc_float2bits(src[1]);
+    packed_coord[2] = _q2proto_valenc_float2bits(src[2]);
+}
+
 static inline void _q2p_packing_angle_short_to_int(int16_t *dest, const int16_t *src)
 {
     memcpy(dest, src, sizeof(int16_t) * 3);
@@ -69,6 +90,12 @@ static inline void _q2p_packing_angle_float_to_int(int16_t *dest, const float *s
         const int16_t *: _q2p_packing_coord_short_to_int(DEST, (const int16_t *)(SOURCE)), \
         const int32_t *: _q2p_packing_coord_int_to_int(DEST, (const int32_t *)(SOURCE)),   \
         const float *: _q2p_packing_coord_float_to_int(DEST, (const float *)(SOURCE)))
+// Helper macro: pack an input coordinate, based on returned data type, to raw float
+#define _Q2P_PACKING_PACK_COORD_VEC_TO_FLOATBITS(DEST, SOURCE)                                   \
+    _Generic((SOURCE),                                                                           \
+        const int16_t *: _q2p_packing_coord_short_to_floatbits(DEST, (const int16_t *)(SOURCE)), \
+        const int32_t *: _q2p_packing_coord_int_to_floatbits(DEST, (const int32_t *)(SOURCE)),   \
+        const float *: _q2p_packing_coord_float_to_floatbits(DEST, (const float *)(SOURCE)))
 // Helper macro: pack an input angle, based on returned data type, to encoded integer
 #define _Q2P_PACKING_PACK_ANGLE_VEC_TO_INT(DEST, SOURCE)                                   \
     _Generic((SOURCE),                                                                     \

@@ -44,6 +44,8 @@ typedef enum q2proto_protocol_e {
     Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO,
     /// Q2PRO extended v2 demo (not used for network communication)
     Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO,
+    /// Q2rePRO (Q2PRO fork w/ rerelease game support) protocol
+    Q2P_PROTOCOL_Q2REPRO,
 } q2proto_protocol_t;
 
 /// Map from q2proto_protocol_t value to protocol version number communicated over network

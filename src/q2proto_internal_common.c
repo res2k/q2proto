@@ -163,6 +163,8 @@ q2proto_error_t q2proto_common_client_read_temp_entity(uintptr_t io_arg, q2proto
         return vanilla_client_read_temp_entity(io_arg, temp_entity);
     case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
         return q2pro_extv2_read_temp_entity(io_arg, temp_entity);
+    case Q2PROTO_GAME_RERELEASE:
+        return rerelease_read_temp_entity(io_arg, temp_entity);
     }
 
     // huh
@@ -195,6 +197,8 @@ q2proto_error_t q2proto_common_client_read_sound(uintptr_t io_arg, q2proto_game_
         return vanilla_client_read_sound(io_arg, sound);
     case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
         return q2pro_extv2_read_sound(io_arg, sound);
+    case Q2PROTO_GAME_RERELEASE:
+        return rerelease_read_sound(io_arg, sound);
     }
 
     // huh
@@ -310,6 +314,9 @@ q2proto_error_t q2proto_common_server_write_sound(uintptr_t io_arg, q2proto_game
             break;
         case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
             WRITE_CHECKED(server_write, io_arg, var_coord_q2pro_i23, &sound->pos);
+            break;
+        case Q2PROTO_GAME_RERELEASE:
+            WRITE_CHECKED(server_write, io_arg, var_coord_float, &sound->pos);
             break;
         }
     }

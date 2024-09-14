@@ -110,6 +110,8 @@ typedef struct _q2proto_packing_entity_dispatch_s
 {
     // Pack entity state for vanilla (and derived)
     void (*vanilla)(const void * restrict, q2proto_game_type_t game_type, q2proto_packed_entity_state_t * restrict);
+    // Pack entity state for q2repro protocol
+    void (*q2repro)(const void * restrict, q2proto_packed_entity_state_t * restrict);
 } _q2proto_packing_entity_dispatch_t;
 
 // Call actual entity packing function
@@ -120,6 +122,8 @@ typedef struct _q2proto_packing_player_dispatch_s
 {
     // Pack player state for vanilla (and derived)
     void (*vanilla)(const void * restrict, q2proto_packed_player_state_t * restrict);
+    // Pack player state for q2repro protocol
+    void (*q2repro)(const void * restrict, q2proto_packed_player_state_t * restrict);
 } _q2proto_packing_player_dispatch_t;
 
 // Call actual player packing function

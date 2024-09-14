@@ -35,6 +35,9 @@ q2proto_error_t q2proto_q2pro_init_servercontext(q2proto_servercontext_t *contex
 // Functions reused by q2pro_extdemo
 q2proto_error_t q2proto_q2pro_client_read_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, uint64_t bits, q2proto_entity_state_delta_t *entity_state);
 q2proto_error_t q2proto_q2pro_server_write_entity_state_delta(q2proto_servercontext_t *context, uintptr_t io_arg, uint16_t entnum, const q2proto_entity_state_delta_t *entity_state_delta);
+
+// Functions reused by q2repro
+q2proto_error_t q2proto_q2pro_client_read_muzzleflash2(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_muzzleflash_t *muzzleflash);
 /** @} */
 
 #endif // Q2PROTO_PROTO_Q2PRO_H_
