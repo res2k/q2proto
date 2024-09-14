@@ -31,6 +31,8 @@ typedef enum q2proto_game_type_e
     Q2PROTO_GAME_Q2PRO_EXTENDED,
     /// "Q2PRO extended v2" game
     Q2PROTO_GAME_Q2PRO_EXTENDED_V2,
+    /// Rerelease game
+    Q2PROTO_GAME_RERELEASE,
 } q2proto_game_type_t;
 
 #endif // Q2PROTO_GAMETYPE_H_

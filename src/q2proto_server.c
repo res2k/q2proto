@@ -142,6 +142,8 @@ static size_t filter_accepted_protocols(q2proto_protocol_t *new_accepted_protoco
             if (protocol == Q2P_PROTOCOL_Q2PRO)
                 new_accepted_protocols[out_num++] = protocol;
             break;
+        case Q2PROTO_GAME_RERELEASE:
+            break;
         }
     }
     return out_num;
@@ -268,6 +270,8 @@ q2proto_error_t q2proto_init_servercontext_demo(q2proto_servercontext_t* context
         connect_info.protocol = Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO;
         *max_msg_len = 0x8000; // Write packets to the limit supported by Q2PRO
         break;
+    case Q2PROTO_GAME_RERELEASE:
+        return Q2P_ERR_NOT_IMPLEMENTED;
     }
     return q2proto_init_servercontext(context, server_info, &connect_info);
 }
