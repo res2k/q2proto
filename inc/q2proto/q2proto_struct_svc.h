@@ -283,7 +283,7 @@ typedef struct q2proto_svc_serverdata_s {
         bool enhanced;
     } r1q2;
 
-    /// Q2PRO specific serverdata
+    /// Q2PRO (and, to some extent, Q2rePRO) specific serverdata
     struct {
         /// Q2PRO: Server state
         uint8_t server_state;
@@ -304,6 +304,18 @@ typedef struct q2proto_svc_serverdata_s {
          */
         bool extensions_v2;
     } q2pro;
+
+    /// Q2rePRO specific serverdata
+    struct {
+        /// Server update rate
+        uint8_t server_fps;
+        /**
+         * game3 compatibility flag
+         * Note: It's recommended you let q2proto_server_fill_serverdata() set this flag
+         * and use \c server_game_type stored in the client context to check the game type.
+         */
+        bool game3_compat;
+    } q2repro;
 } q2proto_svc_serverdata_t;
 
 /// Flag bits for fields set in a q2proto_svc_playerstate_t structure
@@ -319,39 +331,43 @@ enum q2proto_playerstate_delta_flags
     Q2P_PSD_PM_GRAVITY = 0x8,
     /// 'pm_delta_angles' is set
     Q2P_PSD_PM_DELTA_ANGLES = 0x10,
+    /// 'pm_viewheight' is set
+    Q2P_PSD_PM_VIEWHEIGHT = 0x20,
     /// 'viewoffset' is set
-    Q2P_PSD_VIEWOFFSET = 0x20,
+    Q2P_PSD_VIEWOFFSET = 0x40,
     /// 'kick_angles' is set
-    Q2P_PSD_KICKANGLES = 0x40,
+    Q2P_PSD_KICKANGLES = 0x80,
     /// 'gunindex' is set
-    Q2P_PSD_GUNINDEX = 0x80,
+    Q2P_PSD_GUNINDEX = 0x100,
     /**
      * 'gunframe' is set.
      * Note: due to different transmit granularities in different protocols,
      * if setting just one of the 'gun'  _bits_ during writing,
      * all of gunframe, gunoffset, gunangles have to be set!
      */
-    Q2P_PSD_GUNFRAME = 0x100,
+    Q2P_PSD_GUNFRAME = 0x200,
     /**
      * 'gunoffset' is set.
      * Note: due to different transmit granularities in different protocols,
      * if setting just one of the 'gun'  _bits_ during writing,
      * all of gunframe, gunoffset, gunangles have to be set!
      */
-    Q2P_PSD_GUNOFFSET = 0x200,
+    Q2P_PSD_GUNOFFSET = 0x400,
     /**
      * 'gunangles' is set.
      * Note: due to different transmit granularities in different protocols,
      * if setting just one of the 'gun'  _bits_ during writing,
      * all of gunframe, gunoffset, gunangles have to be set!
      */
-    Q2P_PSD_GUNANGLES = 0x400,
+    Q2P_PSD_GUNANGLES = 0x800,
     /// 'fov' is set
-    Q2P_PSD_FOV = 0x800,
+    Q2P_PSD_FOV = 0x1000,
     /// 'rdflags' is set
-    Q2P_PSD_RDFLAGS = 0x1000,
+    Q2P_PSD_RDFLAGS = 0x2000,
+    /// 'gunrate' is set
+    Q2P_PSD_GUNRATE = 0x4000,
     /// 'clientnum' is set. Requires q2proto_servercontext_t::features.playerstate_clientnum!
-    Q2P_PSD_CLIENTNUM = 0x2000,
+    Q2P_PSD_CLIENTNUM = 0x8000,
 };
 
 /// Player state delta, as contained in frame messages
@@ -372,6 +388,8 @@ typedef struct q2proto_svc_playerstate_s {
     int16_t pm_gravity;
     /// pmove delta angles
     q2proto_var_angle_t pm_delta_angles;
+    /// rerelease: viewheight
+    int8_t pm_viewheight;
     /// viewoffset
     q2proto_var_small_offset_t viewoffset;
     /// viewangles
@@ -381,7 +399,7 @@ typedef struct q2proto_svc_playerstate_s {
     /// gunindex
     uint16_t gunindex;
     /// gunframe
-    uint8_t gunframe;
+    uint16_t gunframe;
     /// gunoffset
     q2proto_var_small_offset_t gunoffset;
     /// gunangles
@@ -398,6 +416,8 @@ typedef struct q2proto_svc_playerstate_s {
     uint64_t statbits;
     /// stats entries
     int16_t stats[Q2PROTO_STATS];
+    /// rerelease: gunrate
+    uint8_t gunrate;
     /// client number
     int16_t clientnum;
 } q2proto_svc_playerstate_t;
@@ -419,7 +439,7 @@ typedef struct q2proto_svc_frame_s {
     int32_t deltaframe;
     /// suppress count
     uint8_t suppress_count;
-    /// frame flags (Q2PRO)
+    /// frame flags (Q2PRO, Q2rePRO)
     uint8_t q2pro_frame_flags;
     /// length, in bytes, of areabits data
     uint8_t areabits_len;
@@ -450,6 +470,140 @@ typedef struct q2proto_svc_setting_s {
     /// Setting value
     int32_t value;
 } q2proto_svc_setting_t;
+
+/// Rerelease player damage indicators
+typedef struct q2proto_svc_damage_s {
+    /// Number of damage indicators
+    uint8_t count;
+    /// Damage indicator
+    struct {
+        /// approximate damage value (divided by 3)
+        uint8_t damage;
+        /// damage to health
+        bool health;
+        /// damage to armor
+        bool armor;
+        /// damage to shield
+        bool shield;
+        /// direction
+        q2proto_vec3_t direction;
+    } damage[Q2PROTO_MAX_DAMAGE_INDICATORS];
+} q2proto_svc_damage_t;
+
+/// Flag bits for fields set in a q2proto_svc_fog_t structure
+enum q2proto_fog_flags
+{
+    /// 'density', 'skyfactor' are set
+    Q2P_FOG_DENSITY_SKYFACTOR = 0x1,
+    /// 'r' is set
+    Q2P_FOG_R = 0x2,
+    /// 'g' is set
+    Q2P_FOG_G = 0x4,
+    /// 'b' is set
+    Q2P_FOG_B = 0x8,
+    /// 'time' is set
+    Q2P_FOG_TIME = 0x10,
+};
+
+/// Flag bits for fields set in a q2proto_svc_fog_t.heightfog structure
+enum q2proto_heightfog_flags
+{
+    /// 'falloff' is set
+    Q2P_HEIGHTFOG_FALLOFF = 0x1,
+    /// 'density' is set
+    Q2P_HEIGHTFOG_DENSITY = 0x2,
+    /// 'start_r' is set
+    Q2P_HEIGHTFOG_START_R = 0x4,
+    /// 'start_g' is set
+    Q2P_HEIGHTFOG_START_G = 0x8,
+    /// 'start_b' is set
+    Q2P_HEIGHTFOG_START_B = 0x10,
+    /// 'start_dist' is set
+    Q2P_HEIGHTFOG_START_DIST = 0x20,
+    /// 'end_r' is set
+    Q2P_HEIGHTFOG_END_R = 0x40,
+    /// 'end_g' is set
+    Q2P_HEIGHTFOG_END_G = 0x80,
+    /// 'end_b' is set
+    Q2P_HEIGHTFOG_END_B = 0x100,
+    /// 'end_dist' is set
+    Q2P_HEIGHTFOG_END_DIST = 0x200,
+};
+
+/// Rerelease fog
+typedef struct q2proto_svc_fog_s {
+    /// Combination of q2proto_fog_flags, indicating which fields are set
+    uint32_t flags;
+    /// density
+    float density;
+    /// skyfactor
+    uint8_t skyfactor;
+    /// color: red
+    uint8_t r;
+    /// color: green
+    uint8_t g;
+    /// color: blue
+    uint8_t b;
+    /// time
+    uint16_t time;
+
+    struct {
+        /// Combination of q2proto_heightfog_flags, indicating which fields are set
+        uint32_t flags;
+        /// falloff
+        float falloff;
+        /// density
+        float density;
+        /// start color: red
+        uint8_t start_r;
+        /// start color: green
+        uint8_t start_g;
+        /// start color: blue
+        uint8_t start_b;
+        /// start distance
+        int32_t start_dist;
+        /// end color: red
+        uint8_t end_r;
+        /// end color: green
+        uint8_t end_g;
+        /// end color: blue
+        uint8_t end_b;
+        /// end distance
+        int32_t end_dist;
+    } heightfog;
+} q2proto_svc_fog_t;
+
+/// Rerelease POI
+typedef struct q2proto_svc_poi_s {
+    /// poi key
+    uint16_t key;
+    /// poi lifetime
+    uint16_t time;
+    /// position
+    q2proto_vec3_t pos;
+    /// image index
+    uint16_t image;
+    /// palette index
+    uint8_t color;
+    /// flags
+    uint8_t flags;
+} q2proto_svc_poi_t;
+
+/// Rerelease help path
+typedef struct q2proto_svc_help_path_s {
+    /// Whether help path was started or continued
+    bool start;
+    /// Path position
+    q2proto_vec3_t pos;
+    /// Path direction
+    q2proto_vec3_t dir;
+} q2proto_svc_help_path_t;
+
+/// Rerelease achievement
+typedef struct q2proto_svc_achievement_s {
+    /// Achievement ID
+    q2proto_string_t id;
+} q2proto_svc_achievement_t;
 
 /// Types of message from server
 typedef enum q2proto_svc_message_type_e
@@ -503,6 +657,16 @@ typedef enum q2proto_svc_message_type_e
     Q2P_SVC_FRAME_ENTITY_DELTA,
     /// R1Q2, Q2PRO server setting
     Q2P_SVC_SETTING,
+    /// Rerelease damage indicator
+    Q2P_SVC_DAMAGE,
+    /// Rerelease fog
+    Q2P_SVC_FOG,
+    /// Rerelease POI
+    Q2P_SVC_POI,
+    /// Rerelease help path
+    Q2P_SVC_HELP_PATH,
+    /// Rerelease achievement
+    Q2P_SVC_ACHIEVEMENT,
 }
 q2proto_svc_message_type_t;
 
@@ -555,6 +719,16 @@ typedef struct q2proto_svc_message_s {
         q2proto_svc_frame_entity_delta_t frame_entity_delta;
         /// Q2P_SVC_SETTING message
         q2proto_svc_setting_t setting;
+        /// Q2P_SVC_DAMAGE message
+        q2proto_svc_damage_t damage;
+        /// Q2P_SVC_FOG message
+        q2proto_svc_fog_t fog;
+        /// Q2P_SVC_POI message
+        q2proto_svc_poi_t poi;
+        /// Q2P_SVC_HELP_PATH message
+        q2proto_svc_help_path_t help_path;
+        /// Q2P_SVC_ACHIEVEMENT message
+        q2proto_svc_achievement_t achievement;
     };
 } q2proto_svc_message_t;
 

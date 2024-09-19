@@ -24,5 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /// Supported number of stats
 #define Q2PROTO_STATS           64
+/// Supported number of damage indicators. Same value as in rerelease game.
+#define Q2PROTO_MAX_DAMAGE_INDICATORS   4
 
 #endif // Q2PROTO_LIMITS_H_

@@ -885,6 +885,8 @@ static q2proto_error_t vanilla_server_write_playerstate(uintptr_t io_arg, const 
         flags |= PS_M_GRAVITY;
     if(playerstate->delta_bits & Q2P_PSD_PM_DELTA_ANGLES)
         flags |= PS_M_DELTA_ANGLES;
+    if(playerstate->delta_bits & Q2P_PSD_PM_VIEWHEIGHT)
+        return Q2P_ERR_BAD_DATA;
     if(playerstate->delta_bits & Q2P_PSD_VIEWOFFSET)
         flags |= PS_VIEWOFFSET;
     if(playerstate->viewangles.delta_bits != 0)
@@ -902,10 +904,16 @@ static q2proto_error_t vanilla_server_write_playerstate(uintptr_t io_arg, const 
     if(playerstate->delta_bits & Q2P_PSD_GUNINDEX)
         flags |= PS_WEAPONINDEX;
     if(playerstate->delta_bits & (Q2P_PSD_GUNFRAME | Q2P_PSD_GUNOFFSET | Q2P_PSD_GUNANGLES))
+    {
         flags |= PS_WEAPONFRAME;
+        if (playerstate->gunframe > UINT8_MAX)
+            return Q2P_ERR_BAD_DATA;
+    }
     if(playerstate->delta_bits & Q2P_PSD_CLIENTNUM)
         return Q2P_ERR_BAD_DATA;
     if(playerstate->statbits > UINT32_MAX)
+        return Q2P_ERR_BAD_DATA;
+    if(playerstate->delta_bits & Q2P_PSD_GUNRATE)
         return Q2P_ERR_BAD_DATA;
 
     //
