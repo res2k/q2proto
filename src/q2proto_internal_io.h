@@ -110,6 +110,11 @@ static inline int32_t q2protoio_read_i32(uintptr_t io_arg)
     return (int32_t)q2protoio_read_u32(io_arg);
 }
 
+static inline int64_t q2protoio_read_i64(uintptr_t io_arg)
+{
+    return (int64_t)q2protoio_read_u64(io_arg);
+}
+
 static inline bool q2protoio_read_bool(uintptr_t io_arg)
 {
     return q2protoio_read_u8(io_arg) != 0;
@@ -155,6 +160,16 @@ static inline uint64_t q2protoio_read_var_u64(uintptr_t io_arg)
 
 fail:
     return (uint64_t)-1;
+}
+
+static inline float q2protoio_read_float(uintptr_t io_arg)
+{
+    union {
+        uint32_t u;
+        float f;
+    } conv;
+    conv.u = q2protoio_read_u32(io_arg);
+    return conv.f;
 }
 
 /// Read a single component of a 16-bit encoded coordinate
@@ -370,6 +385,11 @@ static inline void q2protoio_write_i32(uintptr_t io_arg, int32_t x)
     q2protoio_write_u32(io_arg, (uint32_t)x);
 }
 
+static inline void q2protoio_write_i64(uintptr_t io_arg, int64_t x)
+{
+    q2protoio_write_u64(io_arg, (uint64_t)x);
+}
+
 static inline void q2protoio_write_var_u64(uintptr_t io_arg, uint64_t x)
 {
     do
@@ -380,6 +400,16 @@ static inline void q2protoio_write_var_u64(uintptr_t io_arg, uint64_t x)
             b |= 0x80;
         q2protoio_write_u8(io_arg, b);
     } while (x != 0);
+}
+
+static inline void q2protoio_write_float(uintptr_t io_arg, float x)
+{
+    union {
+        uint32_t u;
+        float f;
+    } conv;
+    conv.f = x;
+    q2protoio_write_u32(io_arg, conv.u);
 }
 
 static inline void q2protoio_write_string(uintptr_t io_arg, const q2proto_string_t* str)

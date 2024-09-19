@@ -46,6 +46,8 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL uint8_t q2protoio_read_u8(uintptr_t io_arg);
 Q2PROTO_EXTERNALLY_PROVIDED_DECL uint16_t q2protoio_read_u16(uintptr_t io_arg);
 /// Read a 32-bit unsigned integer.
 Q2PROTO_EXTERNALLY_PROVIDED_DECL uint32_t q2protoio_read_u32(uintptr_t io_arg);
+/// Read a 64-bit unsigned integer.
+Q2PROTO_EXTERNALLY_PROVIDED_DECL uint64_t q2protoio_read_u64(uintptr_t io_arg);
 /**
  * Read a string (consisting of length and chars).
  * The returned pointer must remain valid for the duration of processing the message!
@@ -67,6 +69,8 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL void q2protoio_write_u8(uintptr_t io_arg, uint8
 Q2PROTO_EXTERNALLY_PROVIDED_DECL void q2protoio_write_u16(uintptr_t io_arg, uint16_t x);
 /// Write a 32-bit unsigned integer.
 Q2PROTO_EXTERNALLY_PROVIDED_DECL void q2protoio_write_u32(uintptr_t io_arg, uint32_t x);
+/// Write a 64-bit unsigned integer.
+Q2PROTO_EXTERNALLY_PROVIDED_DECL void q2protoio_write_u64(uintptr_t io_arg, uint64_t x);
 /// Reserve \a size bytes in the output buffer, return pointer to first byte
 Q2PROTO_EXTERNALLY_PROVIDED_DECL void* q2protoio_write_reserve_raw(uintptr_t io_arg, size_t size);
 /**

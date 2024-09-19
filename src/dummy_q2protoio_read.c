@@ -35,6 +35,11 @@ uint32_t q2protoio_read_u32(uintptr_t io_arg)
     return (uint32_t)-1;
 }
 
+uint64_t q2protoio_read_u64(uintptr_t io_arg)
+{
+    return (uint64_t)-1;
+}
+
 q2proto_string_t q2protoio_read_string(uintptr_t io_arg)
 {
     q2proto_string_t s = {.len = 0, .str = NULL};
