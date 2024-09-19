@@ -215,6 +215,23 @@ static inline q2proto_error_t read_var_coord_q2pro_i23(uintptr_t io_arg, q2proto
     return Q2P_ERR_SUCCESS;
 }
 
+/// Read a single component of a float encoded coordinate
+#define READ_CHECKED_VAR_COORD_COMP_FLOAT(SOURCE, IO_ARG, TARGET, COMP) \
+    do                                                                  \
+    {                                                                   \
+        float coord;                                                    \
+        READ_CHECKED(SOURCE, (IO_ARG), coord, float);                   \
+        q2proto_var_coord_set_float_comp(TARGET, COMP, coord);          \
+    } while (0)
+
+static inline q2proto_error_t read_var_coord_float(uintptr_t io_arg, q2proto_var_coord_t* pos)
+{
+    READ_CHECKED_VAR_COORD_COMP_FLOAT(client_read, io_arg, pos, 0);
+    READ_CHECKED_VAR_COORD_COMP_FLOAT(client_read, io_arg, pos, 1);
+    READ_CHECKED_VAR_COORD_COMP_FLOAT(client_read, io_arg, pos, 2);
+    return Q2P_ERR_SUCCESS;
+}
+
 /// Read a single component of a 16-bit encoded angle
 #define READ_CHECKED_VAR_ANGLE_COMP_16(SOURCE, IO_ARG, TARGET, COMP) \
     do                                                               \
@@ -311,6 +328,15 @@ static inline q2proto_error_t read_int23_coord(uintptr_t io_arg, float coord[3])
         int32_t c;
         READ_CHECKED(client_read, io_arg, c, q2pro_i23, NULL);
         coord[i] = _q2proto_valenc_int2coord(c);
+    }
+    return Q2P_ERR_SUCCESS;
+}
+
+static inline q2proto_error_t read_float_coord(uintptr_t io_arg, float coord[3])
+{
+    for (int i = 0; i < 3; i++)
+    {
+        READ_CHECKED(client_read, io_arg, coord[i], float);
     }
     return Q2P_ERR_SUCCESS;
 }
@@ -438,6 +464,13 @@ static inline void q2protoio_write_var_coord_q2pro_i23(uintptr_t io_arg, const q
     q2protoio_write_q2pro_i23(io_arg, q2proto_var_coord_get_int_comp(pos, 2), 0);
 }
 
+static inline void q2protoio_write_var_coord_float(uintptr_t io_arg, const q2proto_var_coord_t* pos)
+{
+    q2protoio_write_float(io_arg, q2proto_var_coord_get_float_comp(pos, 0));
+    q2protoio_write_float(io_arg, q2proto_var_coord_get_float_comp(pos, 1));
+    q2protoio_write_float(io_arg, q2proto_var_coord_get_float_comp(pos, 2));
+}
+
 static inline q2proto_error_t server_write_q2pro_extv2_blends(uintptr_t io_arg, const q2proto_blend_delta_t *blend, const q2proto_blend_delta_t *damage_blend)
 {
     uint8_t blend_bits = (blend->delta_bits & 0xf) | (damage_blend->delta_bits & 0xf) << 4;
@@ -480,6 +513,19 @@ static inline unsigned q2proto_maybe_diff_coord_write_differs_int(const q2proto_
     if (q2proto_var_coord_get_int_comp(&coord->write.prev, 1) != q2proto_var_coord_get_int_comp(&coord->write.current, 1))
         bits |= BIT(1);
     if (q2proto_var_coord_get_int_comp(&coord->write.prev, 2) != q2proto_var_coord_get_int_comp(&coord->write.current, 2))
+        bits |= BIT(2);
+    return bits;
+}
+
+/// Check if the float values of in the "write" part of a q2proto_maybe_diff_coord_t differ
+static inline unsigned q2proto_maybe_diff_coord_write_differs_float(const q2proto_maybe_diff_coord_t *coord)
+{
+    unsigned bits = 0;
+    if (q2proto_var_coord_get_float_comp(&coord->write.prev, 0) != q2proto_var_coord_get_float_comp(&coord->write.current, 0))
+        bits |= BIT(0);
+    if (q2proto_var_coord_get_float_comp(&coord->write.prev, 1) != q2proto_var_coord_get_float_comp(&coord->write.current, 1))
+        bits |= BIT(1);
+    if (q2proto_var_coord_get_float_comp(&coord->write.prev, 2) != q2proto_var_coord_get_float_comp(&coord->write.current, 2))
         bits |= BIT(2);
     return bits;
 }
