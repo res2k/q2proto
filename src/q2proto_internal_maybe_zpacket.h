@@ -29,6 +29,7 @@ typedef struct q2proto_maybe_zpacket_s {
 #if Q2PROTO_COMPRESSION_DEFLATE
     uintptr_t original_io_arg;
     bool deflate_enabled;
+    uint8_t zpacket_cmd;
 #else
     char dummy;
 #endif

@@ -784,6 +784,7 @@ q2proto_error_t q2proto_r1q2_init_servercontext(q2proto_servercontext_t *context
         return Q2P_ERR_GAMETYPE_UNSUPPORTED;
 
     context->protocol_version = connect_info->version;
+    context->zpacket_cmd = svc_r1q2_zpacket;
     context->features.enable_deflate = connect_info->has_zlib;
     context->features.has_beam_old_origin_fix = true;
 

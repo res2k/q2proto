@@ -118,6 +118,8 @@ struct q2proto_servercontext_s {
     const q2proto_server_info_t *Q2PROTO_PRIVATE_MEMBER(server_info);
     /// Protocol version (for R1Q2/Q2PRO)
     int Q2PROTO_PRIVATE_MEMBER(protocol_version);
+    /// zpacket command (differs between R1Q2/Q2PRO and Q2rePRO protocol)
+    uint8_t Q2PROTO_PRIVATE_MEMBER(zpacket_cmd);
 
     /// serverdata filling
     Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, fill_serverdata, q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata);

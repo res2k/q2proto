@@ -35,6 +35,7 @@ q2proto_error_t q2proto_maybe_zpacket_begin(q2proto_servercontext_t *context, q2
 #if Q2PROTO_COMPRESSION_DEFLATE
     memset(state, 0, sizeof(*state));
     state->original_io_arg = io_arg;
+    state->zpacket_cmd = context->zpacket_cmd;
     if (deflate_args && context->features.enable_deflate)
     {
         size_t max_deflated = q2protoio_write_available(io_arg);
@@ -64,7 +65,7 @@ q2proto_error_t q2proto_maybe_zpacket_end(q2proto_maybe_zpacket_t *state, uintpt
     if (err != Q2P_ERR_SUCCESS)
         goto error;
 
-    WRITE_CHECKED(server_write, state->original_io_arg, u8, svc_r1q2_zpacket);
+    WRITE_CHECKED(server_write, state->original_io_arg, u8, state->zpacket_cmd);
     WRITE_CHECKED(server_write, state->original_io_arg, u16, compressed_len);
     WRITE_CHECKED(server_write, state->original_io_arg, u16, uncompressed_len);
     WRITE_CHECKED(server_write, state->original_io_arg, raw, data, compressed_len, NULL);
