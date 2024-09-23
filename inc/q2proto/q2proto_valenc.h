@@ -110,6 +110,30 @@ static inline uint8_t _q2proto_valenc_blend2byte(float x)
     return _q2proto_valenc_clamped_mul(x, 255, 0, UINT8_MAX);
 }
 
+// Decode a viewoffset component for Q2rePRO protocol
+static inline float _q2proto_valenc_q2repro_short2viewoffset(int16_t x)
+{
+    return x / 16.f;
+}
+
+// Encode a viewoffset component for Q2rePRO protocol
+static inline int16_t _q2proto_valenc_q2repro_viewoffset2short(float x)
+{
+    return _q2proto_valenc_clamped_mul(x, 16, INT16_MIN, INT16_MAX);
+}
+
+// Encode a kick_angles component for Q2rePRO protocol
+static inline float _q2proto_valenc_q2repro_short2kick_angle(int16_t x)
+{
+    return x / 1024.f;
+}
+
+// Encode a kick_angles component for Q2rePRO protocol
+static inline int16_t _q2proto_valenc_q2repro_kick_angle2short(float x)
+{
+    return _q2proto_valenc_clamped_mul(x, 1024, INT16_MIN, INT16_MAX);
+}
+
 #if defined(__cplusplus)
 } // extern "C"
 #endif

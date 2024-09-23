@@ -149,6 +149,14 @@ _GENERATE_VARIANT_FUNCTIONS(var_small_offset, float, float, 3)
  * @{ */
 _GENERATE_VARIANT_FUNCTIONS(var_small_offset, char, int8_t, 3)
 /** @}  */
+/** 'Small offset' functions for Q2rePRO viewoffset encoding
+ * @{ */
+_GENERATE_VARIANT_FUNCTIONS(var_small_offset, q2repro_viewoffset, int16_t, 3)
+/** @}  */
+/** 'Small offset' functions for Q2rePRO gunoffset encoding
+ * @{ */
+_GENERATE_VARIANT_FUNCTIONS(var_small_offset, q2repro_gunoffset, int16_t, 3)
+/** @}  */
 
 /// Variant for "small" angles with limited range and precision (kick_angles, gunangles), can be encoded into 8 bit
 typedef struct q2proto_var_small_angle_s {
@@ -170,6 +178,14 @@ _GENERATE_VARIANT_FUNCTIONS(var_small_angle, float, float, 3)
 /** 'Small angle' functions for pre-encoded 8-bit values
  * @{ */
 _GENERATE_VARIANT_FUNCTIONS(var_small_angle, char, int8_t, 3)
+/** @}  */
+/** 'Small angle' functions for Q2rePRO kick_angles encoding
+ * @{ */
+_GENERATE_VARIANT_FUNCTIONS(var_small_angle, q2repro_kick_angles, int16_t, 3)
+/** @}  */
+/** 'Small angle' functions for Q2rePRO gunangles encoding
+ * @{ */
+_GENERATE_VARIANT_FUNCTIONS(var_small_angle, q2repro_gunangles, int16_t, 3)
 /** @}  */
 
 /// Variant for "blend" values (RGBA, each component stored as a float or as a byte)
