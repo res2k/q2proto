@@ -293,18 +293,26 @@ void q2proto_server_make_player_state_delta(q2proto_servercontext_t *context, co
 
 q2proto_error_t q2proto_server_write_pos(const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_vec3_t pos)
 {
-    if (server_info->game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
+    switch(server_info->game_type)
     {
-        WRITE_CHECKED(server_write, io_arg, q2pro_i23, _q2proto_valenc_coord2int(pos[0]), 0);
-        WRITE_CHECKED(server_write, io_arg, q2pro_i23, _q2proto_valenc_coord2int(pos[1]), 0);
-        WRITE_CHECKED(server_write, io_arg, q2pro_i23, _q2proto_valenc_coord2int(pos[2]), 0);
-    }
-    else
-    {
+    case Q2PROTO_GAME_VANILLA:
+    case Q2PROTO_GAME_Q2PRO_EXTENDED:
         WRITE_CHECKED(server_write, io_arg, u16, _q2proto_valenc_coord2int(pos[0]));
         WRITE_CHECKED(server_write, io_arg, u16, _q2proto_valenc_coord2int(pos[1]));
         WRITE_CHECKED(server_write, io_arg, u16, _q2proto_valenc_coord2int(pos[2]));
+        break;
+    case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
+        WRITE_CHECKED(server_write, io_arg, q2pro_i23, _q2proto_valenc_coord2int(pos[0]), 0);
+        WRITE_CHECKED(server_write, io_arg, q2pro_i23, _q2proto_valenc_coord2int(pos[1]), 0);
+        WRITE_CHECKED(server_write, io_arg, q2pro_i23, _q2proto_valenc_coord2int(pos[2]), 0);
+        break;
+    case Q2PROTO_GAME_RERELEASE:
+        WRITE_CHECKED(server_write, io_arg, float, pos[0]);
+        WRITE_CHECKED(server_write, io_arg, float, pos[1]);
+        WRITE_CHECKED(server_write, io_arg, float, pos[2]);
+        break;
     }
+
     return Q2P_ERR_SUCCESS;
 }
 
