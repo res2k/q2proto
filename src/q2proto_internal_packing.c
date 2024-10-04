@@ -274,7 +274,7 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
 
 void _q2proto_pack_entity_state_dispatch(q2proto_servercontext_t *context, const _q2proto_packing_entity_dispatch_t *dispatch, const void *entity_state_p, q2proto_packed_entity_state_t *entity_packed)
 {
-    dispatch->vanilla(entity_state_p, context->server_info->game_type != Q2PROTO_GAME_VANILLA, entity_packed);
+    dispatch->vanilla(entity_state_p, context->server_info->game_type, entity_packed);
 }
 
 void _q2proto_pack_player_state_dispatch(q2proto_servercontext_t *context, const _q2proto_packing_player_dispatch_t *dispatch, const void *player_state_p, q2proto_packed_player_state_t *player_packed)

@@ -52,7 +52,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME   _Q2PROTO_PACKING_NAME(Q2P_PACK_ENTITY_FUNCTION_NAME, _int)
 
-static void _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME(const void * restrict entity_state_p, bool extended_state, q2proto_packed_entity_state_t * restrict entity_packed)
+static void _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME(const void * restrict entity_state_p, q2proto_game_type_t game_type, q2proto_packed_entity_state_t * restrict entity_packed)
 {
     memset(entity_packed, 0, sizeof(*entity_packed));
 
@@ -72,7 +72,7 @@ static void _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME(const void * restrict entity_
     entity_packed->sound = (uint16_t)Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, sound);
     entity_packed->event = (uint8_t)Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, event);
     entity_packed->solid = (uint32_t)Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, solid);
-    if (extended_state)
+    if (game_type >= Q2PROTO_GAME_Q2PRO_EXTENDED)
     {
         entity_packed->loop_volume = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, loop_volume), 255, 0, UINT8_MAX);
         entity_packed->loop_attenuation = q2proto_sound_encode_loop_attenuation(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, loop_attenuation));

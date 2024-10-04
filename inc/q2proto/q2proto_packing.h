@@ -109,7 +109,7 @@ typedef struct q2proto_servercontext_s q2proto_servercontext_t;
 typedef struct _q2proto_packing_entity_dispatch_s
 {
     // Pack entity state for vanilla (and derived)
-    void (*vanilla)(const void * restrict, bool extended_state, q2proto_packed_entity_state_t * restrict);
+    void (*vanilla)(const void * restrict, q2proto_game_type_t game_type, q2proto_packed_entity_state_t * restrict);
 } _q2proto_packing_entity_dispatch_t;
 
 // Call actual entity packing function
