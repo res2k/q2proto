@@ -226,6 +226,7 @@ q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t* context, con
 {
     memset(context, 0, sizeof(*context));
     context->server_info = server_info;
+    context->protocol = connect_info->protocol;
 
     switch(connect_info->protocol)
     {
