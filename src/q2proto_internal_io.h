@@ -164,12 +164,7 @@ fail:
 
 static inline float q2protoio_read_float(uintptr_t io_arg)
 {
-    union {
-        uint32_t u;
-        float f;
-    } conv;
-    conv.u = q2protoio_read_u32(io_arg);
-    return conv.f;
+    return _q2proto_valenc_bits2float(q2protoio_read_u32(io_arg));
 }
 
 /// Read a single component of a 16-bit encoded coordinate
@@ -430,12 +425,7 @@ static inline void q2protoio_write_var_u64(uintptr_t io_arg, uint64_t x)
 
 static inline void q2protoio_write_float(uintptr_t io_arg, float x)
 {
-    union {
-        uint32_t u;
-        float f;
-    } conv;
-    conv.f = x;
-    q2protoio_write_u32(io_arg, conv.u);
+    q2protoio_write_u32(io_arg, _q2proto_valenc_float2bits(x));
 }
 
 static inline void q2protoio_write_string(uintptr_t io_arg, const q2proto_string_t* str)

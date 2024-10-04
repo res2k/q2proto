@@ -30,6 +30,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern "C" {
 #endif
 
+// Get raw float bits
+static inline uint32_t _q2proto_valenc_float2bits(float x)
+{
+    union {
+        uint32_t u;
+        float f;
+    } conv;
+    conv.f = x;
+    return conv.u;
+}
+
+// Get float from raw bits
+static inline float _q2proto_valenc_bits2float(uint32_t x)
+{
+    union {
+        uint32_t u;
+        float f;
+    } conv;
+    conv.u = x;
+    return conv.f;
+}
+
 static inline int _q2proto_valenc_clamped_mul(float x, int scale, int min, int max)
 {
     x *= scale;
