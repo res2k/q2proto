@@ -22,6 +22,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define Q2PROTO_BUILD
 #include "q2proto_internal.h"
 
+q2proto_error_t q2proto_r1q2_parse_connect(q2proto_string_t *connect_str, q2proto_connect_t *parsed_connect)
+{
+    // set minor protocol version
+    q2proto_string_t protocol_ver_token = {0};
+    next_token(&protocol_ver_token, connect_str, ' ');
+    if (protocol_ver_token.len > 0) {
+        parsed_connect->version = q2pstol(&protocol_ver_token, 10);
+        if (parsed_connect->version < PROTOCOL_VERSION_R1Q2_MINIMUM)
+            parsed_connect->version = PROTOCOL_VERSION_R1Q2_MINIMUM;
+        else if (parsed_connect->version > PROTOCOL_VERSION_R1Q2_CURRENT)
+            parsed_connect->version = PROTOCOL_VERSION_R1Q2_CURRENT;
+    } else {
+        parsed_connect->version = PROTOCOL_VERSION_R1Q2_MINIMUM;
+    }
+    parsed_connect->has_zlib = true;
+
+    return Q2P_ERR_SUCCESS;
+}
+
 //
 // CLIENT: PARSE MESSAGES FROM SERVER
 //

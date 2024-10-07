@@ -28,6 +28,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define Q2REPRO_PROTOCOL_VERSION_MINIMUM        1024
 #define Q2REPRO_PROTOCOL_VERSION_CURRENT        Q2REPRO_PROTOCOL_VERSION_MINIMUM
 
+q2proto_error_t q2proto_q2repro_parse_connect(q2proto_string_t *connect_str, q2proto_connect_t *parsed_connect)
+{
+    parsed_connect->q2pro_nctype = 1; // NETCHAN_NEW
+
+    q2proto_string_t zlib_token = {0};
+    next_token(&zlib_token, connect_str, ' ');
+    parsed_connect->has_zlib = q2pstol(&zlib_token, 10) != 0;
+
+    return Q2P_ERR_SUCCESS;
+}
+
 //
 // CLIENT: PARSE MESSAGES FROM SERVER
 //

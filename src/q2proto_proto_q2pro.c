@@ -23,6 +23,37 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_internal.h"
 #include "q2proto_internal_bit_read_write.h"
 
+q2proto_error_t q2proto_q2pro_parse_connect(q2proto_string_t *connect_str, q2proto_connect_t *parsed_connect)
+{
+    q2proto_string_t netchan_token = {0};
+    next_token(&netchan_token, connect_str, ' ');
+    if (netchan_token.len > 0)
+        parsed_connect->q2pro_nctype = q2pstol(&netchan_token, 10);
+    else
+        parsed_connect->q2pro_nctype = 1; // NETCHAN_NEW
+
+    q2proto_string_t zlib_token = {0};
+    next_token(&zlib_token, connect_str, ' ');
+    parsed_connect->has_zlib = q2pstol(&zlib_token, 10) != 0;
+
+    // set minor protocol version
+    q2proto_string_t protocol_ver_token = {0};
+    next_token(&protocol_ver_token, connect_str, ' ');
+    if (protocol_ver_token.len > 0) {
+        parsed_connect->version = q2pstol(&protocol_ver_token, 10);
+        if (parsed_connect->version < PROTOCOL_VERSION_Q2PRO_MINIMUM)
+            parsed_connect->version = PROTOCOL_VERSION_Q2PRO_MINIMUM;
+        else if (parsed_connect->version > PROTOCOL_VERSION_Q2PRO_CURRENT)
+            parsed_connect->version = PROTOCOL_VERSION_Q2PRO_CURRENT;
+        if (parsed_connect->version == PROTOCOL_VERSION_Q2PRO_RESERVED)
+            parsed_connect->version--; // never use this version
+    } else {
+        parsed_connect->version = PROTOCOL_VERSION_Q2PRO_MINIMUM;
+    }
+
+    return Q2P_ERR_SUCCESS;
+}
+
 //
 // CLIENT: PARSE MESSAGES FROM SERVER
 //
