@@ -16,24 +16,47 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef Q2PROTO_H_
-#define Q2PROTO_H_
+/**\file
+ * Connection arguments
+ */
+#ifndef Q2PROTO_CONNECT_H_
+#define Q2PROTO_CONNECT_H_
 
-#include "q2proto_client.h"
-#include "q2proto_connect.h"
-#include "q2proto_coords.h"
-#include "q2proto_defs.h"
-#include "q2proto_error.h"
-#include "q2proto_gametype.h"
-#include "q2proto_io.h"
-#include "q2proto_packing.h"
 #include "q2proto_protocol.h"
-#include "q2proto_server.h"
-#include "q2proto_solid.h"
-#include "q2proto_sound.h"
 #include "q2proto_string.h"
-#include "q2proto_struct_clc.h"
-#include "q2proto_struct_svc.h"
-#include "q2proto_valenc.h"
 
-#endif // Q2PROTO_H_
+#include <stdbool.h>
+#include <stdint.h>
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+/// Connection information
+typedef struct q2proto_connect_s {
+    /// Protocol
+    q2proto_protocol_t protocol;
+    /// Protocol version
+    int version;
+    /// Port
+    int qport;
+    /// Challenge
+    int32_t challenge;
+
+    /// Initial user info
+    q2proto_string_t userinfo;
+
+    /// Maximum packet length
+    int packet_length;
+    /// zlib compression available?
+    bool has_zlib;
+
+    /// Q2PRO netchan type
+    int q2pro_nctype;
+} q2proto_connect_t;
+
+#if defined(__cplusplus)
+} // extern "C"
+#endif
+
+#endif // Q2PROTO_CONNECT_H_

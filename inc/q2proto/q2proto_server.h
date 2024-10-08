@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef Q2PROTO_SERVER_H_
 #define Q2PROTO_SERVER_H_
 
+#include "q2proto_connect.h"
 #include "q2proto_defs.h"
 #include "q2proto_error.h"
 #include "q2proto_gametype.h"
@@ -60,29 +61,6 @@ typedef struct q2proto_server_info_s
     /// Default packet length value, used for \c packet_length member of q2proto_connect_t.
     int default_packet_length;
 } q2proto_server_info_t;
-
-/// Connection information
-typedef struct q2proto_connect_s {
-    /// Protocol
-    q2proto_protocol_t protocol;
-    /// Protocol version
-    int version;
-    /// Port
-    int qport;
-    /// Challenge
-    int32_t challenge;
-
-    /// Initial user info
-    q2proto_string_t userinfo;
-
-    /// Maximum packet length
-    int packet_length;
-    /// zlib compression available?
-    bool has_zlib;
-
-    /// Q2PRO netchan type
-    int q2pro_nctype;
-} q2proto_connect_t;
 
 /**
  * Parse the arguments to a "connect" command, sent by a connecting client to the server.
