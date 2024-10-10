@@ -67,6 +67,17 @@ q2proto_error_t q2proto_parse_challenge(const char *challenge_args, const q2prot
  */
 q2proto_error_t q2proto_complete_connect(q2proto_connect_t *connect);
 
+/**
+ * Create a string with arguments to "connect" command sent by client.
+ * \param args_str Buffer to receive arguments string.
+ * \param size Size of arguments string buffer.
+ * \param need_size If not \c NULL, returns the required buffer size.
+ * \param connect Structure with connect arguments.
+ * \returns Error code. If \c Q2P_ERR_BUFFER_TOO_SMALL is returned, use \c need_size
+ *   to provide an adequately sized larger buffer.
+ */
+q2proto_error_t q2proto_get_connect_arguments(char *args_str, size_t size, size_t* need_size, const q2proto_connect_t *connect);
+
 typedef struct q2proto_clientcontext_s q2proto_clientcontext_t;
 
 /**

@@ -50,6 +50,8 @@ typedef enum q2proto_error_e {
     Q2P_ERR_BAD_COMMAND = -4,
     /// Unsupported gametype
     Q2P_ERR_GAMETYPE_UNSUPPORTED = -5,
+    /// Destination buffer too small
+    Q2P_ERR_BUFFER_TOO_SMALL = -6,
 
     /// Challenge parsing: no acceptable protocol found
     Q2P_ERR_NO_ACCEPTABLE_PROTOCOL = -100,

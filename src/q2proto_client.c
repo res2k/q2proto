@@ -123,6 +123,101 @@ q2proto_error_t q2proto_complete_connect(q2proto_connect_t *connect)
     return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
 }
 
+q2proto_error_t q2proto_get_connect_arguments(char *args_str, size_t size, size_t* need_size, const q2proto_connect_t *connect)
+{
+    int result = Q2P_ERR_SUCCESS;
+    size_t buf_needed = 0;
+
+#define SET_ERROR(err)  if(result == Q2P_ERR_SUCCESS) result = err
+
+    int net_protocol = q2proto_get_protocol_netver(connect->protocol);
+    if (net_protocol == 0)
+    {
+        SET_ERROR(Q2P_ERR_PROTOCOL_NOT_SUPPORTED);
+        net_protocol = 9999; // to take up realistic amount of buffer space
+    }
+
+#define ADD_FORMAT_IMPL(...)                                   \
+    do                                                         \
+    {                                                          \
+        size_t buf_remaining = size;                           \
+        int fmt_result = q2proto_snprintf_update(__VA_ARGS__); \
+        if (fmt_result < 0)                                    \
+        {                                                      \
+            SET_ERROR(Q2P_ERR_BAD_DATA);                       \
+            break;                                             \
+        }                                                      \
+        buf_needed += fmt_result;                              \
+        if (fmt_result >= buf_remaining)                       \
+        {                                                      \
+            SET_ERROR(Q2P_ERR_BUFFER_TOO_SMALL);               \
+        }                                                      \
+    } while (0)
+#if defined(_MSC_VER)
+    #define ADD_FORMAT(FMT, ...) ADD_FORMAT_IMPL(&args_str, &size, (FMT), ##__VA_ARGS__)
+#else
+    #define ADD_FORMAT(FMT, ...) ADD_FORMAT_IMPL(&args_str, &size, (FMT) __VA_OPT__(,) __VA_ARGS__)
+#endif
+
+    // Common part
+    ADD_FORMAT("%d %d %d \"", net_protocol, connect->qport, connect->challenge);
+    {
+        size_t userinfo_len = q2pslcpy(args_str, size, &connect->userinfo);
+        if (userinfo_len >= size)
+        {
+            SET_ERROR(Q2P_ERR_BUFFER_TOO_SMALL);
+            size = 0;
+        }
+        else
+        {
+            buf_needed += userinfo_len;
+            size -= userinfo_len;
+            args_str += userinfo_len;
+        }
+    }
+
+    const char *tail = NULL;
+    switch(connect->protocol)
+    {
+    case Q2P_PROTOCOL_INVALID:
+    case Q2P_PROTOCOL_OLD_DEMO:
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
+        // shouldn't be used for "connect"
+        SET_ERROR(Q2P_ERR_PROTOCOL_NOT_SUPPORTED);
+        break;
+    case Q2P_PROTOCOL_VANILLA:
+        // no extra connect args
+        break;
+    case Q2P_PROTOCOL_R1Q2:
+        tail = q2proto_r1q2_connect_tail(connect);
+        break;
+    case Q2P_PROTOCOL_Q2PRO:
+        tail = q2proto_q2pro_connect_tail(connect);
+        break;
+    case Q2P_PROTOCOL_Q2REPRO:
+        tail = q2proto_q2repro_connect_tail(connect);
+        break;
+    }
+
+    if (tail)
+    {
+        ADD_FORMAT("\" %s", tail);
+    }
+    else
+    {
+        ADD_FORMAT("\"");
+    }
+
+#undef SET_ERROR
+#undef ADD_FORMAT
+#undef ADD_FORMAT_IMPL
+
+    if (need_size)
+        *need_size = buf_needed + 1;
+    return result;
+}
+
 static q2proto_error_t default_client_packet_parse(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
 static q2proto_error_t default_client_send(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message);
 

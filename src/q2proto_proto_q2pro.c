@@ -63,6 +63,11 @@ q2proto_error_t q2proto_q2pro_complete_connect(q2proto_connect_t *connect)
     return Q2P_ERR_SUCCESS;
 }
 
+const char *q2proto_q2pro_connect_tail(const q2proto_connect_t *connect)
+{
+    return q2proto_va("%d %d %d %d", connect->packet_length, connect->q2pro_nctype, connect->has_zlib, connect->version);
+}
+
 //
 // CLIENT: PARSE MESSAGES FROM SERVER
 //

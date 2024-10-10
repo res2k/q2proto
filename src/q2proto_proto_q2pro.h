@@ -30,6 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 q2proto_error_t q2proto_q2pro_parse_connect(q2proto_string_t *connect_str, q2proto_connect_t *parsed_connect);
 /// connect struct completion
 q2proto_error_t q2proto_q2pro_complete_connect(q2proto_connect_t *connect);
+/// Get "connect" string tail
+const char *q2proto_q2pro_connect_tail(const q2proto_connect_t *connect);
 
 /// Client context setup
 q2proto_error_t q2proto_q2pro_continue_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata);
