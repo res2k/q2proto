@@ -29,8 +29,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /// Helper: Format into a string with static lifetime
 const char *q2proto_va(const char *fmt, ...);
 
-/// snprintf() to a buffer, and update pointer and remaining size
-void q2proto_snprintf_update(char **buf, size_t *buf_size, const char *format, ...);
+/**
+ * snprintf() to a buffer, and update pointer and remaining size.
+ * \returns Return value of snprintf().
+ */
+int q2proto_snprintf_update(char **buf, size_t *buf_size, const char *format, ...);
 /** @} */
 
 #endif // Q2PROTO_INTERNAL_FMT_H_

@@ -44,15 +44,17 @@ const char *q2proto_va(const char *fmt, ...)
     return s;
 }
 
-void q2proto_snprintf_update(char **buf, size_t *buf_size, const char* format, ...)
+int q2proto_snprintf_update(char **buf, size_t *buf_size, const char* format, ...)
 {
+    int result;
     va_list argptr;
 
     va_start(argptr, format);
-    vsnprintf(*buf, *buf_size, format, argptr);
+    result = vsnprintf(*buf, *buf_size, format, argptr);
     va_end(argptr);
 
-    size_t fmt_size = strlen(*buf);
+    size_t fmt_size = *buf ? strlen(*buf) : 0;
     *buf += fmt_size;
     *buf_size -= fmt_size;
+    return result;
 }
