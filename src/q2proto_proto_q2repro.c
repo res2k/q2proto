@@ -39,6 +39,16 @@ q2proto_error_t q2proto_q2repro_parse_connect(q2proto_string_t *connect_str, q2p
     return Q2P_ERR_SUCCESS;
 }
 
+q2proto_error_t q2proto_q2repro_complete_connect(q2proto_connect_t *connect)
+{
+    if (connect->version == 0)
+        connect->version = Q2REPRO_PROTOCOL_VERSION_CURRENT;
+    connect->has_zlib = Q2PROTO_COMPRESSION_DEFLATE;
+    connect->qport &= 0xff;
+    connect->q2pro_nctype = 1; // force new netchan
+    return Q2P_ERR_SUCCESS;
+}
+
 //
 // CLIENT: PARSE MESSAGES FROM SERVER
 //

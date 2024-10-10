@@ -54,6 +54,15 @@ q2proto_error_t q2proto_q2pro_parse_connect(q2proto_string_t *connect_str, q2pro
     return Q2P_ERR_SUCCESS;
 }
 
+q2proto_error_t q2proto_q2pro_complete_connect(q2proto_connect_t *connect)
+{
+    if (connect->version == 0)
+        connect->version = PROTOCOL_VERSION_Q2PRO_CURRENT;
+    connect->has_zlib = Q2PROTO_COMPRESSION_DEFLATE;
+    connect->qport &= 0xff;
+    return Q2P_ERR_SUCCESS;
+}
+
 //
 // CLIENT: PARSE MESSAGES FROM SERVER
 //

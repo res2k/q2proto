@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef Q2PROTO_CLIENT_H_
 #define Q2PROTO_CLIENT_H_
 
+#include "q2proto_connect.h"
 #include "q2proto_coords.h"
 #include "q2proto_defs.h"
 #include "q2proto_error.h"
@@ -53,6 +54,18 @@ typedef struct q2proto_challenge_s {
  * \returns Error code
  */
 q2proto_error_t q2proto_parse_challenge(const char *challenge_args, const q2proto_protocol_t *accepted_protocols, size_t num_accepted_protocols, q2proto_challenge_t *parsed_challenge);
+
+/**
+ * Complete values of a q2proto_connect_t structure, based on contained protocol.
+ * Usually sets the following fields:
+ * - \c version (if zero)
+ * - \c has_zlib
+ * All other fields should contain sensible values.
+ * Additionally, may change the following fields:
+ * - \c qport
+ * \param connect Structure to change.
+ */
+q2proto_error_t q2proto_complete_connect(q2proto_connect_t *connect);
 
 typedef struct q2proto_clientcontext_s q2proto_clientcontext_t;
 

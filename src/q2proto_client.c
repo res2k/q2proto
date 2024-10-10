@@ -99,6 +99,30 @@ q2proto_error_t q2proto_parse_challenge(const char *challenge_args, const q2prot
     return parsed_challenge->server_protocol != Q2P_PROTOCOL_INVALID ? Q2P_ERR_SUCCESS : Q2P_ERR_NO_ACCEPTABLE_PROTOCOL;
 }
 
+q2proto_error_t q2proto_complete_connect(q2proto_connect_t *connect)
+{
+    switch(connect->protocol)
+    {
+    case Q2P_PROTOCOL_INVALID:
+    case Q2P_PROTOCOL_OLD_DEMO:
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
+        // none of these should be used for actual connections
+        break;
+    case Q2P_PROTOCOL_VANILLA:
+        // do nothing
+        return Q2P_ERR_SUCCESS;
+    case Q2P_PROTOCOL_R1Q2:
+        return q2proto_r1q2_complete_connect(connect);
+    case Q2P_PROTOCOL_Q2PRO:
+        return q2proto_q2pro_complete_connect(connect);
+    case Q2P_PROTOCOL_Q2REPRO:
+        return q2proto_q2repro_complete_connect(connect);
+    }
+
+    return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
+}
+
 static q2proto_error_t default_client_packet_parse(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
 static q2proto_error_t default_client_send(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message);
 
