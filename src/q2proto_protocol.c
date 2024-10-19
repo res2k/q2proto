@@ -72,5 +72,5 @@ q2proto_protocol_t q2proto_protocol_from_netver(int version)
     return Q2P_PROTOCOL_INVALID;
 }
 
-const q2proto_protocol_t q2proto_default_accepted_protocols[] = {Q2P_PROTOCOL_Q2PRO, Q2P_PROTOCOL_R1Q2, Q2P_PROTOCOL_VANILLA};
-const size_t q2proto_num_default_accepted_protocols = sizeof(q2proto_default_accepted_protocols) / sizeof(q2proto_default_accepted_protocols[0]);
+const q2proto_protocol_t q2proto_vanilla_protocols[] = {Q2P_PROTOCOL_Q2PRO, Q2P_PROTOCOL_R1Q2, Q2P_PROTOCOL_VANILLA};
+const size_t q2proto_num_vanilla_protocols = sizeof(q2proto_vanilla_protocols) / sizeof(q2proto_vanilla_protocols[0]);
