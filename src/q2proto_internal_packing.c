@@ -195,6 +195,12 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
         q2proto_var_angle_set_short(&delta->pm_delta_angles, to->pm_delta_angles);
     }
 
+    if (to->pm_viewheight != from->pm_viewheight)
+    {
+        delta->delta_bits |= Q2P_PSD_PM_VIEWHEIGHT;
+        delta->pm_viewheight = to->pm_viewheight;
+    }
+
     if (memcmp(to->viewoffset, from->viewoffset, sizeof(to->viewoffset)) != 0)
     {
         delta->delta_bits |= Q2P_PSD_VIEWOFFSET;
