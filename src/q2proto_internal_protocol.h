@@ -344,4 +344,9 @@ static inline unsigned int max_configstrings_for_game(q2proto_game_type_t game)
 
 /** @} */
 
+/// Number of bits used by Q2PRO, Q2rePRO protocols for gunindex (remained is gunskin)
+#define Q2PRO_GUNINDEX_BITS     13
+/// Mask to extract gunindex
+#define Q2PRO_GUNINDEX_MASK     (BIT(13) - 1)
+
 #endif // Q2PROTO_INTERNAL_PROTOCOL_H_

@@ -629,7 +629,12 @@ static q2proto_error_t q2pro_client_read_playerstate(q2proto_clientcontext_t *co
     if (delta_bits_check(flags, PS_WEAPONINDEX, &playerstate->delta_bits, Q2P_PSD_GUNINDEX))
     {
         if (has_q2pro_extensions)
-            READ_CHECKED(client_read, io_arg, playerstate->gunindex, u16);
+        {
+            uint16_t gun_index_and_skin;
+            READ_CHECKED(client_read, io_arg, gun_index_and_skin, u16);
+            playerstate->gunindex = gun_index_and_skin & Q2PRO_GUNINDEX_MASK;
+            playerstate->gunskin = gun_index_and_skin >> Q2PRO_GUNINDEX_BITS;
+        }
         else
             READ_CHECKED(client_read, io_arg, playerstate->gunindex, u8);
     }
@@ -1625,8 +1630,12 @@ static q2proto_error_t q2pro_server_write_playerstate(q2proto_servercontext_t *c
         flags |= PS_FOV;
     if(playerstate->delta_bits & Q2P_PSD_RDFLAGS)
         flags |= PS_RDFLAGS;
-    if(playerstate->delta_bits & Q2P_PSD_GUNINDEX)
+    if(playerstate->delta_bits & (Q2P_PSD_GUNINDEX | Q2P_PSD_GUNSKIN))
+    {
         flags |= PS_WEAPONINDEX;
+        if (!has_q2pro_extensions && playerstate->delta_bits & Q2P_PSD_GUNSKIN)
+            return Q2P_ERR_BAD_DATA;
+    }
     if(playerstate->delta_bits & Q2P_PSD_GUNFRAME)
     {
         flags |= PS_WEAPONFRAME;
@@ -1721,7 +1730,10 @@ static q2proto_error_t q2pro_server_write_playerstate(q2proto_servercontext_t *c
     if (flags & PS_WEAPONINDEX)
     {
         if (has_q2pro_extensions)
-            WRITE_CHECKED(server_write, io_arg, u16, playerstate->gunindex);
+        {
+            uint16_t gun_index_and_skin = playerstate->gunindex | (playerstate->gunskin << Q2PRO_GUNINDEX_BITS);
+            WRITE_CHECKED(server_write, io_arg, u16, gun_index_and_skin);
+        }
         else
             WRITE_CHECKED(server_write, io_arg, u8, playerstate->gunindex);
     }

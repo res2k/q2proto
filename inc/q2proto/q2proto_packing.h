@@ -63,6 +63,7 @@ typedef struct q2proto_packed_player_state_s
     int16_t viewangles[3];
     int16_t kick_angles[3];
     uint16_t gunindex;
+    uint8_t gunskin;
     uint16_t gunframe;
     int16_t gunoffset[3];
     int16_t gunangles[3];

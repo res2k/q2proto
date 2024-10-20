@@ -98,6 +98,7 @@ static void _Q2P_PACK_PLAYER_VANILLA_FUNCTION_NAME(const void * restrict player_
     player_packed->kick_angles[1] = _q2proto_valenc_smallangle2char(kick_angles[1]);
     player_packed->kick_angles[2] = _q2proto_valenc_smallangle2char(kick_angles[2]);
     player_packed->gunindex = (int16_t)Q2P_PACK_GET_PLAYER_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, gunindex);
+    player_packed->gunskin = (int8_t)Q2P_PACK_GET_PLAYER_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, gunskin);
     player_packed->gunframe = (uint8_t)Q2P_PACK_GET_PLAYER_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, gunframe);
     const float* gunoffset = Q2P_PACK_GET_PLAYER_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, gunoffset);
     player_packed->gunoffset[0] = _q2proto_valenc_smalloffset2char(gunoffset[0]);
@@ -147,6 +148,7 @@ static void _Q2P_PACK_PLAYER_Q2REPRO_FUNCTION_NAME(const void * restrict player_
     player_packed->kick_angles[1] = _q2proto_valenc_q2repro_kick_angle2short(kick_angles[1]);
     player_packed->kick_angles[2] = _q2proto_valenc_q2repro_kick_angle2short(kick_angles[2]);
     player_packed->gunindex = (int16_t)Q2P_PACK_GET_PLAYER_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, gunindex);
+    player_packed->gunskin = (int8_t)Q2P_PACK_GET_PLAYER_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, gunskin);
     player_packed->gunframe = (uint8_t)Q2P_PACK_GET_PLAYER_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, gunframe);
     const float* gunoffset = Q2P_PACK_GET_PLAYER_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, gunoffset);
     player_packed->gunoffset[0] = _q2proto_valenc_int2coord(gunoffset[0]);

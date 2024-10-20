@@ -337,37 +337,49 @@ enum q2proto_playerstate_delta_flags
     Q2P_PSD_VIEWOFFSET = 0x40,
     /// 'kick_angles' is set
     Q2P_PSD_KICKANGLES = 0x80,
-    /// 'gunindex' is set
+    /**
+     * 'gunindex' is set.
+     * Note: due to different transmit granularities in different protocols,
+     * if setting either 'gunindex' or 'gunskin' _bits_ during writing,
+     * both gunindex, gunskin have to be set!
+     */
     Q2P_PSD_GUNINDEX = 0x100,
+    /**
+     * 'gunskin' is set.
+     * Note: due to different transmit granularities in different protocols,
+     * if setting either 'gunindex' or 'gunskin' _bits_ during writing,
+     * both gunindex, gunskin have to be set!
+     */
+    Q2P_PSD_GUNSKIN = 0x200,
     /**
      * 'gunframe' is set.
      * Note: due to different transmit granularities in different protocols,
      * if setting just one of the 'gun'  _bits_ during writing,
      * all of gunframe, gunoffset, gunangles have to be set!
      */
-    Q2P_PSD_GUNFRAME = 0x200,
+    Q2P_PSD_GUNFRAME = 0x400,
     /**
      * 'gunoffset' is set.
      * Note: due to different transmit granularities in different protocols,
      * if setting just one of the 'gun'  _bits_ during writing,
      * all of gunframe, gunoffset, gunangles have to be set!
      */
-    Q2P_PSD_GUNOFFSET = 0x400,
+    Q2P_PSD_GUNOFFSET = 0x800,
     /**
      * 'gunangles' is set.
      * Note: due to different transmit granularities in different protocols,
      * if setting just one of the 'gun'  _bits_ during writing,
      * all of gunframe, gunoffset, gunangles have to be set!
      */
-    Q2P_PSD_GUNANGLES = 0x800,
+    Q2P_PSD_GUNANGLES = 0x1000,
     /// 'fov' is set
-    Q2P_PSD_FOV = 0x1000,
+    Q2P_PSD_FOV = 0x2000,
     /// 'rdflags' is set
-    Q2P_PSD_RDFLAGS = 0x2000,
+    Q2P_PSD_RDFLAGS = 0x4000,
     /// 'gunrate' is set
-    Q2P_PSD_GUNRATE = 0x4000,
+    Q2P_PSD_GUNRATE = 0x8000,
     /// 'clientnum' is set. Requires q2proto_servercontext_t::features.playerstate_clientnum!
-    Q2P_PSD_CLIENTNUM = 0x8000,
+    Q2P_PSD_CLIENTNUM = 0x10000,
 };
 
 /// Player state delta, as contained in frame messages
@@ -398,6 +410,8 @@ typedef struct q2proto_svc_playerstate_s {
     q2proto_var_small_angle_t kick_angles;
     /// gunindex
     uint16_t gunindex;
+    /// gunskin (for rerelease, Q2PRO extended v2 games)
+    uint8_t gunskin;
     /// gunframe
     uint16_t gunframe;
     /// gunoffset

@@ -257,9 +257,13 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
     }
 
     if (to->gunindex != from->gunindex)
-    {
         delta->delta_bits |= Q2P_PSD_GUNINDEX;
+    if (to->gunskin != from->gunskin)
+        delta->delta_bits |= Q2P_PSD_GUNSKIN;
+    if(delta->delta_bits & (Q2P_PSD_GUNINDEX | Q2P_PSD_GUNSKIN))
+    {
         delta->gunindex = to->gunindex;
+        delta->gunskin = to->gunskin;
     }
 
     for (int i = 0; i < Q2PROTO_STATS; i++)

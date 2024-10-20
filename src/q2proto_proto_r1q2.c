@@ -1167,6 +1167,8 @@ static q2proto_error_t r1q2_server_write_playerstate(uintptr_t io_arg, const q2p
         flags |= PS_RDFLAGS;
     if(playerstate->delta_bits & Q2P_PSD_GUNINDEX)
         flags |= PS_WEAPONINDEX;
+    if(playerstate->delta_bits & Q2P_PSD_GUNSKIN)
+        return Q2P_ERR_BAD_DATA;
     if(playerstate->delta_bits & Q2P_PSD_GUNFRAME)
     {
         flags |= PS_WEAPONFRAME;
