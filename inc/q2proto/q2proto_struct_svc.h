@@ -58,6 +58,7 @@ enum q2proto_entity_state_delta_flags
      * both 'effects' and 'effects_more' must be set!
      */
     Q2P_ESD_EFFECTS = 0x40,
+#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
     /**
      * 'effects_more' is set.
      * Note: due to different transmit granularities in different protocols,
@@ -65,24 +66,37 @@ enum q2proto_entity_state_delta_flags
      * both 'effects' and 'effects_more' must be set!
      */
     Q2P_ESD_EFFECTS_MORE = 0x80,
+#elif defined(Q2PROTO_BUILD)
+    Q2P_ESD_EFFECTS_MORE = 0,
+#endif
     /// 'renderfx' is set.
     Q2P_ESD_RENDERFX = 0x100,
     /// 'old_origin' is set
     Q2P_ESD_OLD_ORIGIN = 0x200,
     /// 'sound' is set
     Q2P_ESD_SOUND = 0x400,
+#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
     /// 'loop_attenuation' is set. Only applies if Q2P_ESD_SOUND is also set.
     Q2P_ESD_LOOP_ATTENUATION = 0x800,
     /// 'loop_volume' is set. Only applies if Q2P_ESD_SOUND is also set.
     Q2P_ESD_LOOP_VOLUME = 0x1000,
+#elif defined(Q2PROTO_BUILD)
+    Q2P_ESD_LOOP_ATTENUATION = 0,
+    Q2P_ESD_LOOP_VOLUME = 0,
+#endif
     /// 'event' is set
     Q2P_ESD_EVENT = 0x2000,
     /// 'solid' is set
     Q2P_ESD_SOLID = 0x4000,
+#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
     /// 'alpha' is set
     Q2P_ESD_ALPHA = 0x8000,
     /// 'scale' is set
     Q2P_ESD_SCALE = 0x10000,
+#elif defined(Q2PROTO_BUILD)
+    Q2P_ESD_ALPHA = 0,
+    Q2P_ESD_SCALE = 0,
+#endif
 };
 
 /// Delta between entity states
@@ -103,8 +117,10 @@ typedef struct q2proto_entity_state_delta_s {
     uint32_t skinnum;
     /// effects
     uint32_t effects;
+#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
     /// effects (upper 32 bit)
     uint32_t effects_more;
+#endif
     /// renderfx
     uint32_t renderfx;
     /// origin
@@ -115,18 +131,22 @@ typedef struct q2proto_entity_state_delta_s {
     q2proto_var_coord_t old_origin;
     /// sound
     uint16_t sound;
+#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
     /// sound loop volume
     uint8_t loop_volume;
     /// sound loop attenuation
     uint8_t loop_attenuation;
+#endif
     /// event
     uint8_t event;
     /// solid
     uint32_t solid;
+#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
     /// alpha
     uint8_t alpha;
     /// scale
     uint8_t scale;
+#endif
 } q2proto_entity_state_delta_t;
 
 /// Contents from a muzzleflash or muzzleflash2 message
@@ -331,8 +351,12 @@ enum q2proto_playerstate_delta_flags
     Q2P_PSD_PM_GRAVITY = 0x8,
     /// 'pm_delta_angles' is set
     Q2P_PSD_PM_DELTA_ANGLES = 0x10,
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
     /// 'pm_viewheight' is set
     Q2P_PSD_PM_VIEWHEIGHT = 0x20,
+#elif defined(Q2PROTO_BUILD)
+    Q2P_PSD_PM_VIEWHEIGHT = 0,
+#endif
     /// 'viewoffset' is set
     Q2P_PSD_VIEWOFFSET = 0x40,
     /// 'kick_angles' is set
@@ -344,6 +368,7 @@ enum q2proto_playerstate_delta_flags
      * both gunindex, gunskin have to be set!
      */
     Q2P_PSD_GUNINDEX = 0x100,
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
     /**
      * 'gunskin' is set.
      * Note: due to different transmit granularities in different protocols,
@@ -351,6 +376,9 @@ enum q2proto_playerstate_delta_flags
      * both gunindex, gunskin have to be set!
      */
     Q2P_PSD_GUNSKIN = 0x200,
+#elif defined(Q2PROTO_BUILD)
+    Q2P_PSD_GUNSKIN = 0,
+#endif
     /**
      * 'gunframe' is set.
      * Note: due to different transmit granularities in different protocols,
@@ -376,8 +404,12 @@ enum q2proto_playerstate_delta_flags
     Q2P_PSD_FOV = 0x2000,
     /// 'rdflags' is set
     Q2P_PSD_RDFLAGS = 0x4000,
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
     /// 'gunrate' is set
     Q2P_PSD_GUNRATE = 0x8000,
+#elif defined(Q2PROTO_BUILD)
+    Q2P_PSD_GUNRATE = 0,
+#endif
     /// 'clientnum' is set. Requires q2proto_servercontext_t::features.playerstate_clientnum!
     Q2P_PSD_CLIENTNUM = 0x10000,
 };
@@ -400,8 +432,10 @@ typedef struct q2proto_svc_playerstate_s {
     int16_t pm_gravity;
     /// pmove delta angles
     q2proto_var_angle_t pm_delta_angles;
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
     /// rerelease: viewheight
     int8_t pm_viewheight;
+#endif
     /// viewoffset
     q2proto_var_small_offset_t viewoffset;
     /// viewangles
@@ -410,8 +444,10 @@ typedef struct q2proto_svc_playerstate_s {
     q2proto_var_small_angle_t kick_angles;
     /// gunindex
     uint16_t gunindex;
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
     /// gunskin (for rerelease, Q2PRO extended v2 games)
     uint8_t gunskin;
+#endif
     /// gunframe
     uint16_t gunframe;
     /// gunoffset
@@ -420,8 +456,10 @@ typedef struct q2proto_svc_playerstate_s {
     q2proto_var_small_angle_t gunangles;
     /// screen blend
     q2proto_blend_delta_t blend;
-    /// damage blend (for Q2PRO extended v2 games)
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+    /// damage blend (for rerelease, Q2PRO extended v2 games)
     q2proto_blend_delta_t damage_blend;
+#endif
     /// fov
     uint8_t fov;
     /// renderflags
@@ -430,8 +468,10 @@ typedef struct q2proto_svc_playerstate_s {
     uint64_t statbits;
     /// stats entries
     int16_t stats[Q2PROTO_STATS];
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
     /// rerelease: gunrate
     uint8_t gunrate;
+#endif
     /// client number
     int16_t clientnum;
 } q2proto_svc_playerstate_t;

@@ -37,6 +37,60 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     #endif
     #include Q2PROTO_CONFIG_H
 #endif
+/**\def Q2PROTO_FEATURES_VANILLA
+ * Possible values for Q2PROTO_PLAYER_STATE_FEATURES, Q2PROTO_ENTITY_STATE_FEATURES
+ * to indicate vanilla game features. */
+#define Q2PROTO_FEATURES_VANILLA            0
+/**\def Q2PROTO_FEATURES_Q2PRO_EXTENDED
+ * Possible values for Q2PROTO_PLAYER_STATE_FEATURES, Q2PROTO_ENTITY_STATE_FEATURES
+ * to indicate Q2PRO extended game features.
+ * Additional player state fields:
+ * - gunskin
+ * Additional entity state fields:
+ * - additional 32 effects bits
+ * - alpha
+ * - loop_attenuation
+ * - loop_volume
+ * - scale
+ */
+#define Q2PROTO_FEATURES_Q2PRO_EXTENDED     1
+/**\def Q2PROTO_FEATURES_Q2PRO_EXTENDED
+ * Possible values for Q2PROTO_PLAYER_STATE_FEATURES, Q2PROTO_ENTITY_STATE_FEATURES
+ * to indicate Q2PRO extended game features.
+ * Additional player state fields:
+ * - gunskin
+ * Additional entity state fields:
+ * - additional 32 effects bits
+ * - alpha
+ * - loop_attenuation
+ * - loop_volume
+ * - scale
+ */
+#define Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2  2
+/**\def Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+ * Possible values for Q2PROTO_PLAYER_STATE_FEATURES, Q2PROTO_ENTITY_STATE_FEATURES
+ * to indicate Q2PRO extended game V2 features.
+ * Additional player state fields:
+ * - damage_blend
+ */
+#define Q2PROTO_FEATURES_RERELEASE          3
+/**\def Q2PROTO_FEATURES_RERELEASE
+ * Possible values for Q2PROTO_PLAYER_STATE_FEATURES, Q2PROTO_ENTITY_STATE_FEATURES
+ * to indicate rerelease game features.
+ * Additional player state fields:
+ * - gunrate
+ * - pm_viewheight
+ */
+/**\def Q2PROTO_PLAYER_STATE_FEATURES
+ * Features to be supported by player state structs. */
+#if !defined(Q2PROTO_PLAYER_STATE_FEATURES)
+    #define Q2PROTO_PLAYER_STATE_FEATURES  Q2PROTO_FEATURES_VANILLA
+#endif
+/**\def Q2PROTO_ENTITY_STATE_FEATURES
+ * Features to be supported by entity state structs. */
+#if !defined(Q2PROTO_ENTITY_STATE_FEATURES)
+    #define Q2PROTO_ENTITY_STATE_FEATURES  Q2PROTO_FEATURES_VANILLA
+#endif
 /**\def Q2PROTO_RETURN_IO_ERROR_CODES
  * If defined to 1, errors from IO functions are checked and returned from calling functions.
  * Can be disabled if the IO functions never return in case of an error

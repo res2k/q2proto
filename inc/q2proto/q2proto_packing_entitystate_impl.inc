@@ -73,6 +73,7 @@ static void _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME(const void * restrict entity_
     entity_packed->sound = (uint16_t)Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, sound);
     entity_packed->event = (uint8_t)Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, event);
     entity_packed->solid = (uint32_t)Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, solid);
+#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
     if (game_type >= Q2PROTO_GAME_Q2PRO_EXTENDED)
     {
         entity_packed->loop_volume = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, loop_volume), 255, 0, UINT8_MAX);
@@ -80,6 +81,7 @@ static void _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME(const void * restrict entity_
         entity_packed->alpha = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, alpha), 255, 0, UINT8_MAX);
         entity_packed->scale = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, scale), 16, 0, UINT8_MAX);
     }
+#endif
 }
 
 static void _Q2P_PACK_ENTITY_Q2REPRO_FUNCTION_NAME(const void * restrict entity_state_p, q2proto_packed_entity_state_t * restrict entity_packed)
@@ -100,10 +102,12 @@ static void _Q2P_PACK_ENTITY_Q2REPRO_FUNCTION_NAME(const void * restrict entity_
     entity_packed->sound = (uint16_t)Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, sound);
     entity_packed->event = (uint8_t)Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, event);
     entity_packed->solid = (uint32_t)Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, solid);
+#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
     entity_packed->loop_volume = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, loop_volume), 255, 0, UINT8_MAX);
     entity_packed->loop_attenuation = q2proto_sound_encode_loop_attenuation(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, loop_attenuation));
     entity_packed->alpha = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, alpha), 255, 0, UINT8_MAX);
     entity_packed->scale = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, scale), 16, 0, UINT8_MAX);
+#endif
 }
 
 #undef _Q2PROTO_PACKING_CAST_ENTITYSTATE

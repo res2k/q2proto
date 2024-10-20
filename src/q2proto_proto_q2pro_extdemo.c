@@ -333,7 +333,9 @@ static q2proto_error_t q2pro_extdemo_client_read_playerstate(q2proto_clientconte
         uint16_t gun_index_and_skin;
         READ_CHECKED(client_read, io_arg, gun_index_and_skin, u16);
         playerstate->gunindex = gun_index_and_skin & Q2PRO_GUNINDEX_MASK;
+    #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
         playerstate->gunskin = gun_index_and_skin >> Q2PRO_GUNINDEX_BITS;
+    #endif
     }
 
     if (delta_bits_check(flags, PS_WEAPONFRAME, &playerstate->delta_bits, Q2P_PSD_GUNFRAME | Q2P_PSD_GUNOFFSET | Q2P_PSD_GUNANGLES))
@@ -346,7 +348,13 @@ static q2proto_error_t q2pro_extdemo_client_read_playerstate(q2proto_clientconte
     if (flags & PS_BLEND)
     {
         if (has_q2pro_extensions_v2)
-            CHECKED(client_read, io_arg, client_read_q2pro_extv2_blends(io_arg, &playerstate->blend, &playerstate->damage_blend));
+        {
+            q2proto_blend_delta_t damage_blend;
+            CHECKED(client_read, io_arg, client_read_q2pro_extv2_blends(io_arg, &playerstate->blend, &damage_blend));
+        #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+            memcpy(&playerstate->damage_blend, &damage_blend, sizeof(damage_blend));
+        #endif
+        }
         else
         {
             CHECKED(client_read, io_arg, read_var_blend(io_arg, &playerstate->blend.values));
@@ -572,6 +580,7 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
         flags |= PS_KICKANGLES;
     if(playerstate->blend.delta_bits != 0)
         flags |= PS_BLEND;
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
     if(playerstate->damage_blend.delta_bits != 0)
     {
         if (has_q2pro_extensions_v2)
@@ -579,6 +588,7 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
         else
             return Q2P_ERR_BAD_DATA;
     }
+#endif
     if(playerstate->delta_bits & Q2P_PSD_FOV)
         flags |= PS_FOV;
     if(playerstate->delta_bits & Q2P_PSD_RDFLAGS)
@@ -680,7 +690,10 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
 
     if (flags & PS_WEAPONINDEX)
     {
-        uint16_t gun_index_and_skin = playerstate->gunindex | (playerstate->gunskin << Q2PRO_GUNINDEX_BITS);
+        uint16_t gun_index_and_skin = playerstate->gunindex;
+    #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+        gun_index_and_skin |= (playerstate->gunskin << Q2PRO_GUNINDEX_BITS);
+    #endif
         WRITE_CHECKED(server_write, io_arg, u16, gun_index_and_skin);
     }
 
@@ -698,7 +711,16 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
     if (flags & PS_BLEND)
     {
         if (has_q2pro_extensions_v2)
-            CHECKED(server_write, io_arg, server_write_q2pro_extv2_blends(io_arg, &playerstate->blend, &playerstate->damage_blend));
+        {
+            const q2proto_blend_delta_t* damage_blend;
+        #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+            damage_blend = &playerstate->damage_blend;
+        #else
+            const q2proto_blend_delta_t null_blend = {0};
+            damage_blend = &null_blend;
+        #endif
+            CHECKED(server_write, io_arg, server_write_q2pro_extv2_blends(io_arg, &playerstate->blend, damage_blend));
+        }
         else
         {
             WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&playerstate->blend.values, 0));
