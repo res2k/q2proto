@@ -58,6 +58,9 @@ q2proto_error_t q2proto_q2pro_extdemo_continue_serverdata(q2proto_clientcontext_
     context->protocol_version = serverdata->protocol_version;
     context->features.batch_move = true;
     context->features.userinfo_delta = true;
+    context->features.has_upmove = true;
+    context->features.has_clientnum = true;
+    context->features.has_solid32 = true;
     context->features.server_game_type = has_q2pro_extensions_v2 ? Q2PROTO_GAME_Q2PRO_EXTENDED_V2 : Q2PROTO_GAME_Q2PRO_EXTENDED;
 
     return Q2P_ERR_SUCCESS;

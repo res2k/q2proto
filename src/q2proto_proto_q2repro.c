@@ -185,6 +185,8 @@ q2proto_error_t q2proto_q2repro_continue_serverdata(q2proto_clientcontext_t *con
     context->protocol_version = serverdata->protocol_version;
     context->features.batch_move = true;
     context->features.userinfo_delta = true;
+    context->features.has_clientnum = true;
+    context->features.has_solid32 = true;
     if (serverdata->q2repro.game3_compat) {
         // FIXME: correct?
         if (serverdata->q2pro.extensions_v2)

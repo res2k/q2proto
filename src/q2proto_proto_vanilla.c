@@ -49,6 +49,8 @@ q2proto_error_t q2proto_vanilla_continue_serverdata(q2proto_clientcontext_t *con
     context->client_write = vanilla_client_write;
     context->server_protocol = serverdata->protocol == PROTOCOL_OLD_DEMO ? Q2P_PROTOCOL_OLD_DEMO : Q2P_PROTOCOL_VANILLA;
 
+    context->features.has_upmove = true;
+
     return Q2P_ERR_SUCCESS;
 }
 

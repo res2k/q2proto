@@ -85,6 +85,9 @@ q2proto_error_t q2proto_r1q2_continue_serverdata(q2proto_clientcontext_t *contex
     context->server_protocol = Q2P_PROTOCOL_R1Q2;
     context->protocol_version = serverdata->protocol_version;
 
+    context->features.has_upmove = true;
+    context->features.has_solid32 = serverdata->protocol_version >= PROTOCOL_VERSION_R1Q2_LONG_SOLID;
+
     return Q2P_ERR_SUCCESS;
 }
 

@@ -90,6 +90,12 @@ struct q2proto_clientcontext_s {
         bool batch_move;
         /// Protocol supports userinfo delta (Q2P_CLC_USERINFO_DELTA)
         bool userinfo_delta;
+        /// Protocol supports usercmd upmove
+        bool has_upmove;
+        /// Protocol supports playerstate clientnum
+        bool has_clientnum;
+        /// Protocol supports 32-bit 'solid' values
+        bool has_solid32;
         /// Type of game run by the server
         q2proto_game_type_t server_game_type;
     } features;
