@@ -166,7 +166,6 @@ void q2proto_debug_common_player_delta_bits_to_str(char *buf, size_t size, uint3
     S(M_FLAGS,          "pm_flags");
     S(M_GRAVITY,        "pm_gravity");
     S(M_DELTA_ANGLES,   "pm_delta_angles");
-    S(VIEWHEIGHT,       "viewheight");
     S(VIEWOFFSET,       "viewoffset");
     S(VIEWANGLES,       "viewangles");
     S(KICKANGLES,       "kick_angles");

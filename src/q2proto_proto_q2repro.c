@@ -244,6 +244,23 @@ static MAYBE_UNUSED const char* server_cmd_string(int command)
     return str ? str : q2proto_va("%d", command);
 }
 
+static MAYBE_UNUSED void debug_player_delta_bits_to_str(char *buf, size_t size, uint32_t bits)
+{
+    q2proto_debug_common_player_delta_bits_to_str(buf, size, bits & ~PS_RR_VIEWHEIGHT);
+    buf += strlen(buf);
+    size -= strlen(buf);
+
+#define S(b, s)                                         \
+    if (bits & PS_##b)                                  \
+    {                                                   \
+        q2proto_snprintf_update(&buf, &size, " %s", s); \
+        bits &= ~PS_##b;                                \
+    }
+
+    S(RR_VIEWHEIGHT, "viewheight");
+#undef S
+}
+
 static q2proto_error_t q2repro_client_read(q2proto_clientcontext_t *context, uintptr_t raw_io_arg, q2proto_svc_message_t *svc_message)
 {
     memset(svc_message, 0, sizeof(*svc_message));
@@ -669,7 +686,7 @@ static q2proto_error_t q2repro_client_read_playerstate(q2proto_clientcontext_t *
 #if Q2PROTO_SHOWNET
     if (q2protodbg_shownet_check(io_arg, 2) && flags) {
         char buf[1024], buf2[1024];
-        q2proto_debug_common_player_delta_bits_to_str(buf, sizeof(buf), flags);
+        debug_player_delta_bits_to_str(buf, sizeof(buf), flags);
         q2proto_debug_common_player_delta_extrabits_to_str(buf2, sizeof(buf2), extraflags);
         SHOWNET(io_arg, 2, -2, "   %s + %s", buf, buf2);
     }
@@ -785,7 +802,7 @@ static q2proto_error_t q2repro_client_read_playerstate(q2proto_clientcontext_t *
     if (delta_bits_check(extraflags, EPS_GUNRATE, &playerstate->delta_bits, Q2P_PSD_GUNRATE))
         READ_CHECKED(client_read, io_arg, playerstate->gunrate, u8);
 
-    if (delta_bits_check(flags, PS_VIEWHEIGHT, &playerstate->delta_bits, Q2P_PSD_PM_VIEWHEIGHT))
+    if (delta_bits_check(flags, PS_RR_VIEWHEIGHT, &playerstate->delta_bits, Q2P_PSD_PM_VIEWHEIGHT))
         READ_CHECKED(client_read, io_arg, playerstate->pm_viewheight, i8);
 #endif
 
@@ -2020,7 +2037,7 @@ static q2proto_error_t q2repro_server_write_playerstate(q2proto_servercontext_t 
     if(playerstate->delta_bits & Q2P_PSD_PM_DELTA_ANGLES)
         flags |= PS_M_DELTA_ANGLES;
     if(playerstate->delta_bits & Q2P_PSD_PM_VIEWHEIGHT)
-        flags |= PS_VIEWHEIGHT;
+        flags |= PS_RR_VIEWHEIGHT;
     if(playerstate->delta_bits & Q2P_PSD_VIEWOFFSET)
         flags |= PS_VIEWOFFSET;
     if(playerstate->viewangles.delta_bits & (BIT(0) | BIT(1)))
@@ -2170,7 +2187,7 @@ static q2proto_error_t q2repro_server_write_playerstate(q2proto_servercontext_t 
     if (*extraflags & EPS_GUNRATE)
         WRITE_CHECKED(server_write, io_arg, u8, playerstate->gunrate);
 
-    if (flags & PS_VIEWHEIGHT)
+    if (flags & PS_RR_VIEWHEIGHT)
         WRITE_CHECKED(server_write, io_arg, i8, playerstate->pm_viewheight);
 #endif
 

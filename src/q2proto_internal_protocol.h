@@ -247,7 +247,7 @@ typedef enum {
 #define PS_WEAPONINDEX      BIT(12)
 #define PS_WEAPONFRAME      BIT(13)
 #define PS_RDFLAGS          BIT(14)
-#define PS_VIEWHEIGHT       BIT(15) // re-release
+#define PS_RR_VIEWHEIGHT    BIT(15) // re-release
 
 // r1q2 protocol specific extra flags
 #define EPS_GUNOFFSET       BIT(0)
