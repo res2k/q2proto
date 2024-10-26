@@ -96,6 +96,8 @@ struct q2proto_clientcontext_s {
         bool has_clientnum;
         /// Protocol supports 32-bit 'solid' values
         bool has_solid32;
+        /// Protocol sends fog data as part of playerstate
+        bool has_playerfog;
         /// Type of game run by the server
         q2proto_game_type_t server_game_type;
     } features;

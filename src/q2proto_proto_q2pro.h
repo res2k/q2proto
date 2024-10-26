@@ -40,8 +40,11 @@ q2proto_error_t q2proto_q2pro_continue_serverdata(q2proto_clientcontext_t *conte
 q2proto_error_t q2proto_q2pro_init_servercontext(q2proto_servercontext_t *context, const q2proto_connect_t* connect_info);
 
 // Functions reused by q2pro_extdemo
+void q2proto_q2pro_debug_player_delta_bits_to_str(char *buf, size_t size, uint32_t bits);
 q2proto_error_t q2proto_q2pro_client_read_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, uint64_t bits, q2proto_entity_state_delta_t *entity_state);
+q2proto_error_t q2proto_q2pro_client_read_playerfog(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_fog_t *fog);
 q2proto_error_t q2proto_q2pro_server_write_entity_state_delta(q2proto_servercontext_t *context, uintptr_t io_arg, uint16_t entnum, const q2proto_entity_state_delta_t *entity_state_delta);
+q2proto_error_t q2proto_q2pro_server_write_playerfog(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_fog_t *fog);
 
 // Functions reused by q2repro
 q2proto_error_t q2proto_q2pro_client_read_muzzleflash2(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_muzzleflash_t *muzzleflash);

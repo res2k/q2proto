@@ -89,6 +89,17 @@ typedef struct q2proto_packed_player_state_s
     uint8_t fov;
     uint8_t rdflags;
     int16_t stats[Q2PROTO_STATS];
+#if Q2PROTO_PLAYER_STATE_FEATURES == Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+    uint8_t fog_color[3];
+    uint16_t fog_density;
+    uint16_t fog_skyfactor;
+    uint8_t heightfog_start_color[3];
+    uint8_t heightfog_end_color[3];
+    uint16_t heightfog_density;
+    uint16_t heightfog_falloff;
+    int32_t heightfog_start_dist;
+    int32_t heightfog_end_dist;
+#endif
 } q2proto_packed_player_state_t;
 
 /**\def Q2PROTO_DECLARE_ENTITY_PACKING_FUNCTION

@@ -295,6 +295,74 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
             delta->stats[i] = to->stats[i];
         }
     }
+
+#if Q2PROTO_PLAYER_STATE_FEATURES == Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+    if (from->fog_color[0] != to->fog_color[0])
+        delta->fog.global.color.delta_bits |= BIT(0);
+    if (from->fog_color[1] != to->fog_color[1])
+        delta->fog.global.color.delta_bits |= BIT(1);
+    if (from->fog_color[2] != to->fog_color[2])
+        delta->fog.global.color.delta_bits |= BIT(2);
+    if (delta->fog.global.color.delta_bits != 0)
+    {
+        q2proto_var_color_set_byte_comp(&delta->fog.global.color.values, 0, to->fog_color[0]);
+        q2proto_var_color_set_byte_comp(&delta->fog.global.color.values, 1, to->fog_color[1]);
+        q2proto_var_color_set_byte_comp(&delta->fog.global.color.values, 2, to->fog_color[2]);
+    }
+    if (from->fog_density != to->fog_density || from->fog_skyfactor != to->fog_skyfactor)
+    {
+        q2proto_var_fraction_set_word(&delta->fog.global.density, to->fog_density);
+        q2proto_var_fraction_set_word(&delta->fog.global.skyfactor, to->fog_skyfactor);
+        delta->fog.flags |= Q2P_FOG_DENSITY_SKYFACTOR;
+    }
+
+    if (from->heightfog_start_color[0] != to->heightfog_start_color[0])
+        delta->fog.height.start_color.delta_bits |= BIT(0);
+    if (from->heightfog_start_color[1] != to->heightfog_start_color[1])
+        delta->fog.height.start_color.delta_bits |= BIT(1);
+    if (from->heightfog_start_color[2] != to->heightfog_start_color[2])
+        delta->fog.height.start_color.delta_bits |= BIT(2);
+    if (delta->fog.height.start_color.delta_bits != 0)
+    {
+        q2proto_var_color_set_byte_comp(&delta->fog.height.start_color.values, 0, to->heightfog_start_color[0]);
+        q2proto_var_color_set_byte_comp(&delta->fog.height.start_color.values, 1, to->heightfog_start_color[1]);
+        q2proto_var_color_set_byte_comp(&delta->fog.height.start_color.values, 2, to->heightfog_start_color[2]);
+    }
+
+    if (from->heightfog_end_color[0] != to->heightfog_end_color[0])
+        delta->fog.height.end_color.delta_bits |= BIT(0);
+    if (from->heightfog_end_color[1] != to->heightfog_end_color[1])
+        delta->fog.height.end_color.delta_bits |= BIT(1);
+    if (from->heightfog_end_color[2] != to->heightfog_end_color[2])
+        delta->fog.height.end_color.delta_bits |= BIT(2);
+    if (delta->fog.height.end_color.delta_bits != 0)
+    {
+        q2proto_var_color_set_byte_comp(&delta->fog.height.end_color.values, 0, to->heightfog_end_color[0]);
+        q2proto_var_color_set_byte_comp(&delta->fog.height.end_color.values, 1, to->heightfog_end_color[1]);
+        q2proto_var_color_set_byte_comp(&delta->fog.height.end_color.values, 2, to->heightfog_end_color[2]);
+    }
+
+    if (from->heightfog_density != to->heightfog_density)
+    {
+        q2proto_var_fraction_set_word(&delta->fog.height.density, to->heightfog_density);
+        delta->fog.flags |= Q2P_HEIGHTFOG_DENSITY;
+    }
+    if (from->heightfog_falloff != to->heightfog_falloff)
+    {
+        q2proto_var_fraction_set_word(&delta->fog.height.falloff, to->heightfog_falloff);
+        delta->fog.flags |= Q2P_HEIGHTFOG_FALLOFF;
+    }
+    if (from->heightfog_start_dist != to->heightfog_start_dist)
+    {
+        q2proto_var_coord_set_int(&delta->fog.height.start_dist, to->heightfog_start_dist);
+        delta->fog.flags |= Q2P_HEIGHTFOG_START_DIST;
+    }
+    if (from->heightfog_end_dist != to->heightfog_end_dist)
+    {
+        q2proto_var_coord_set_int(&delta->fog.height.end_dist, to->heightfog_end_dist);
+        delta->fog.flags |= Q2P_HEIGHTFOG_END_DIST;
+    }
+#endif
 }
 
 void _q2proto_pack_entity_state_dispatch(q2proto_servercontext_t *context, const _q2proto_packing_entity_dispatch_t *dispatch, const void *entity_state_p, q2proto_packed_entity_state_t *entity_packed)

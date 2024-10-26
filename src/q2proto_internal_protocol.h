@@ -27,13 +27,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_internal_defs.h"
 
 // Protocol major version numbers
-#define PROTOCOL_OLD_DEMO               26
-#define PROTOCOL_VANILLA                34
-#define PROTOCOL_R1Q2                   35
-#define PROTOCOL_Q2PRO                  36
-#define PROTOCOL_Q2PRO_EXTENDED_DEMO    3434
-#define PROTOCOL_Q2PRO_EXTENDED_V2_DEMO 3435
-#define PROTOCOL_Q2REPRO                1038
+#define PROTOCOL_OLD_DEMO                   26
+#define PROTOCOL_VANILLA                    34
+#define PROTOCOL_R1Q2                       35
+#define PROTOCOL_Q2PRO                      36
+#define PROTOCOL_Q2PRO_DEMO_EXT             3434
+#define PROTOCOL_Q2PRO_DEMO_EXT_LIMITS_2    3435
+#define PROTOCOL_Q2PRO_DEMO_EXT_PLAYERFOG   3436
+#define PROTOCOL_Q2PRO_DEMO_EXT_CURRENT     3436
+#define PROTOCOL_Q2REPRO                    1038
 
 // Protocol revision numbers used by R1Q2 and Q2PRO
 #define PROTOCOL_VERSION_R1Q2_MINIMUM           1903    // b6377
@@ -52,7 +54,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PROTOCOL_VERSION_Q2PRO_CINEMATICS           1023    // r2263
 #define PROTOCOL_VERSION_Q2PRO_EXTENDED_LIMITS      1024    // r2894
 #define PROTOCOL_VERSION_Q2PRO_EXTENDED_LIMITS_2    1025    // r3300
-#define PROTOCOL_VERSION_Q2PRO_CURRENT              1025    // r3300
+#define PROTOCOL_VERSION_Q2PRO_PLAYERFOG            1026    // r3579
+#define PROTOCOL_VERSION_Q2PRO_CURRENT              1026    // r3579
 
 /**\name Common protocol constants
  * @{ */
@@ -248,6 +251,8 @@ typedef enum {
 #define PS_WEAPONFRAME      BIT(13)
 #define PS_RDFLAGS          BIT(14)
 #define PS_RR_VIEWHEIGHT    BIT(15) // re-release
+#define PS_Q2PRO_MOREBITS   BIT(15) // Q2PRO extended
+#define PS_Q2PRO_PLAYERFOG  BIT(16) // Q2PRO extended
 
 // r1q2 protocol specific extra flags
 #define EPS_GUNOFFSET       BIT(0)

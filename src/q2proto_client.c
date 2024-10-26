@@ -107,6 +107,7 @@ q2proto_error_t q2proto_complete_connect(q2proto_connect_t *connect)
     case Q2P_PROTOCOL_OLD_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG:
         // none of these should be used for actual connections
         break;
     case Q2P_PROTOCOL_VANILLA:
@@ -183,6 +184,7 @@ q2proto_error_t q2proto_get_connect_arguments(char *args_str, size_t size, size_
     case Q2P_PROTOCOL_OLD_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG:
         // shouldn't be used for "connect"
         SET_ERROR(Q2P_ERR_PROTOCOL_NOT_SUPPORTED);
         break;
@@ -280,8 +282,9 @@ static q2proto_error_t default_client_packet_parse(q2proto_clientcontext_t *cont
         return q2proto_r1q2_continue_serverdata(context, io_arg, &svc_message->serverdata);
     case PROTOCOL_Q2PRO:
         return q2proto_q2pro_continue_serverdata(context, io_arg, &svc_message->serverdata);
-    case PROTOCOL_Q2PRO_EXTENDED_DEMO:
-    case PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
+    case PROTOCOL_Q2PRO_DEMO_EXT:
+    case PROTOCOL_Q2PRO_DEMO_EXT_LIMITS_2:
+    case PROTOCOL_Q2PRO_DEMO_EXT_PLAYERFOG:
         return q2proto_q2pro_extdemo_continue_serverdata(context, io_arg, &svc_message->serverdata);
     case PROTOCOL_Q2REPRO:
         return q2proto_q2repro_continue_serverdata(context, io_arg, &svc_message->serverdata);

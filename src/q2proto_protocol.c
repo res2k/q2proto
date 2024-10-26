@@ -39,9 +39,11 @@ int q2proto_get_protocol_netver(q2proto_protocol_t protocol)
     case Q2P_PROTOCOL_Q2PRO:
         return PROTOCOL_Q2PRO;
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
-        return PROTOCOL_Q2PRO_EXTENDED_DEMO;
+        return PROTOCOL_Q2PRO_DEMO_EXT;
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
-        return PROTOCOL_Q2PRO_EXTENDED_V2_DEMO;
+        return PROTOCOL_Q2PRO_DEMO_EXT_LIMITS_2;
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG:
+        return PROTOCOL_Q2PRO_DEMO_EXT_PLAYERFOG;
     case Q2P_PROTOCOL_Q2REPRO:
         return PROTOCOL_Q2REPRO;
     }
@@ -61,10 +63,12 @@ q2proto_protocol_t q2proto_protocol_from_netver(int version)
         return Q2P_PROTOCOL_R1Q2;
     case PROTOCOL_Q2PRO:
         return Q2P_PROTOCOL_Q2PRO;
-    case PROTOCOL_Q2PRO_EXTENDED_DEMO:
+    case PROTOCOL_Q2PRO_DEMO_EXT:
         return Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO;
-    case PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
+    case PROTOCOL_Q2PRO_DEMO_EXT_LIMITS_2:
         return Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO;
+    case PROTOCOL_Q2PRO_DEMO_EXT_PLAYERFOG:
+        return Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG;
     case PROTOCOL_Q2REPRO:
         return Q2P_PROTOCOL_Q2REPRO;
     }

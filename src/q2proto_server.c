@@ -161,6 +161,7 @@ q2proto_error_t q2proto_parse_connect(const char *connect_args, const q2proto_pr
     case Q2P_PROTOCOL_INVALID:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG:
         return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
     case Q2P_PROTOCOL_OLD_DEMO:
     case Q2P_PROTOCOL_VANILLA:
@@ -195,6 +196,7 @@ q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t* context, con
         return q2proto_q2pro_init_servercontext(context, connect_info);
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG:
         return q2proto_q2pro_extdemo_init_servercontext(context, connect_info);
     case Q2P_PROTOCOL_Q2REPRO:
         return q2proto_q2repro_init_servercontext(context, connect_info);
@@ -224,7 +226,7 @@ q2proto_error_t q2proto_init_servercontext_demo(q2proto_servercontext_t* context
         *max_msg_len = 0x8000; // Write packets to the limit supported by Q2PRO
         break;
     case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
-        connect_info.protocol = Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO;
+        connect_info.protocol = Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG;
         *max_msg_len = 0x8000; // Write packets to the limit supported by Q2PRO
         break;
     case Q2PROTO_GAME_RERELEASE:

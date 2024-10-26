@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * - #Q2P_PACK_GET_PLAYER_VALUE
  * - #Q2P_PACK_PLAYER_STATS_NUM
  * - #Q2P_PACK_GET_PLAYER_PMOVE_VALUE
+ * - #Q2P_PACK_GET_PLAYER_FOG_VALUE
+ * - #Q2P_PACK_GET_PLAYER_HEIGHTFOG_VALUE
  */
 #include "q2proto.h"
 
@@ -67,6 +69,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define Q2P_PACK_GET_PLAYER_PMOVE_VALUE(PLAYER, PM_MEMBER)      ((PLAYER)->pmove.PM_MEMBER)
 #define _Q2P_PACK_GET_PLAYER_PMOVE_VALUE_DEFAULTED
 #endif // !defined(Q2P_PACK_GET_PLAYER_VALUE)
+
+/**\def Q2P_PACK_GET_PLAYER_FOG_VALUE
+ * Extract a member from fog data contained in player state packing input data.
+ */
+#if !defined(Q2P_PACK_GET_PLAYER_FOG_VALUE)
+#define Q2P_PACK_GET_PLAYER_FOG_VALUE(PLAYER, FOG_MEMBER)      ((PLAYER)->fog.FOG_MEMBER)
+#define _Q2P_PACK_GET_PLAYER_FOG_VALUE_DEFAULTED
+#endif // !defined(Q2P_PACK_GET_PLAYER_FOG_VALUE)
+
+/**\def Q2P_PACK_GET_PLAYER_HEIGHTFOG_VALUE
+ * Extract a member from heightfog data contained in player state packing input data.
+ */
+#if !defined(Q2P_PACK_GET_PLAYER_HEIGHTFOG_VALUE)
+#define Q2P_PACK_GET_PLAYER_HEIGHTFOG_VALUE(PLAYER, HF_MEMBER)      ((PLAYER)->heightfog.HF_MEMBER)
+#define _Q2P_PACK_GET_PLAYER_HEIGHTFOG_VALUE_DEFAULTED
+#endif // !defined(Q2P_PACK_GET_PLAYER_HEIGHTFOG_VALUE)
 
 #define _Q2P_PACK_PLAYER_VANILLA_FUNCTION_NAME   _Q2PROTO_PACKING_NAME(Q2P_PACK_PLAYER_FUNCTION_NAME, _int)
 #define _Q2P_PACK_PLAYER_Q2REPRO_FUNCTION_NAME   _Q2PROTO_PACKING_NAME(Q2P_PACK_PLAYER_FUNCTION_NAME, _float)
@@ -126,6 +144,26 @@ static void _Q2P_PACK_PLAYER_VANILLA_FUNCTION_NAME(const void * restrict player_
     player_packed->rdflags = (uint8_t)Q2P_PACK_GET_PLAYER_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, rdflags);
     const int16_t* stats = Q2P_PACK_GET_PLAYER_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, stats);
     memcpy(&player_packed->stats, stats, sizeof(int16_t) * Q2P_PACK_PLAYER_STATS_NUM(_Q2PROTO_PACKING_CAST_PLAYERSTATE));
+#if Q2PROTO_PLAYER_STATE_FEATURES == Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+    const float* fog_color = Q2P_PACK_GET_PLAYER_FOG_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, color);
+    player_packed->fog_color[0] = _q2proto_valenc_color2byte(fog_color[0]);
+    player_packed->fog_color[1] = _q2proto_valenc_color2byte(fog_color[1]);
+    player_packed->fog_color[2] = _q2proto_valenc_color2byte(fog_color[2]);
+    player_packed->fog_density = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_PLAYER_FOG_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, density), UINT16_MAX, 0, UINT16_MAX);
+    player_packed->fog_skyfactor = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_PLAYER_FOG_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, sky_factor), UINT16_MAX, 0, UINT16_MAX);
+    const float* heightfog_start_color = Q2P_PACK_GET_PLAYER_HEIGHTFOG_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, start_color);
+    player_packed->heightfog_start_color[0] = _q2proto_valenc_color2byte(heightfog_start_color[0]);
+    player_packed->heightfog_start_color[1] = _q2proto_valenc_color2byte(heightfog_start_color[1]);
+    player_packed->heightfog_start_color[2] = _q2proto_valenc_color2byte(heightfog_start_color[2]);
+    const float* heightfog_end_color = Q2P_PACK_GET_PLAYER_HEIGHTFOG_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, end_color);
+    player_packed->heightfog_end_color[0] = _q2proto_valenc_color2byte(heightfog_end_color[0]);
+    player_packed->heightfog_end_color[1] = _q2proto_valenc_color2byte(heightfog_end_color[1]);
+    player_packed->heightfog_end_color[2] = _q2proto_valenc_color2byte(heightfog_end_color[2]);
+    player_packed->heightfog_density = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_PLAYER_HEIGHTFOG_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, density), UINT16_MAX, 0, UINT16_MAX);
+    player_packed->heightfog_falloff = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_PLAYER_HEIGHTFOG_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, falloff), UINT16_MAX, 0, UINT16_MAX);
+    player_packed->heightfog_start_dist = _q2proto_valenc_coord2int(Q2P_PACK_GET_PLAYER_HEIGHTFOG_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, start_dist));
+    player_packed->heightfog_end_dist = _q2proto_valenc_coord2int(Q2P_PACK_GET_PLAYER_HEIGHTFOG_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, end_dist));
+#endif
 }
 
 static void _Q2P_PACK_PLAYER_Q2REPRO_FUNCTION_NAME(const void * restrict player_state_p, q2proto_packed_player_state_t * restrict player_packed)
@@ -215,3 +253,13 @@ void Q2P_PACK_PLAYER_FUNCTION_NAME(q2proto_servercontext_t *context, const Q2P_P
 #undef _Q2P_PACK_GET_PLAYER_PMOVE_VALUE_DEFAULTED
 #undef Q2P_PACK_GET_PLAYER_PMOVE_VALUE
 #endif // defined(_Q2P_PACK_GET_PLAYER_PMOVE_VALUE_DEFAULTED)
+
+#if defined(_Q2P_PACK_GET_PLAYER_FOG_VALUE_DEFAULTED)
+#undef _Q2P_PACK_GET_PLAYER_FOG_VALUE_DEFAULTED
+#undef Q2P_PACK_GET_PLAYER_FOG_VALUE
+#endif // defined(_Q2P_PACK_GET_PLAYER_FOG_VALUE_DEFAULTED)
+
+#if defined(_Q2P_PACK_GET_PLAYER_HEIGHTFOG_VALUE_DEFAULTED)
+#undef _Q2P_PACK_GET_PLAYER_HEIGHTFOG_VALUE_DEFAULTED
+#undef Q2P_PACK_GET_PLAYER_HEIGHTFOG_VALUE
+#endif // defined(_Q2P_PACK_GET_PLAYER_HEIGHTFOG_VALUE_DEFAULTED)

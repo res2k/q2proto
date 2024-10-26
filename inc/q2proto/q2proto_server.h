@@ -90,6 +90,8 @@ struct q2proto_servercontext_s {
         bool enable_deflate;
         /// Q2PROTO_DOWNLOAD_COMPRESS_RAW is supported for downloads
         bool download_compress_raw;
+        /// Protocol sends fog data as part of playerstate
+        bool has_playerfog;
     } features;
 
     /// Server information
