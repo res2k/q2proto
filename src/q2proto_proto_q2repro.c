@@ -758,7 +758,7 @@ static q2proto_error_t q2repro_client_read_playerstate(q2proto_clientcontext_t *
 
     if (flags & PS_BLEND)
     {
-        q2proto_blend_delta_t damage_blend;
+        q2proto_color_delta_t damage_blend;
         CHECKED(client_read, io_arg, client_read_q2pro_extv2_blends(io_arg, &playerstate->blend, &damage_blend));
     #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
         memcpy(&playerstate->damage_blend, &damage_blend, sizeof(damage_blend));
@@ -1594,13 +1594,13 @@ static void q2repro_server_make_player_state_delta(q2proto_servercontext_t *cont
     {
         if (to->blend[c] != from->blend[c])
         {
-            q2proto_var_blend_set_byte_comp(&delta->blend.values, c, to->blend[c]);
+            q2proto_var_color_set_byte_comp(&delta->blend.values, c, to->blend[c]);
             delta->blend.delta_bits |= BIT(c);
         }
     #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
         if (to->damage_blend[c] != from->damage_blend[c])
         {
-            q2proto_var_blend_set_byte_comp(&delta->damage_blend.values, c, to->damage_blend[c]);
+            q2proto_var_color_set_byte_comp(&delta->damage_blend.values, c, to->damage_blend[c]);
             delta->damage_blend.delta_bits |= BIT(c);
         }
     #endif
@@ -2132,11 +2132,11 @@ static q2proto_error_t q2repro_server_write_playerstate(q2proto_servercontext_t 
 
     if (flags & PS_BLEND)
     {
-        const q2proto_blend_delta_t* damage_blend;
+        const q2proto_color_delta_t* damage_blend;
     #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
         damage_blend = &playerstate->damage_blend;
     #else
-        const q2proto_blend_delta_t null_blend = {0};
+        const q2proto_color_delta_t null_blend = {0};
         damage_blend = &null_blend;
     #endif
         CHECKED(server_write, io_arg, server_write_q2pro_extv2_blends(io_arg, &playerstate->blend, damage_blend));

@@ -455,10 +455,10 @@ typedef struct q2proto_svc_playerstate_s {
     /// gunangles
     q2proto_var_small_angle_t gunangles;
     /// screen blend
-    q2proto_blend_delta_t blend;
+    q2proto_color_delta_t blend;
 #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
     /// damage blend (for rerelease, Q2PRO extended v2 games)
-    q2proto_blend_delta_t damage_blend;
+    q2proto_color_delta_t damage_blend;
 #endif
     /// fov
     uint8_t fov;

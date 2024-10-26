@@ -188,11 +188,11 @@ _GENERATE_VARIANT_FUNCTIONS(var_small_angle, q2repro_kick_angles, int16_t, 3)
 _GENERATE_VARIANT_FUNCTIONS(var_small_angle, q2repro_gunangles, int16_t, 3)
 /** @}  */
 
-/// Variant for "blend" values (RGBA, each component stored as a float or as a byte)
-typedef struct q2proto_var_blend_s {
+/// Variant for color values (RGBA, each component stored as a float or as a byte)
+typedef struct q2proto_var_color_s {
     // Stores types of components
     uint8_t Q2PROTO_PRIVATE_MEMBER(float_bits);
-    // Used by blend_delta functions to store set components
+    // Used by color_delta functions to store set components
     uint8_t Q2PROTO_PRIVATE_MEMBER(delta_bits_space);
     // Component values
     union
@@ -200,15 +200,15 @@ typedef struct q2proto_var_blend_s {
         float f;
         uint8_t c;
     } Q2PROTO_PRIVATE_MEMBER(comps)[4];
-} q2proto_var_blend_t;
+} q2proto_var_color_t;
 
-/** 'Blend' functions for float values
+/** Color functions for float values
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_blend, float, float, 4)
+_GENERATE_VARIANT_FUNCTIONS(var_color, float, float, 4)
 /** @}  */
-/** 'Blend' functions for byte values
+/** Color functions for byte values
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_blend, byte, uint8_t, 4)
+_GENERATE_VARIANT_FUNCTIONS(var_color, byte, uint8_t, 4)
 /** @}  */
 
 /**\name Delta coordinates & angles
@@ -307,18 +307,18 @@ typedef struct q2proto_angle_delta_s {
     } while (0)
 /** @} */
 
-/// Delta blend type
-typedef struct q2proto_blend_delta_s {
+/// Delta color type
+typedef struct q2proto_color_delta_s {
     union {
         /// Actual coordinate values
-        q2proto_var_blend_t values;
+        q2proto_var_color_t values;
         struct {
             uint8_t Q2PROTO_PRIVATE_MEMBER(rsvd0); // float_bits
             uint8_t delta_bits;
             float Q2PROTO_PRIVATE_MEMBER(rsvd1)[4]; // comps
         };
     };
-} q2proto_blend_delta_t;
+} q2proto_color_delta_t;
 
 /**
  * Coordinates that may be transferred as a difference to another value (depending on protocol).

@@ -352,7 +352,7 @@ static q2proto_error_t q2pro_extdemo_client_read_playerstate(q2proto_clientconte
     {
         if (has_q2pro_extensions_v2)
         {
-            q2proto_blend_delta_t damage_blend;
+            q2proto_color_delta_t damage_blend;
             CHECKED(client_read, io_arg, client_read_q2pro_extv2_blends(io_arg, &playerstate->blend, &damage_blend));
         #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
             memcpy(&playerstate->damage_blend, &damage_blend, sizeof(damage_blend));
@@ -360,7 +360,7 @@ static q2proto_error_t q2pro_extdemo_client_read_playerstate(q2proto_clientconte
         }
         else
         {
-            CHECKED(client_read, io_arg, read_var_blend(io_arg, &playerstate->blend.values));
+            CHECKED(client_read, io_arg, read_var_color(io_arg, &playerstate->blend.values));
             playerstate->blend.delta_bits = 0xf;
         }
     }
@@ -715,21 +715,21 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
     {
         if (has_q2pro_extensions_v2)
         {
-            const q2proto_blend_delta_t* damage_blend;
+            const q2proto_color_delta_t* damage_blend;
         #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
             damage_blend = &playerstate->damage_blend;
         #else
-            const q2proto_blend_delta_t null_blend = {0};
+            const q2proto_color_delta_t null_blend = {0};
             damage_blend = &null_blend;
         #endif
             CHECKED(server_write, io_arg, server_write_q2pro_extv2_blends(io_arg, &playerstate->blend, damage_blend));
         }
         else
         {
-            WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&playerstate->blend.values, 0));
-            WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&playerstate->blend.values, 1));
-            WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&playerstate->blend.values, 2));
-            WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&playerstate->blend.values, 3));
+            WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&playerstate->blend.values, 0));
+            WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&playerstate->blend.values, 1));
+            WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&playerstate->blend.values, 2));
+            WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&playerstate->blend.values, 3));
         }
     }
     if (flags & PS_FOV)

@@ -512,7 +512,7 @@ static q2proto_error_t r1q2_client_read_playerstate(uintptr_t io_arg, uint8_t ex
 
     if (flags & PS_BLEND)
     {
-        CHECKED(client_read, io_arg, read_var_blend(io_arg, &playerstate->blend.values));
+        CHECKED(client_read, io_arg, read_var_color(io_arg, &playerstate->blend.values));
         playerstate->blend.delta_bits = 0xf;
     }
 
@@ -1279,10 +1279,10 @@ static q2proto_error_t r1q2_server_write_playerstate(uintptr_t io_arg, const q2p
 
     if (flags & PS_BLEND)
     {
-        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&playerstate->blend.values, 0));
-        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&playerstate->blend.values, 1));
-        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&playerstate->blend.values, 2));
-        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&playerstate->blend.values, 3));
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&playerstate->blend.values, 0));
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&playerstate->blend.values, 1));
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&playerstate->blend.values, 2));
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&playerstate->blend.values, 3));
     }
     if (flags & PS_FOV)
         WRITE_CHECKED(server_write, io_arg, u8, playerstate->fov);

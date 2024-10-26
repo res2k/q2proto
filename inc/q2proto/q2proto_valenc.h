@@ -120,14 +120,14 @@ static inline int8_t _q2proto_valenc_smallangle2char(float x)
     return _q2proto_valenc_clamped_mul(x, 4, INT8_MIN, INT8_MAX);
 }
 
-// Decode a blend component from unsigned 8-bit integer
-static inline float _q2proto_valenc_byte2blend(uint8_t x)
+// Decode a color component from unsigned 8-bit integer
+static inline float _q2proto_valenc_byte2color(uint8_t x)
 {
     return x / 255.f;
 }
 
-// Encode a blend component (0...1) to unsigned 8-bit integer
-static inline uint8_t _q2proto_valenc_blend2byte(float x)
+// Encode a color component (0...1) to unsigned 8-bit integer
+static inline uint8_t _q2proto_valenc_color2byte(float x)
 {
     return _q2proto_valenc_clamped_mul(x, 255, 0, UINT8_MAX);
 }

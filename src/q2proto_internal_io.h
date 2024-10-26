@@ -288,20 +288,20 @@ static inline q2proto_error_t read_var_small_angles(uintptr_t io_arg, q2proto_va
 }
 
 /// Read a single component of an 8-bit blend value
-#define READ_CHECKED_VAR_BLEND_COMP(SOURCE, IO_ARG, TARGET, COMP) \
+#define READ_CHECKED_VAR_COLOR_COMP(SOURCE, IO_ARG, TARGET, COMP) \
     do                                                            \
     {                                                             \
         int8_t c;                                                 \
         READ_CHECKED(SOURCE, (IO_ARG), c, u8);                    \
-        q2proto_var_blend_set_byte_comp(TARGET, COMP, c);         \
+        q2proto_var_color_set_byte_comp(TARGET, COMP, c);         \
     } while (0)
 
-static inline q2proto_error_t read_var_blend(uintptr_t io_arg, q2proto_var_blend_t* blend)
+static inline q2proto_error_t read_var_color(uintptr_t io_arg, q2proto_var_color_t* blend)
 {
-    READ_CHECKED_VAR_BLEND_COMP(client_read, io_arg, blend, 0);
-    READ_CHECKED_VAR_BLEND_COMP(client_read, io_arg, blend, 1);
-    READ_CHECKED_VAR_BLEND_COMP(client_read, io_arg, blend, 2);
-    READ_CHECKED_VAR_BLEND_COMP(client_read, io_arg, blend, 3);
+    READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, blend, 0);
+    READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, blend, 1);
+    READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, blend, 2);
+    READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, blend, 3);
     return Q2P_ERR_SUCCESS;
 }
 
@@ -354,7 +354,7 @@ static inline q2proto_error_t client_read_maybe_diff_coord_comp(q2proto_clientco
     return Q2P_ERR_SUCCESS;
 }
 
-static inline q2proto_error_t client_read_q2pro_extv2_blends(uintptr_t io_arg, q2proto_blend_delta_t *blend, q2proto_blend_delta_t *damage_blend)
+static inline q2proto_error_t client_read_q2pro_extv2_blends(uintptr_t io_arg, q2proto_color_delta_t *blend, q2proto_color_delta_t *damage_blend)
 {
     uint8_t blend_bits;
     READ_CHECKED(client_read, io_arg, blend_bits, u8);
@@ -362,7 +362,7 @@ static inline q2proto_error_t client_read_q2pro_extv2_blends(uintptr_t io_arg, q
     {
         if (blend_bits & BIT(i))
         {
-            READ_CHECKED_VAR_BLEND_COMP(client_read, io_arg, &blend->values, i);
+            READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &blend->values, i);
             blend->delta_bits |= BIT(i);
         }
     }
@@ -370,7 +370,7 @@ static inline q2proto_error_t client_read_q2pro_extv2_blends(uintptr_t io_arg, q
     {
         if (blend_bits & BIT(i + 4))
         {
-            READ_CHECKED_VAR_BLEND_COMP(client_read, io_arg, &damage_blend->values, i);
+            READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &damage_blend->values, i);
             damage_blend->delta_bits |= BIT(i);
         }
     }
@@ -461,19 +461,19 @@ static inline void q2protoio_write_var_coord_float(uintptr_t io_arg, const q2pro
     q2protoio_write_float(io_arg, q2proto_var_coord_get_float_comp(pos, 2));
 }
 
-static inline q2proto_error_t server_write_q2pro_extv2_blends(uintptr_t io_arg, const q2proto_blend_delta_t *blend, const q2proto_blend_delta_t *damage_blend)
+static inline q2proto_error_t server_write_q2pro_extv2_blends(uintptr_t io_arg, const q2proto_color_delta_t *blend, const q2proto_color_delta_t *damage_blend)
 {
     uint8_t blend_bits = (blend->delta_bits & 0xf) | (damage_blend->delta_bits & 0xf) << 4;
     WRITE_CHECKED(server_write, io_arg, u8, blend_bits);
     for (int i = 0; i < 4; i++)
     {
         if(blend->delta_bits & BIT(i))
-            WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&blend->values, i));
+            WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&blend->values, i));
     }
     for (int i = 0; i < 4; i++)
     {
         if(damage_blend->delta_bits & BIT(i))
-            WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_blend_get_byte_comp(&damage_blend->values, i));
+            WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&damage_blend->values, i));
     }
     return Q2P_ERR_SUCCESS;
 }

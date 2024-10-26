@@ -232,13 +232,13 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
     {
         if (to->blend[c] != from->blend[c])
         {
-            q2proto_var_blend_set_byte_comp(&delta->blend.values, c, to->blend[c]);
+            q2proto_var_color_set_byte_comp(&delta->blend.values, c, to->blend[c]);
             delta->blend.delta_bits |= BIT(c);
         }
     #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
         if (to->damage_blend[c] != from->damage_blend[c])
         {
-            q2proto_var_blend_set_byte_comp(&delta->damage_blend.values, c, to->damage_blend[c]);
+            q2proto_var_color_set_byte_comp(&delta->damage_blend.values, c, to->damage_blend[c]);
             delta->damage_blend.delta_bits |= BIT(c);
         }
     #endif

@@ -431,30 +431,30 @@ int16_t q2proto_var_small_angle_get_q2repro_gunangles_comp(const q2proto_var_sma
     return 0;
 }
 
-void q2proto_var_blend_set_float_comp(q2proto_var_blend_t *blend, int comp, float f)
+void q2proto_var_color_set_float_comp(q2proto_var_color_t *blend, int comp, float f)
 {
     blend->comps[comp].f = f;
     blend->float_bits |= BIT(comp);
 }
 
-void q2proto_var_blend_set_byte_comp(q2proto_var_blend_t *blend, int comp, uint8_t b)
+void q2proto_var_color_set_byte_comp(q2proto_var_color_t *blend, int comp, uint8_t b)
 {
     blend->comps[comp].c = b;
     blend->float_bits &= ~(BIT(comp));
 }
 
-float q2proto_var_blend_get_float_comp(const q2proto_var_blend_t *blend, int comp)
+float q2proto_var_color_get_float_comp(const q2proto_var_color_t *blend, int comp)
 {
     if(blend->float_bits & BIT(comp))
         return blend->comps[comp].f;
     else
-        return _q2proto_valenc_byte2blend(blend->comps[comp].c);
+        return _q2proto_valenc_byte2color(blend->comps[comp].c);
 }
 
-uint8_t q2proto_var_blend_get_byte_comp(const q2proto_var_blend_t *blend, int comp)
+uint8_t q2proto_var_color_get_byte_comp(const q2proto_var_color_t *blend, int comp)
 {
     if(blend->float_bits & BIT(comp))
-        return _q2proto_valenc_blend2byte(blend->comps[comp].f);
+        return _q2proto_valenc_color2byte(blend->comps[comp].f);
     else
         return blend->comps[comp].c;
 }
