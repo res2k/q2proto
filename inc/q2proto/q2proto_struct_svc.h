@@ -544,57 +544,59 @@ typedef struct q2proto_svc_damage_s {
     } damage[Q2PROTO_MAX_DAMAGE_INDICATORS];
 } q2proto_svc_damage_t;
 
-/// Flag bits for fields set in a q2proto_svc_fog_t structure
-enum q2proto_fog_flags
-{
-    /// 'density', 'skyfactor' are set
-    Q2P_FOG_DENSITY_SKYFACTOR = 0x1,
-    /// 'time' is set
-    Q2P_FOG_TIME = 0x2,
-};
-
-/// Flag bits for fields set in a q2proto_svc_fog_t.heightfog structure
-enum q2proto_heightfog_flags
-{
-    /// 'falloff' is set
-    Q2P_HEIGHTFOG_FALLOFF = 0x1,
-    /// 'density' is set
-    Q2P_HEIGHTFOG_DENSITY = 0x2,
-    /// 'start_dist' is set
-    Q2P_HEIGHTFOG_START_DIST = 0x4,
-    /// 'end_dist' is set
-    Q2P_HEIGHTFOG_END_DIST = 0x8,
-};
-
-/// Rerelease fog
-typedef struct q2proto_svc_fog_s {
-    /// Combination of q2proto_fog_flags, indicating which fields are set
-    uint32_t flags;
+/// Rerelease fog, global part
+typedef struct q2proto_rr_fog_global_s {
     /// density
-    float density;
+    q2proto_var_fraction_t density;
     /// skyfactor
-    uint8_t skyfactor;
+    q2proto_var_fraction_t skyfactor;
     /// color (alpha is ignored)
     q2proto_color_delta_t color;
     /// time
     uint16_t time;
+} q2proto_rr_fog_global_t;
 
-    struct {
-        /// Combination of q2proto_heightfog_flags, indicating which fields are set
-        uint32_t flags;
-        /// falloff
-        float falloff;
-        /// density
-        float density;
-        /// start color (alpha is ignored)
-        q2proto_color_delta_t start_color;
-        /// start distance
-        int32_t start_dist;
-        /// end color (alpha is ignored)
-        q2proto_color_delta_t end_color;
-        /// end distance
-        int32_t end_dist;
-    } heightfog;
+/// Rerelease fog, heightfog part
+typedef struct q2proto_rr_fog_height_s {
+    /// falloff
+    q2proto_var_fraction_t falloff;
+    /// density
+    q2proto_var_fraction_t density;
+    /// start color (alpha is ignored)
+    q2proto_color_delta_t start_color;
+    /// start distance
+    q2proto_var_coord_t start_dist;
+    /// end color (alpha is ignored)
+    q2proto_color_delta_t end_color;
+    /// end distance
+    q2proto_var_coord_t end_dist;
+} q2proto_rr_fog_height_t;
+
+/// Flag bits for fields set in a q2proto_svc_fog_t structure
+enum q2proto_fog_flags
+{
+    /// global 'density', 'skyfactor' are set
+    Q2P_FOG_DENSITY_SKYFACTOR = 0x1,
+    /// global 'time' is set
+    Q2P_FOG_TIME = 0x2,
+    /// heightfog 'falloff' is set
+    Q2P_HEIGHTFOG_FALLOFF = 0x4,
+    /// heightfog 'density' is set
+    Q2P_HEIGHTFOG_DENSITY = 0x8,
+    /// heightfog 'start_dist' is set
+    Q2P_HEIGHTFOG_START_DIST = 0x10,
+    /// heightfog 'end_dist' is set
+    Q2P_HEIGHTFOG_END_DIST = 0x20,
+};
+
+/// Rerelease fog
+typedef struct q2proto_svc_fog_s {
+    /// Combination of q2proto_fog_flags, indicating which fields in 'global' and 'height' are set
+    uint32_t flags;
+    /// global fog fields
+    q2proto_rr_fog_global_t global;
+    /// height fog fields
+    q2proto_rr_fog_height_t height;
 } q2proto_svc_fog_t;
 
 /// Rerelease POI

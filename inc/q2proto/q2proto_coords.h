@@ -56,6 +56,9 @@ typedef float q2proto_vec3_t[3];
         for (int c = 0; c < NUM_COMPS; c++)                                                                              \
             out[c] = q2proto_##VEC_TYPE##_get_##TYPE_NAME##_comp(vec, c);                                                \
     }
+#define _GENERATE_VARIANT_FUNCTIONS_SINGLE(VEC_TYPE, TYPE_NAME, TYPE_TYPE)                 \
+    void q2proto_##VEC_TYPE##_set_##TYPE_NAME(q2proto_##VEC_TYPE##_t *coord, TYPE_TYPE x); \
+    TYPE_TYPE q2proto_##VEC_TYPE##_get_##TYPE_NAME(const q2proto_##VEC_TYPE##_t *coord);
 
 /**\name Float/short variants
  * Coordinates and angles may be transmitted/stored as either float or short values.
@@ -99,6 +102,33 @@ _GENERATE_VARIANT_FUNCTIONS(var_coords, int_unscaled, int32_t, 3)
  * @{ */
 _GENERATE_VARIANT_FUNCTIONS(var_coords, short_unscaled, int16_t, 3)
 /** @}  */
+
+
+/// Single coordinate value, stored as either float, or encoded into an integer
+typedef struct q2proto_var_coord_s {
+    // Stores type of component
+    uint8_t Q2PROTO_PRIVATE_MEMBER(type);
+    // Values
+    union
+    {
+        float f;
+        int32_t i;
+    } Q2PROTO_PRIVATE_MEMBER(val);
+} q2proto_var_coord_t;
+
+/** 'Variant coordinate' functions for float values
+ * @{ */
+_GENERATE_VARIANT_FUNCTIONS_SINGLE(var_coord, float, float)
+/** @}  */
+/** 'Variant coordinate' functions for pre-encoded integer values
+ * @{ */
+_GENERATE_VARIANT_FUNCTIONS_SINGLE(var_coord, int, int32_t)
+/** @}  */
+/** 'Variant coordinate' functions for integer values (no encoding)
+ * @{ */
+_GENERATE_VARIANT_FUNCTIONS_SINGLE(var_coord, int_unscaled, int32_t)
+/** @}  */
+
 
 /// 'Variant angle', storing an angle as either float, or encoded into 16 bit
 typedef struct q2proto_var_angles_s {
@@ -209,6 +239,32 @@ _GENERATE_VARIANT_FUNCTIONS(var_color, float, float, 4)
 /** Color functions for byte values
  * @{ */
 _GENERATE_VARIANT_FUNCTIONS(var_color, byte, uint8_t, 4)
+/** @}  */
+
+/// Store some fractional value (0..1, inclusive) as floats or an integer encoding
+typedef struct q2proto_var_fraction_s {
+    // Stores type of component
+    uint8_t Q2PROTO_PRIVATE_MEMBER(type);
+    // Values
+    union
+    {
+        float f;
+        uint16_t w;
+        uint8_t b;
+    } Q2PROTO_PRIVATE_MEMBER(val);
+} q2proto_var_fraction_t;
+
+/** 'Fraction' functions for float values
+ * @{ */
+_GENERATE_VARIANT_FUNCTIONS_SINGLE(var_fraction, float, float)
+/** @}  */
+/** 'Fraction' functions for normalized unsigned 16-bit values
+ * @{ */
+_GENERATE_VARIANT_FUNCTIONS_SINGLE(var_fraction, word, uint16_t)
+/** @}  */
+/** 'Fraction' functions for normalized unsigned 8-bit values
+ * @{ */
+_GENERATE_VARIANT_FUNCTIONS_SINGLE(var_fraction, byte, uint8_t)
 /** @}  */
 
 /**\name Delta coordinates & angles

@@ -97,6 +97,48 @@ int16_t q2proto_var_coords_get_short_unscaled_comp(const q2proto_var_coords_t *c
     return clip_int16(q2proto_var_coords_get_int_unscaled_comp(coord, comp));
 }
 
+void q2proto_var_coord_set_float(q2proto_var_coord_t *coord, float f)
+{
+    coord->val.f = f;
+    coord->type = 1;
+}
+
+void q2proto_var_coord_set_int(q2proto_var_coord_t *coord, int32_t i)
+{
+    coord->val.i = i;
+    coord->type = 0;
+}
+
+void q2proto_var_coord_set_int_unscaled(q2proto_var_coord_t *coord, int32_t i)
+{
+    if (i > INT32_MAX / 8)
+        i = INT32_MAX / 8;
+    else if (i < INT32_MIN / 8)
+        i = INT32_MIN / 8;
+    q2proto_var_coord_set_int(coord, i * 8);
+}
+
+float q2proto_var_coord_get_float(const q2proto_var_coord_t *coord)
+{
+    if(coord->type != 0)
+        return coord->val.f;
+    else
+        return _q2proto_valenc_int2coord(coord->val.i);
+}
+
+int32_t q2proto_var_coord_get_int(const q2proto_var_coord_t *coord)
+{
+    if(coord->type != 0)
+        return _q2proto_valenc_coord2int(coord->val.f);
+    else
+        return coord->val.i;
+}
+
+int32_t q2proto_var_coord_get_int_unscaled(const q2proto_var_coord_t *coord)
+{
+    return q2proto_var_coord_get_int(coord) / 8;
+}
+
 typedef enum
 {
     VAR_ANGLES_TYPE_SHORT = 0,
@@ -457,4 +499,71 @@ uint8_t q2proto_var_color_get_byte_comp(const q2proto_var_color_t *blend, int co
         return _q2proto_valenc_color2byte(blend->comps[comp].f);
     else
         return blend->comps[comp].c;
+}
+
+typedef enum
+{
+    VAR_FRACTION_TYPE_WORD = 0,
+    VAR_FRACTION_TYPE_BYTE = 1,
+    VAR_FRACTION_TYPE_FLOAT = 2,
+} var_fraction_type_t;
+
+void q2proto_var_fraction_set_float(q2proto_var_fraction_t *frac, float f)
+{
+    frac->val.f = f;
+    frac->type = VAR_FRACTION_TYPE_FLOAT;
+}
+
+void q2proto_var_fraction_set_word(q2proto_var_fraction_t *frac, uint16_t w)
+{
+    frac->val.w = w;
+    frac->type = VAR_FRACTION_TYPE_WORD;
+}
+
+void q2proto_var_fraction_set_byte(q2proto_var_fraction_t *frac, uint8_t b)
+{
+    frac->val.b = b;
+    frac->type = VAR_FRACTION_TYPE_BYTE;
+}
+
+float q2proto_var_fraction_get_float(const q2proto_var_fraction_t *frac)
+{
+    switch(frac->type)
+    {
+    case VAR_FRACTION_TYPE_WORD:
+        return frac->val.w / 65535.f;
+    case VAR_FRACTION_TYPE_BYTE:
+        return frac->val.b / 255.f;
+    case VAR_FRACTION_TYPE_FLOAT:
+        return frac->val.f;
+    }
+    return 0;
+}
+
+uint16_t q2proto_var_fraction_get_word(const q2proto_var_fraction_t *frac)
+{
+    switch(frac->type)
+    {
+    case VAR_FRACTION_TYPE_WORD:
+        return frac->val.w;
+    case VAR_FRACTION_TYPE_BYTE:
+        return frac->val.b * 0x101;
+    case VAR_FRACTION_TYPE_FLOAT:
+        return _q2proto_valenc_clamped_mul(frac->val.f, UINT16_MAX, 0, UINT16_MAX);
+    }
+    return 0;
+}
+
+uint8_t q2proto_var_fraction_get_byte(const q2proto_var_fraction_t *frac)
+{
+    switch(frac->type)
+    {
+    case VAR_FRACTION_TYPE_WORD:
+        return frac->val.w >> 8;
+    case VAR_FRACTION_TYPE_BYTE:
+        return frac->val.b;
+    case VAR_FRACTION_TYPE_FLOAT:
+        return _q2proto_valenc_clamped_mul(frac->val.f, UINT8_MAX, 0, UINT8_MAX);
+    }
+    return 0;
 }
