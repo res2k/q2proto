@@ -32,8 +32,8 @@ void q2proto_packing_make_entity_state_delta(const q2proto_packed_entity_state_t
     if (!from)
         from = &q2proto_null_packed_entity_state;
 
-    q2proto_var_coord_set_int(&delta->origin.write.prev, from->origin);
-    q2proto_var_coord_set_int(&delta->origin.write.current, to->origin);
+    q2proto_var_coords_set_int(&delta->origin.write.prev, from->origin);
+    q2proto_var_coords_set_int(&delta->origin.write.current, to->origin);
 
     if (to->angles[0] != from->angles[0])
     {
@@ -54,7 +54,7 @@ void q2proto_packing_make_entity_state_delta(const q2proto_packed_entity_state_t
     if (write_old_origin)
     {
         delta->delta_bits |= Q2P_ESD_OLD_ORIGIN;
-        q2proto_var_coord_set_int(&delta->old_origin, to->old_origin);
+        q2proto_var_coords_set_int(&delta->old_origin, to->old_origin);
     }
 
     if (to->skinnum != from->skinnum)
@@ -173,10 +173,10 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
         delta->pm_type = to->pm_type;
     }
 
-    q2proto_var_coord_set_int(&delta->pm_origin.write.prev, from->pm_origin);
-    q2proto_var_coord_set_int(&delta->pm_origin.write.current, to->pm_origin);
-    q2proto_var_coord_set_int(&delta->pm_velocity.write.prev, from->pm_velocity);
-    q2proto_var_coord_set_int(&delta->pm_velocity.write.current, to->pm_velocity);
+    q2proto_var_coords_set_int(&delta->pm_origin.write.prev, from->pm_origin);
+    q2proto_var_coords_set_int(&delta->pm_origin.write.current, to->pm_origin);
+    q2proto_var_coords_set_int(&delta->pm_velocity.write.prev, from->pm_velocity);
+    q2proto_var_coords_set_int(&delta->pm_velocity.write.current, to->pm_velocity);
 
     if (to->pm_time != from->pm_time)
     {

@@ -620,13 +620,13 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
         {
             for (int c = 0; c < 3; c++)
             {
-                int32_t prev_val = q2proto_var_coord_get_int_comp(&playerstate->pm_origin.write.prev, c);
-                int32_t curr_val = q2proto_var_coord_get_int_comp(&playerstate->pm_origin.write.current, c);
+                int32_t prev_val = q2proto_var_coords_get_int_comp(&playerstate->pm_origin.write.prev, c);
+                int32_t curr_val = q2proto_var_coords_get_int_comp(&playerstate->pm_origin.write.current, c);
                 WRITE_CHECKED(server_write, io_arg, q2pro_i23, curr_val, prev_val);
             }
         }
         else
-            WRITE_CHECKED(server_write, io_arg, var_coord_short, &playerstate->pm_origin.write.current);
+            WRITE_CHECKED(server_write, io_arg, var_coords_short, &playerstate->pm_origin.write.current);
     }
 
     if (flags & PS_M_VELOCITY)
@@ -635,13 +635,13 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
         {
             for (int c = 0; c < 3; c++)
             {
-                int32_t prev_val = q2proto_var_coord_get_int_comp(&playerstate->pm_velocity.write.prev, c);
-                int32_t curr_val = q2proto_var_coord_get_int_comp(&playerstate->pm_velocity.write.current, c);
+                int32_t prev_val = q2proto_var_coords_get_int_comp(&playerstate->pm_velocity.write.prev, c);
+                int32_t curr_val = q2proto_var_coords_get_int_comp(&playerstate->pm_velocity.write.current, c);
                 WRITE_CHECKED(server_write, io_arg, q2pro_i23, curr_val, prev_val);
             }
         }
         else
-            WRITE_CHECKED(server_write, io_arg, var_coord_short, &playerstate->pm_velocity.write.current);
+            WRITE_CHECKED(server_write, io_arg, var_coords_short, &playerstate->pm_velocity.write.current);
     }
 
     if (flags & PS_M_TIME)

@@ -81,7 +81,7 @@ typedef struct q2proto_clc_move_delta_s {
     /// view angles
     q2proto_var_angle_t angles;
     /// movement vector, [0]: forward, [1]: side, [2]: up
-    q2proto_var_coord_t move;
+    q2proto_var_coords_t move;
     /// pressed buttons
     uint8_t buttons;
     /// impulsed impulse

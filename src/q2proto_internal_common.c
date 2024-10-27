@@ -310,13 +310,13 @@ q2proto_error_t q2proto_common_server_write_sound(uintptr_t io_arg, q2proto_game
         {
         case Q2PROTO_GAME_VANILLA:
         case Q2PROTO_GAME_Q2PRO_EXTENDED:
-            WRITE_CHECKED(server_write, io_arg, var_coord_short, &sound->pos);
+            WRITE_CHECKED(server_write, io_arg, var_coords_short, &sound->pos);
             break;
         case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
-            WRITE_CHECKED(server_write, io_arg, var_coord_q2pro_i23, &sound->pos);
+            WRITE_CHECKED(server_write, io_arg, var_coords_q2pro_i23, &sound->pos);
             break;
         case Q2PROTO_GAME_RERELEASE:
-            WRITE_CHECKED(server_write, io_arg, var_coord_float, &sound->pos);
+            WRITE_CHECKED(server_write, io_arg, var_coords_float, &sound->pos);
             break;
         }
     }

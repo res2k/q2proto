@@ -475,9 +475,9 @@ q2proto_error_t q2proto_q2pro_client_read_entity_delta(q2proto_clientcontext_t *
     if (delta_bits_check(bits, U_OLDORIGIN, &entity_state->delta_bits, Q2P_ESD_OLD_ORIGIN))
     {
         if (has_q2pro_extensions_v2)
-            CHECKED(client_read, io_arg, read_var_coord_q2pro_i23(io_arg, &entity_state->old_origin));
+            CHECKED(client_read, io_arg, read_var_coords_q2pro_i23(io_arg, &entity_state->old_origin));
         else
-            CHECKED(client_read, io_arg, read_var_coord_short(io_arg, &entity_state->old_origin));
+            CHECKED(client_read, io_arg, read_var_coords_short(io_arg, &entity_state->old_origin));
     }
 
     if (delta_bits_check(bits, U_SOUND, &entity_state->delta_bits, Q2P_ESD_SOUND))
@@ -977,7 +977,7 @@ static q2proto_error_t q2pro_client_write_move_delta(uintptr_t io_arg, const q2p
 
     int16_t short_move[3];
     int16_t short_angles[3];
-    q2proto_var_coord_get_short_unscaled(&move_delta->move, short_move);
+    q2proto_var_coords_get_short_unscaled(&move_delta->move, short_move);
     q2proto_var_angle_get_short(&move_delta->angles, short_angles);
 
     if (bits & CM_ANGLE1)
@@ -1051,7 +1051,7 @@ static q2proto_error_t q2pro_client_write_move_delta_bits(bitwriter_t* bitwriter
     int16_t short_move[3];
     int16_t short_angles[3];
     int16_t prev_short_angles[3] = {0};
-    q2proto_var_coord_get_short_unscaled(&move_delta->move, short_move);
+    q2proto_var_coords_get_short_unscaled(&move_delta->move, short_move);
     q2proto_var_angle_get_short(&move_delta->angles, short_angles);
     q2proto_var_angle_get_short(&base_move->angles, prev_short_angles);
 
@@ -1088,17 +1088,17 @@ static q2proto_error_t q2pro_client_write_move_delta_bits(bitwriter_t* bitwriter
     if (bits & CM_FORWARD)
     {
         CHECKED_BITWRITER_WRITE(bitwriter, short_move[0], -10);
-        q2proto_var_coord_set_short_unscaled_comp(&base_move->move, 0, short_move[0]);
+        q2proto_var_coords_set_short_unscaled_comp(&base_move->move, 0, short_move[0]);
     }
     if (bits & CM_SIDE)
     {
         CHECKED_BITWRITER_WRITE(bitwriter, short_move[1], -10);
-        q2proto_var_coord_set_short_unscaled_comp(&base_move->move, 1, short_move[1]);
+        q2proto_var_coords_set_short_unscaled_comp(&base_move->move, 1, short_move[1]);
     }
     if (bits & CM_UP)
     {
         CHECKED_BITWRITER_WRITE(bitwriter, short_move[2], -10);
-        q2proto_var_coord_set_short_unscaled_comp(&base_move->move, 2, short_move[2]);
+        q2proto_var_coords_set_short_unscaled_comp(&base_move->move, 2, short_move[2]);
     }
 
     if (bits & CM_BUTTONS)
@@ -1194,13 +1194,13 @@ static q2proto_error_t q2proto_server_write_maybe_diff_coord_comp(q2proto_server
 {
     if (context->server_info->game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
     {
-        int32_t prev_val = q2proto_var_coord_get_int_comp(&coord->write.prev, comp);
-        int32_t curr_val = q2proto_var_coord_get_int_comp(&coord->write.current, comp);
+        int32_t prev_val = q2proto_var_coords_get_int_comp(&coord->write.prev, comp);
+        int32_t curr_val = q2proto_var_coords_get_int_comp(&coord->write.current, comp);
         WRITE_CHECKED(server_write, io_arg, q2pro_i23, curr_val, prev_val);
     }
     else
     {
-        int16_t v = q2proto_var_coord_get_short_comp(&coord->write.current, comp);
+        int16_t v = q2proto_var_coords_get_short_comp(&coord->write.current, comp);
         WRITE_CHECKED(server_write, io_arg, i16, v);
     }
     return Q2P_ERR_SUCCESS;
@@ -1541,9 +1541,9 @@ q2proto_error_t q2proto_q2pro_server_write_entity_state_delta(q2proto_servercont
     if (bits & U_OLDORIGIN)
     {
         if (has_q2pro_extensions_v2)
-            CHECKED_IO(q2pro_server_write, io_arg, q2protoio_write_var_coord_q2pro_i23(io_arg, &entity_state_delta->old_origin), "write old_origin");
+            CHECKED_IO(q2pro_server_write, io_arg, q2protoio_write_var_coords_q2pro_i23(io_arg, &entity_state_delta->old_origin), "write old_origin");
         else
-            CHECKED_IO(q2pro_server_write, io_arg, q2protoio_write_var_coord_short(io_arg, &entity_state_delta->old_origin), "write old_origin");
+            CHECKED_IO(q2pro_server_write, io_arg, q2protoio_write_var_coords_short(io_arg, &entity_state_delta->old_origin), "write old_origin");
     }
 
     if (bits & U_SOUND)
@@ -2084,11 +2084,11 @@ static q2proto_error_t q2pro_server_read_move_delta(uintptr_t io_arg, q2proto_cl
         READ_CHECKED_VAR_ANGLE_COMP_16(server_read, io_arg, &move_delta->angles, 2);
 
     if (delta_bits_check(bits, CM_FORWARD, &move_delta->delta_bits, Q2P_CMD_MOVE_FORWARD))
-        READ_CHECKED_VAR_COORD_COMP_16_UNSCALED(server_read, io_arg, &move_delta->move, 0);
+        READ_CHECKED_VAR_COORDS_COMP_16_UNSCALED(server_read, io_arg, &move_delta->move, 0);
     if (delta_bits_check(bits, CM_SIDE, &move_delta->delta_bits, Q2P_CMD_MOVE_SIDE))
-        READ_CHECKED_VAR_COORD_COMP_16_UNSCALED(server_read, io_arg, &move_delta->move, 1);
+        READ_CHECKED_VAR_COORDS_COMP_16_UNSCALED(server_read, io_arg, &move_delta->move, 1);
     if (delta_bits_check(bits, CM_UP, &move_delta->delta_bits, Q2P_CMD_MOVE_UP))
-        READ_CHECKED_VAR_COORD_COMP_16_UNSCALED(server_read, io_arg, &move_delta->move, 2);
+        READ_CHECKED_VAR_COORDS_COMP_16_UNSCALED(server_read, io_arg, &move_delta->move, 2);
 
     if (delta_bits_check(bits, CM_BUTTONS, &move_delta->delta_bits, Q2P_CMD_BUTTONS))
         READ_CHECKED(server_read, io_arg, move_delta->buttons, u8);
@@ -2164,19 +2164,19 @@ static q2proto_error_t q2pro_server_read_batch_move_delta(bitreader_t *bitreader
     {
         int move_value;
         CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, -10, &move_value));
-        q2proto_var_coord_set_int_unscaled_comp(&move_delta->move, 0, move_value);
+        q2proto_var_coords_set_int_unscaled_comp(&move_delta->move, 0, move_value);
     }
     if (delta_bits_check(bits, CM_SIDE, &move_delta->delta_bits, Q2P_CMD_MOVE_SIDE))
     {
         int move_value;
         CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, -10, &move_value));
-        q2proto_var_coord_set_int_unscaled_comp(&move_delta->move, 1, move_value);
+        q2proto_var_coords_set_int_unscaled_comp(&move_delta->move, 1, move_value);
     }
     if (delta_bits_check(bits, CM_UP, &move_delta->delta_bits, Q2P_CMD_MOVE_UP))
     {
         int move_value;
         CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, -10, &move_value));
-        q2proto_var_coord_set_int_unscaled_comp(&move_delta->move, 2, move_value);
+        q2proto_var_coords_set_int_unscaled_comp(&move_delta->move, 2, move_value);
     }
 
     if (delta_bits_check(bits, CM_BUTTONS, &move_delta->delta_bits, Q2P_CMD_BUTTONS))

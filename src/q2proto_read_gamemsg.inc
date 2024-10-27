@@ -212,7 +212,7 @@ static q2proto_error_t READ_SOUND_NAME(uintptr_t io_arg, q2proto_svc_sound_t *so
     {
         q2proto_vec3_t pos;
         CHECKED(client_read, io_arg, READ_GAME_POSITION(io_arg, pos));
-        q2proto_var_coord_set_float(&sound->pos, pos);
+        q2proto_var_coords_set_float(&sound->pos, pos);
     }
 
     return Q2P_ERR_SUCCESS;

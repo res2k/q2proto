@@ -168,62 +168,62 @@ static inline float q2protoio_read_float(uintptr_t io_arg)
 }
 
 /// Read a single component of a 16-bit encoded coordinate
-#define READ_CHECKED_VAR_COORD_COMP_16(SOURCE, IO_ARG, TARGET, COMP) \
-    do                                                               \
-    {                                                                \
-        int16_t coord;                                               \
-        READ_CHECKED(SOURCE, (IO_ARG), coord, i16);                  \
-        q2proto_var_coord_set_int_comp(TARGET, COMP, coord);         \
+#define READ_CHECKED_VAR_COORDS_COMP_16(SOURCE, IO_ARG, TARGET, COMP) \
+    do                                                                \
+    {                                                                 \
+        int16_t coord;                                                \
+        READ_CHECKED(SOURCE, (IO_ARG), coord, i16);                   \
+        q2proto_var_coords_set_int_comp(TARGET, COMP, coord);         \
     } while (0)
 
-static inline q2proto_error_t read_var_coord_short(uintptr_t io_arg, q2proto_var_coord_t* pos)
+static inline q2proto_error_t read_var_coords_short(uintptr_t io_arg, q2proto_var_coords_t* pos)
 {
-    READ_CHECKED_VAR_COORD_COMP_16(client_read, io_arg, pos, 0);
-    READ_CHECKED_VAR_COORD_COMP_16(client_read, io_arg, pos, 1);
-    READ_CHECKED_VAR_COORD_COMP_16(client_read, io_arg, pos, 2);
+    READ_CHECKED_VAR_COORDS_COMP_16(client_read, io_arg, pos, 0);
+    READ_CHECKED_VAR_COORDS_COMP_16(client_read, io_arg, pos, 1);
+    READ_CHECKED_VAR_COORDS_COMP_16(client_read, io_arg, pos, 2);
     return Q2P_ERR_SUCCESS;
 }
 
 /// Read a single component of a 16-bit coordinate (no encoding)
-#define READ_CHECKED_VAR_COORD_COMP_16_UNSCALED(SOURCE, IO_ARG, TARGET, COMP) \
-    do                                                                        \
-    {                                                                         \
-        int16_t coord;                                                        \
-        READ_CHECKED(SOURCE, (IO_ARG), coord, i16);                           \
-        q2proto_var_coord_set_short_unscaled_comp(TARGET, COMP, coord);       \
+#define READ_CHECKED_VAR_COORDS_COMP_16_UNSCALED(SOURCE, IO_ARG, TARGET, COMP) \
+    do                                                                         \
+    {                                                                          \
+        int16_t coord;                                                         \
+        READ_CHECKED(SOURCE, (IO_ARG), coord, i16);                            \
+        q2proto_var_coords_set_short_unscaled_comp(TARGET, COMP, coord);       \
     } while (0)
 
 /// Read a single component of a Q2PRO variably encoded coordinate
-#define READ_CHECKED_VAR_COORD_COMP_Q2PRO_I23(SOURCE, IO_ARG, TARGET, COMP) \
-    do                                                                      \
-    {                                                                       \
-        int coord;                                                          \
-        READ_CHECKED(SOURCE, (IO_ARG), coord, q2pro_i23, NULL);             \
-        q2proto_var_coord_set_int_comp(TARGET, COMP, coord);                \
+#define READ_CHECKED_VAR_COORDS_COMP_Q2PRO_I23(SOURCE, IO_ARG, TARGET, COMP) \
+    do                                                                       \
+    {                                                                        \
+        int coord;                                                           \
+        READ_CHECKED(SOURCE, (IO_ARG), coord, q2pro_i23, NULL);              \
+        q2proto_var_coords_set_int_comp(TARGET, COMP, coord);                \
     } while (0)
 
-static inline q2proto_error_t read_var_coord_q2pro_i23(uintptr_t io_arg, q2proto_var_coord_t* pos)
+static inline q2proto_error_t read_var_coords_q2pro_i23(uintptr_t io_arg, q2proto_var_coords_t* pos)
 {
-    READ_CHECKED_VAR_COORD_COMP_Q2PRO_I23(client_read, io_arg, pos, 0);
-    READ_CHECKED_VAR_COORD_COMP_Q2PRO_I23(client_read, io_arg, pos, 1);
-    READ_CHECKED_VAR_COORD_COMP_Q2PRO_I23(client_read, io_arg, pos, 2);
+    READ_CHECKED_VAR_COORDS_COMP_Q2PRO_I23(client_read, io_arg, pos, 0);
+    READ_CHECKED_VAR_COORDS_COMP_Q2PRO_I23(client_read, io_arg, pos, 1);
+    READ_CHECKED_VAR_COORDS_COMP_Q2PRO_I23(client_read, io_arg, pos, 2);
     return Q2P_ERR_SUCCESS;
 }
 
 /// Read a single component of a float encoded coordinate
-#define READ_CHECKED_VAR_COORD_COMP_FLOAT(SOURCE, IO_ARG, TARGET, COMP) \
-    do                                                                  \
-    {                                                                   \
-        float coord;                                                    \
-        READ_CHECKED(SOURCE, (IO_ARG), coord, float);                   \
-        q2proto_var_coord_set_float_comp(TARGET, COMP, coord);          \
+#define READ_CHECKED_VAR_COORDS_COMP_FLOAT(SOURCE, IO_ARG, TARGET, COMP) \
+    do                                                                   \
+    {                                                                    \
+        float coord;                                                     \
+        READ_CHECKED(SOURCE, (IO_ARG), coord, float);                    \
+        q2proto_var_coords_set_float_comp(TARGET, COMP, coord);          \
     } while (0)
 
-static inline q2proto_error_t read_var_coord_float(uintptr_t io_arg, q2proto_var_coord_t* pos)
+static inline q2proto_error_t read_var_coords_float(uintptr_t io_arg, q2proto_var_coords_t* pos)
 {
-    READ_CHECKED_VAR_COORD_COMP_FLOAT(client_read, io_arg, pos, 0);
-    READ_CHECKED_VAR_COORD_COMP_FLOAT(client_read, io_arg, pos, 1);
-    READ_CHECKED_VAR_COORD_COMP_FLOAT(client_read, io_arg, pos, 2);
+    READ_CHECKED_VAR_COORDS_COMP_FLOAT(client_read, io_arg, pos, 0);
+    READ_CHECKED_VAR_COORDS_COMP_FLOAT(client_read, io_arg, pos, 1);
+    READ_CHECKED_VAR_COORDS_COMP_FLOAT(client_read, io_arg, pos, 2);
     return Q2P_ERR_SUCCESS;
 }
 
@@ -350,7 +350,7 @@ static inline q2proto_error_t client_read_maybe_diff_coord_comp(q2proto_clientco
     {
         READ_CHECKED(client_read, io_arg, val, i16);
     }
-    q2proto_var_coord_set_int_comp(&coord->read.value.values, comp, val);
+    q2proto_var_coords_set_int_comp(&coord->read.value.values, comp, val);
     return Q2P_ERR_SUCCESS;
 }
 
@@ -435,11 +435,11 @@ static inline void q2protoio_write_string(uintptr_t io_arg, const q2proto_string
     p[str->len] = 0;
 }
 
-static inline void q2protoio_write_var_coord_short(uintptr_t io_arg, const q2proto_var_coord_t* pos)
+static inline void q2protoio_write_var_coords_short(uintptr_t io_arg, const q2proto_var_coords_t* pos)
 {
-    q2protoio_write_i16(io_arg, q2proto_var_coord_get_int_comp(pos, 0));
-    q2protoio_write_i16(io_arg, q2proto_var_coord_get_int_comp(pos, 1));
-    q2protoio_write_i16(io_arg, q2proto_var_coord_get_int_comp(pos, 2));
+    q2protoio_write_i16(io_arg, q2proto_var_coords_get_int_comp(pos, 0));
+    q2protoio_write_i16(io_arg, q2proto_var_coords_get_int_comp(pos, 1));
+    q2protoio_write_i16(io_arg, q2proto_var_coords_get_int_comp(pos, 2));
     /* Note: q2protoio_get_error() is defined to return the error from the "last I/O operation",
      * so it's theoretically possible that one q2protoio_write_coord_short() fails, but the
      * last one succeeds, keeping the "last error" as success...
@@ -447,18 +447,18 @@ static inline void q2protoio_write_var_coord_short(uintptr_t io_arg, const q2pro
      * the remaining writes will do so, as well. */
 }
 
-static inline void q2protoio_write_var_coord_q2pro_i23(uintptr_t io_arg, const q2proto_var_coord_t* pos)
+static inline void q2protoio_write_var_coords_q2pro_i23(uintptr_t io_arg, const q2proto_var_coords_t* pos)
 {
-    q2protoio_write_q2pro_i23(io_arg, q2proto_var_coord_get_int_comp(pos, 0), 0);
-    q2protoio_write_q2pro_i23(io_arg, q2proto_var_coord_get_int_comp(pos, 1), 0);
-    q2protoio_write_q2pro_i23(io_arg, q2proto_var_coord_get_int_comp(pos, 2), 0);
+    q2protoio_write_q2pro_i23(io_arg, q2proto_var_coords_get_int_comp(pos, 0), 0);
+    q2protoio_write_q2pro_i23(io_arg, q2proto_var_coords_get_int_comp(pos, 1), 0);
+    q2protoio_write_q2pro_i23(io_arg, q2proto_var_coords_get_int_comp(pos, 2), 0);
 }
 
-static inline void q2protoio_write_var_coord_float(uintptr_t io_arg, const q2proto_var_coord_t* pos)
+static inline void q2protoio_write_var_coords_float(uintptr_t io_arg, const q2proto_var_coords_t* pos)
 {
-    q2protoio_write_float(io_arg, q2proto_var_coord_get_float_comp(pos, 0));
-    q2protoio_write_float(io_arg, q2proto_var_coord_get_float_comp(pos, 1));
-    q2protoio_write_float(io_arg, q2proto_var_coord_get_float_comp(pos, 2));
+    q2protoio_write_float(io_arg, q2proto_var_coords_get_float_comp(pos, 0));
+    q2protoio_write_float(io_arg, q2proto_var_coords_get_float_comp(pos, 1));
+    q2protoio_write_float(io_arg, q2proto_var_coords_get_float_comp(pos, 2));
 }
 
 static inline q2proto_error_t server_write_q2pro_extv2_blends(uintptr_t io_arg, const q2proto_color_delta_t *blend, const q2proto_color_delta_t *damage_blend)
@@ -498,11 +498,11 @@ static inline bool delta_bits_check(uint64_t bits, uint64_t check, uint32_t* del
 static inline unsigned q2proto_maybe_diff_coord_write_differs_int(const q2proto_maybe_diff_coord_t *coord)
 {
     unsigned bits = 0;
-    if (q2proto_var_coord_get_int_comp(&coord->write.prev, 0) != q2proto_var_coord_get_int_comp(&coord->write.current, 0))
+    if (q2proto_var_coords_get_int_comp(&coord->write.prev, 0) != q2proto_var_coords_get_int_comp(&coord->write.current, 0))
         bits |= BIT(0);
-    if (q2proto_var_coord_get_int_comp(&coord->write.prev, 1) != q2proto_var_coord_get_int_comp(&coord->write.current, 1))
+    if (q2proto_var_coords_get_int_comp(&coord->write.prev, 1) != q2proto_var_coords_get_int_comp(&coord->write.current, 1))
         bits |= BIT(1);
-    if (q2proto_var_coord_get_int_comp(&coord->write.prev, 2) != q2proto_var_coord_get_int_comp(&coord->write.current, 2))
+    if (q2proto_var_coords_get_int_comp(&coord->write.prev, 2) != q2proto_var_coords_get_int_comp(&coord->write.current, 2))
         bits |= BIT(2);
     return bits;
 }
@@ -511,11 +511,11 @@ static inline unsigned q2proto_maybe_diff_coord_write_differs_int(const q2proto_
 static inline unsigned q2proto_maybe_diff_coord_write_differs_float(const q2proto_maybe_diff_coord_t *coord)
 {
     unsigned bits = 0;
-    if (q2proto_var_coord_get_float_comp(&coord->write.prev, 0) != q2proto_var_coord_get_float_comp(&coord->write.current, 0))
+    if (q2proto_var_coords_get_float_comp(&coord->write.prev, 0) != q2proto_var_coords_get_float_comp(&coord->write.current, 0))
         bits |= BIT(0);
-    if (q2proto_var_coord_get_float_comp(&coord->write.prev, 1) != q2proto_var_coord_get_float_comp(&coord->write.current, 1))
+    if (q2proto_var_coords_get_float_comp(&coord->write.prev, 1) != q2proto_var_coords_get_float_comp(&coord->write.current, 1))
         bits |= BIT(1);
-    if (q2proto_var_coord_get_float_comp(&coord->write.prev, 2) != q2proto_var_coord_get_float_comp(&coord->write.current, 2))
+    if (q2proto_var_coords_get_float_comp(&coord->write.prev, 2) != q2proto_var_coords_get_float_comp(&coord->write.current, 2))
         bits |= BIT(2);
     return bits;
 }

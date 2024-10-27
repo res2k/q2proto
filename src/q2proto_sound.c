@@ -37,7 +37,7 @@ void q2proto_sound_decode_message(const q2proto_svc_sound_t *sound_msg, q2proto_
     if (sound_msg->flags & SND_POS)
     {
         sound_data->has_position = true;
-        q2proto_var_coord_get_float(&sound_msg->pos, sound_data->pos);
+        q2proto_var_coords_get_float(&sound_msg->pos, sound_data->pos);
     }
     if (sound_msg->flags & SND_VOLUME)
         sound_data->volume = sound_msg->volume / 255.f;
@@ -68,7 +68,7 @@ void q2proto_sound_encode_message(const q2proto_sound_t *sound_data, q2proto_svc
     }
     if (sound_data->has_position)
     {
-        q2proto_var_coord_set_float(&sound_msg->pos, sound_data->pos);
+        q2proto_var_coords_set_float(&sound_msg->pos, sound_data->pos);
         sound_msg->flags |= SND_POS;
     }
     int volume = sound_data->volume * 255;

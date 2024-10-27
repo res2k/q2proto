@@ -35,38 +35,38 @@ static inline int16_t clip_int16(int a)
     return ((a + 0x8000U) & ~0xFFFF) ? (a >> 31) ^ 0x7FFF : a;
 }
 
-void q2proto_var_coord_set_float_comp(q2proto_var_coord_t *coord, int comp, float f)
+void q2proto_var_coords_set_float_comp(q2proto_var_coords_t *coord, int comp, float f)
 {
     coord->comps[comp].f = f;
     coord->float_bits |= BIT(comp);
 }
 
-void q2proto_var_coord_set_int_comp(q2proto_var_coord_t *coord, int comp, int32_t i)
+void q2proto_var_coords_set_int_comp(q2proto_var_coords_t *coord, int comp, int32_t i)
 {
     coord->comps[comp].i = i;
     coord->float_bits &= ~(BIT(comp));
 }
 
-void q2proto_var_coord_set_short_comp(q2proto_var_coord_t *coord, int comp, int16_t s)
+void q2proto_var_coords_set_short_comp(q2proto_var_coords_t *coord, int comp, int16_t s)
 {
-    q2proto_var_coord_set_int_comp(coord, comp, s);
+    q2proto_var_coords_set_int_comp(coord, comp, s);
 }
 
-void q2proto_var_coord_set_int_unscaled_comp(q2proto_var_coord_t *coord, int comp, int32_t i)
+void q2proto_var_coords_set_int_unscaled_comp(q2proto_var_coords_t *coord, int comp, int32_t i)
 {
     if (i > INT32_MAX / 8)
         i = INT32_MAX / 8;
     else if (i < INT32_MIN / 8)
         i = INT32_MIN / 8;
-    q2proto_var_coord_set_int_comp(coord, comp, i * 8);
+    q2proto_var_coords_set_int_comp(coord, comp, i * 8);
 }
 
-void q2proto_var_coord_set_short_unscaled_comp(q2proto_var_coord_t *coord, int comp, int16_t s)
+void q2proto_var_coords_set_short_unscaled_comp(q2proto_var_coords_t *coord, int comp, int16_t s)
 {
-    q2proto_var_coord_set_int_unscaled_comp(coord, comp, s);
+    q2proto_var_coords_set_int_unscaled_comp(coord, comp, s);
 }
 
-float q2proto_var_coord_get_float_comp(const q2proto_var_coord_t *coord, int comp)
+float q2proto_var_coords_get_float_comp(const q2proto_var_coords_t *coord, int comp)
 {
     if(coord->float_bits & BIT(comp))
         return coord->comps[comp].f;
@@ -74,7 +74,7 @@ float q2proto_var_coord_get_float_comp(const q2proto_var_coord_t *coord, int com
         return _q2proto_valenc_int2coord(coord->comps[comp].i);
 }
 
-int32_t q2proto_var_coord_get_int_comp(const q2proto_var_coord_t *coord, int comp)
+int32_t q2proto_var_coords_get_int_comp(const q2proto_var_coords_t *coord, int comp)
 {
     if(coord->float_bits & BIT(comp))
         return _q2proto_valenc_coord2int(coord->comps[comp].f);
@@ -82,19 +82,19 @@ int32_t q2proto_var_coord_get_int_comp(const q2proto_var_coord_t *coord, int com
         return coord->comps[comp].i;
 }
 
-int16_t q2proto_var_coord_get_short_comp(const q2proto_var_coord_t *coord, int comp)
+int16_t q2proto_var_coords_get_short_comp(const q2proto_var_coords_t *coord, int comp)
 {
-    return q2proto_var_coord_get_int_comp(coord, comp);
+    return q2proto_var_coords_get_int_comp(coord, comp);
 }
 
-int32_t q2proto_var_coord_get_int_unscaled_comp(const q2proto_var_coord_t *coord, int comp)
+int32_t q2proto_var_coords_get_int_unscaled_comp(const q2proto_var_coords_t *coord, int comp)
 {
-    return q2proto_var_coord_get_int_comp(coord, comp) / 8;
+    return q2proto_var_coords_get_int_comp(coord, comp) / 8;
 }
 
-int16_t q2proto_var_coord_get_short_unscaled_comp(const q2proto_var_coord_t *coord, int comp)
+int16_t q2proto_var_coords_get_short_unscaled_comp(const q2proto_var_coords_t *coord, int comp)
 {
-    return clip_int16(q2proto_var_coord_get_int_unscaled_comp(coord, comp));
+    return clip_int16(q2proto_var_coords_get_int_unscaled_comp(coord, comp));
 }
 
 typedef enum

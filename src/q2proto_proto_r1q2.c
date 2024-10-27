@@ -351,17 +351,17 @@ static q2proto_error_t r1q2_client_read_entity_delta(q2proto_clientcontext_t *co
     entity_state->origin.read.value.delta_bits = 0;
     if (bits & U_ORIGIN1)
     {
-        READ_CHECKED_VAR_COORD_COMP_16(client_read, io_arg, &entity_state->origin.read.value.values, 0);
+        READ_CHECKED_VAR_COORDS_COMP_16(client_read, io_arg, &entity_state->origin.read.value.values, 0);
         entity_state->origin.read.value.delta_bits |= BIT(0);
     }
     if (bits & U_ORIGIN2)
     {
-        READ_CHECKED_VAR_COORD_COMP_16(client_read, io_arg, &entity_state->origin.read.value.values, 1);
+        READ_CHECKED_VAR_COORDS_COMP_16(client_read, io_arg, &entity_state->origin.read.value.values, 1);
         entity_state->origin.read.value.delta_bits |= BIT(1);
     }
     if (bits & U_ORIGIN3)
     {
-        READ_CHECKED_VAR_COORD_COMP_16(client_read, io_arg, &entity_state->origin.read.value.values, 2);
+        READ_CHECKED_VAR_COORDS_COMP_16(client_read, io_arg, &entity_state->origin.read.value.values, 2);
         entity_state->origin.read.value.delta_bits |= BIT(2);
     }
 
@@ -383,7 +383,7 @@ static q2proto_error_t r1q2_client_read_entity_delta(q2proto_clientcontext_t *co
     }
 
     if (delta_bits_check(bits, U_OLDORIGIN, &entity_state->delta_bits, Q2P_ESD_OLD_ORIGIN))
-        CHECKED(client_read, io_arg, read_var_coord_short(io_arg, &entity_state->old_origin));
+        CHECKED(client_read, io_arg, read_var_coords_short(io_arg, &entity_state->old_origin));
 
     if (delta_bits_check(bits, U_SOUND, &entity_state->delta_bits, Q2P_ESD_SOUND))
         READ_CHECKED(client_read, io_arg, entity_state->sound, u8);
@@ -443,26 +443,26 @@ static q2proto_error_t r1q2_client_read_playerstate(uintptr_t io_arg, uint8_t ex
     playerstate->pm_origin.read.value.delta_bits = 0;
     if (flags & PS_M_ORIGIN)
     {
-        READ_CHECKED_VAR_COORD_COMP_16(client_read, io_arg, &playerstate->pm_origin.read.value.values, 0);
-        READ_CHECKED_VAR_COORD_COMP_16(client_read, io_arg, &playerstate->pm_origin.read.value.values, 1);
+        READ_CHECKED_VAR_COORDS_COMP_16(client_read, io_arg, &playerstate->pm_origin.read.value.values, 0);
+        READ_CHECKED_VAR_COORDS_COMP_16(client_read, io_arg, &playerstate->pm_origin.read.value.values, 1);
         playerstate->pm_origin.read.value.delta_bits |= BIT(0) | BIT(1);
     }
     if (extraflags & EPS_M_ORIGIN2)
     {
-        READ_CHECKED_VAR_COORD_COMP_16(client_read, io_arg, &playerstate->pm_origin.read.value.values, 2);
+        READ_CHECKED_VAR_COORDS_COMP_16(client_read, io_arg, &playerstate->pm_origin.read.value.values, 2);
         playerstate->pm_origin.read.value.delta_bits |= BIT(2);
     }
 
     playerstate->pm_velocity.read.value.delta_bits = 0;
     if (flags & PS_M_VELOCITY)
     {
-        READ_CHECKED_VAR_COORD_COMP_16(client_read, io_arg, &playerstate->pm_velocity.read.value.values, 0);
-        READ_CHECKED_VAR_COORD_COMP_16(client_read, io_arg, &playerstate->pm_velocity.read.value.values, 1);
+        READ_CHECKED_VAR_COORDS_COMP_16(client_read, io_arg, &playerstate->pm_velocity.read.value.values, 0);
+        READ_CHECKED_VAR_COORDS_COMP_16(client_read, io_arg, &playerstate->pm_velocity.read.value.values, 1);
         playerstate->pm_velocity.read.value.delta_bits |= BIT(0) | BIT(1);
     }
     if (extraflags & EPS_M_VELOCITY2)
     {
-        READ_CHECKED_VAR_COORD_COMP_16(client_read, io_arg, &playerstate->pm_velocity.read.value.values, 2);
+        READ_CHECKED_VAR_COORDS_COMP_16(client_read, io_arg, &playerstate->pm_velocity.read.value.values, 2);
         playerstate->pm_velocity.read.value.delta_bits |= BIT(2);
     }
 
@@ -689,7 +689,7 @@ static q2proto_error_t r1q2_client_write_move_delta(q2proto_clientcontext_t *con
 
     int16_t short_move[3];
     int16_t short_angles[3];
-    q2proto_var_coord_get_short_unscaled(&move_delta->move, short_move);
+    q2proto_var_coords_get_short_unscaled(&move_delta->move, short_move);
     q2proto_var_angle_get_short(&move_delta->angles, short_angles);
 
     bool compressed_movements = context->protocol_version >= PROTOCOL_VERSION_R1Q2_UCMD;
@@ -1056,11 +1056,11 @@ static q2proto_error_t r1q2_server_write_entity_state_delta(q2proto_servercontex
         WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->renderfx);
 
     if (bits & U_ORIGIN1)
-        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&entity_state_delta->origin.write.current, 0));
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&entity_state_delta->origin.write.current, 0));
     if (bits & U_ORIGIN2)
-        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&entity_state_delta->origin.write.current, 1));
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&entity_state_delta->origin.write.current, 1));
     if (bits & U_ORIGIN3)
-        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&entity_state_delta->origin.write.current, 2));
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&entity_state_delta->origin.write.current, 2));
 
     if (bits & U_ANGLE1)
         WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_angle_get_char_comp(&entity_state_delta->angle.values, 0));
@@ -1071,9 +1071,9 @@ static q2proto_error_t r1q2_server_write_entity_state_delta(q2proto_servercontex
 
     if (bits & U_OLDORIGIN)
     {
-        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&entity_state_delta->old_origin, 0));
-        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&entity_state_delta->old_origin, 1));
-        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&entity_state_delta->old_origin, 2));
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&entity_state_delta->old_origin, 0));
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&entity_state_delta->old_origin, 1));
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&entity_state_delta->old_origin, 2));
     }
 
     if (bits & U_SOUND)
@@ -1203,19 +1203,19 @@ static q2proto_error_t r1q2_server_write_playerstate(uintptr_t io_arg, const q2p
 
     if (flags & PS_M_ORIGIN)
     {
-        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&playerstate->pm_origin.write.current, 0));
-        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&playerstate->pm_origin.write.current, 1));
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&playerstate->pm_origin.write.current, 0));
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&playerstate->pm_origin.write.current, 1));
     }
     if (*extraflags & EPS_M_ORIGIN2)
-        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&playerstate->pm_origin.write.current, 2));
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&playerstate->pm_origin.write.current, 2));
 
     if (flags & PS_M_VELOCITY)
     {
-        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&playerstate->pm_velocity.write.current, 0));
-        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&playerstate->pm_velocity.write.current, 1));
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&playerstate->pm_velocity.write.current, 0));
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&playerstate->pm_velocity.write.current, 1));
     }
     if (*extraflags & EPS_M_VELOCITY2)
-        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coord_get_int_comp(&playerstate->pm_velocity.write.current, 2));
+        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&playerstate->pm_velocity.write.current, 2));
 
     if (flags & PS_M_TIME)
         WRITE_CHECKED(server_write, io_arg, u8, playerstate->pm_time);
@@ -1467,10 +1467,10 @@ static q2proto_error_t r1q2_server_read_move_delta(q2proto_servercontext_t *cont
         {
             int8_t c;
             READ_CHECKED(server_read, io_arg, c, i8);
-            q2proto_var_coord_set_int_unscaled_comp(&move_delta->move, 0, c * 5);
+            q2proto_var_coords_set_int_unscaled_comp(&move_delta->move, 0, c * 5);
         }
         else
-            READ_CHECKED_VAR_COORD_COMP_16_UNSCALED(server_read, io_arg, &move_delta->move, 0);
+            READ_CHECKED_VAR_COORDS_COMP_16_UNSCALED(server_read, io_arg, &move_delta->move, 0);
     }
     if (delta_bits_check(bits, CM_SIDE, &move_delta->delta_bits, Q2P_CMD_MOVE_SIDE))
     {
@@ -1478,10 +1478,10 @@ static q2proto_error_t r1q2_server_read_move_delta(q2proto_servercontext_t *cont
         {
             int8_t c;
             READ_CHECKED(server_read, io_arg, c, i8);
-            q2proto_var_coord_set_int_unscaled_comp(&move_delta->move, 1, c * 5);
+            q2proto_var_coords_set_int_unscaled_comp(&move_delta->move, 1, c * 5);
         }
         else
-            READ_CHECKED_VAR_COORD_COMP_16_UNSCALED(server_read, io_arg, &move_delta->move, 1);
+            READ_CHECKED_VAR_COORDS_COMP_16_UNSCALED(server_read, io_arg, &move_delta->move, 1);
     }
     if (delta_bits_check(bits, CM_UP, &move_delta->delta_bits, Q2P_CMD_MOVE_UP))
     {
@@ -1489,10 +1489,10 @@ static q2proto_error_t r1q2_server_read_move_delta(q2proto_servercontext_t *cont
         {
             int8_t c;
             READ_CHECKED(server_read, io_arg, c, i8);
-            q2proto_var_coord_set_int_unscaled_comp(&move_delta->move, 2, c * 5);
+            q2proto_var_coords_set_int_unscaled_comp(&move_delta->move, 2, c * 5);
         }
         else
-            READ_CHECKED_VAR_COORD_COMP_16_UNSCALED(server_read, io_arg, &move_delta->move, 2);
+            READ_CHECKED_VAR_COORDS_COMP_16_UNSCALED(server_read, io_arg, &move_delta->move, 2);
     }
 
     if (!compressed_movements)

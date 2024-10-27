@@ -128,7 +128,7 @@ typedef struct q2proto_entity_state_delta_s {
     /// angle
     q2proto_angle_delta_t angle;
     /// old_origin
-    q2proto_var_coord_t old_origin;
+    q2proto_var_coords_t old_origin;
     /// sound
     uint16_t sound;
 #if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
@@ -212,7 +212,7 @@ typedef struct q2proto_svc_sound_s {
     /// channel
     uint8_t channel;
     /// pos
-    q2proto_var_coord_t pos;
+    q2proto_var_coords_t pos;
 } q2proto_svc_sound_t;
 
 

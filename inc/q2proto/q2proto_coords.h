@@ -64,11 +64,11 @@ typedef float q2proto_vec3_t[3];
  * \remark Try to work with <tt>float</tt>s as much as you can.
  * While automatic conversion from \c float to \c short is supported, it's lossy!
  * @{ */
-/// 'Variant coordinate', storing a coordinate as either float, or encoded into 16 bit
-typedef struct q2proto_var_coord_s {
+/// 'Variant coordinates', storing a coordinate as either float, or encoded into an integer
+typedef struct q2proto_var_coords_s {
     // Stores types of components
     uint8_t Q2PROTO_PRIVATE_MEMBER(float_bits);
-    // Used by coord_delta functions to store set components
+    // Used by coords_delta functions to store set components
     uint8_t Q2PROTO_PRIVATE_MEMBER(delta_bits_space);
     // Component values
     union
@@ -76,35 +76,35 @@ typedef struct q2proto_var_coord_s {
         float f;
         int32_t i;
     } Q2PROTO_PRIVATE_MEMBER(comps)[3];
-} q2proto_var_coord_t;
+} q2proto_var_coords_t;
 
 
 /** 'Variant coordinate' functions for float values
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_coord, float, float, 3)
+_GENERATE_VARIANT_FUNCTIONS(var_coords, float, float, 3)
 /** @}  */
 /** 'Variant coordinate' functions for pre-encoded integer values
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_coord, int, int32_t, 3)
+_GENERATE_VARIANT_FUNCTIONS(var_coords, int, int32_t, 3)
 /** @}  */
 /** 'Variant coordinate' functions for pre-encoded short values
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_coord, short, int16_t, 3)
+_GENERATE_VARIANT_FUNCTIONS(var_coords, short, int16_t, 3)
 /** @}  */
 /** 'Variant coordinate' functions for integer values (no encoding)
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_coord, int_unscaled, int32_t, 3)
+_GENERATE_VARIANT_FUNCTIONS(var_coords, int_unscaled, int32_t, 3)
 /** @}  */
 /** 'Variant coordinate' functions for short values (no encoding)
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_coord, short_unscaled, int16_t, 3)
+_GENERATE_VARIANT_FUNCTIONS(var_coords, short_unscaled, int16_t, 3)
 /** @}  */
 
 /// 'Variant angle', storing an angle as either float, or encoded into 16 bit
 typedef struct q2proto_var_angle_s {
     // Stores types of components
     uint8_t Q2PROTO_PRIVATE_MEMBER(float_bits);
-    // Used by coord_delta functions to store set components
+    // Used by coords_delta functions to store set components
     uint8_t Q2PROTO_PRIVATE_MEMBER(delta_bits_space);
     // Component values
     union
@@ -212,53 +212,53 @@ _GENERATE_VARIANT_FUNCTIONS(var_color, byte, uint8_t, 4)
 /** @}  */
 
 /**\name Delta coordinates & angles
- * They store coordinates or angles in different types, using q2proto_var_coord_t and
+ * They store coordinates or angles in different types, using q2proto_var_coords_t and
  * q2proto_angle_delta_t, but also provide access to extra delta bits indicating
  * which components actually changed.
  * @{ */
 /// Delta coordinate type
-typedef struct q2proto_coord_delta_s {
+typedef struct q2proto_coords_delta_s {
     union {
         /// Actual coordinate values
-        q2proto_var_coord_t values;
+        q2proto_var_coords_t values;
         struct {
             uint8_t Q2PROTO_PRIVATE_MEMBER(rsvd0); // float_bits
             uint8_t delta_bits;
             float Q2PROTO_PRIVATE_MEMBER(rsvd1)[3]; // comps
         };
     };
-} q2proto_coord_delta_t;
+} q2proto_coords_delta_t;
 
-/**\def Q2PROTO_SET_COORD_DELTA
- * Fills \c COORD_DELTA with values from \c TO and determines delta bits by comparing
+/**\def Q2PROTO_SET_COORDS_DELTA
+ * Fills \c COORDS_DELTA with values from \c TO and determines delta bits by comparing
  * with \c FROM.
  */
-#define Q2PROTO_SET_COORD_DELTA(COORD_DELTA, TO, FROM, COORD_TYPE)           \
-    do                                                                       \
-    {                                                                        \
-        (COORD_DELTA).delta_bits = 0;                                        \
-        if ((TO)[0] != (FROM)[0])                                            \
-            (COORD_DELTA).delta_bits |= BIT(0);                              \
-        if ((TO)[1] != (FROM)[1])                                            \
-            (COORD_DELTA).delta_bits |= BIT(1);                              \
-        if ((TO)[2] != (FROM)[2])                                            \
-            (COORD_DELTA).delta_bits |= BIT(2);                              \
-        if ((COORD_DELTA).delta_bits != 0)                                   \
-            q2proto_var_coord_set_##COORD_TYPE(&(COORD_DELTA).values, (TO)); \
+#define Q2PROTO_SET_COORDS_DELTA(COORDS_DELTA, TO, FROM, COORD_TYPE)           \
+    do                                                                         \
+    {                                                                          \
+        (COORDS_DELTA).delta_bits = 0;                                         \
+        if ((TO)[0] != (FROM)[0])                                              \
+            (COORDS_DELTA).delta_bits |= BIT(0);                               \
+        if ((TO)[1] != (FROM)[1])                                              \
+            (COORDS_DELTA).delta_bits |= BIT(1);                               \
+        if ((TO)[2] != (FROM)[2])                                              \
+            (COORDS_DELTA).delta_bits |= BIT(2);                               \
+        if ((COORDS_DELTA).delta_bits != 0)                                    \
+            q2proto_var_coords_set_##COORD_TYPE(&(COORDS_DELTA).values, (TO)); \
     } while (0)
 
-/**\def Q2PROTO_APPLY_COORD_DELTA
- * Change all components of \c TO with values from \c COORD_DELTA according to set delta bits.
+/**\def Q2PROTO_APPLY_COORDS_DELTA
+ * Change all components of \c TO with values from \c COORDS_DELTA according to set delta bits.
  */
-#define Q2PROTO_APPLY_COORD_DELTA(TO, COORD_DELTA, COORD_TYPE)                             \
-    do                                                                                     \
-    {                                                                                      \
-        if ((COORD_DELTA).delta_bits & BIT(0))                                             \
-            (TO)[0] = q2proto_var_coord_get_##COORD_TYPE##_comp(&(COORD_DELTA).values, 0); \
-        if ((COORD_DELTA).delta_bits & BIT(1))                                             \
-            (TO)[1] = q2proto_var_coord_get_##COORD_TYPE##_comp(&(COORD_DELTA).values, 1); \
-        if ((COORD_DELTA).delta_bits & BIT(2))                                             \
-            (TO)[2] = q2proto_var_coord_get_##COORD_TYPE##_comp(&(COORD_DELTA).values, 2); \
+#define Q2PROTO_APPLY_COORDS_DELTA(TO, COORDS_DELTA, COORD_TYPE)                             \
+    do                                                                                       \
+    {                                                                                        \
+        if ((COORDS_DELTA).delta_bits & BIT(0))                                              \
+            (TO)[0] = q2proto_var_coords_get_##COORD_TYPE##_comp(&(COORDS_DELTA).values, 0); \
+        if ((COORDS_DELTA).delta_bits & BIT(1))                                              \
+            (TO)[1] = q2proto_var_coords_get_##COORD_TYPE##_comp(&(COORDS_DELTA).values, 1); \
+        if ((COORDS_DELTA).delta_bits & BIT(2))                                              \
+            (TO)[2] = q2proto_var_coords_get_##COORD_TYPE##_comp(&(COORDS_DELTA).values, 2); \
     } while (0)
 
 /// Delta angle type
@@ -336,14 +336,14 @@ typedef struct q2proto_maybe_diff_coord_s {
              */
             uint8_t diff_bits;
             /// Difference or absolute values. Note that not each component may have a value in all cases.
-            q2proto_coord_delta_t value;
+            q2proto_coords_delta_t value;
         } read;
         /// Coordinate to write.
         struct {
             /// "Previous" value of coordinate to write. May be used to write a difference value.
-            q2proto_var_coord_t prev;
+            q2proto_var_coords_t prev;
             /// "Current" value of coordinate to write.
-            q2proto_var_coord_t current;
+            q2proto_var_coords_t current;
         } write;
     };
 } q2proto_maybe_diff_coord_t;
@@ -355,7 +355,7 @@ static inline void q2proto_maybe_read_diff_apply_float(const q2proto_maybe_diff_
     for (int i = 0; i < 3; i++)
     {
         if (!(maybe_diff->read.value.delta_bits & (1 << i))) continue;
-        float v = q2proto_var_coord_get_float_comp(&maybe_diff->read.value.values, i);
+        float v = q2proto_var_coords_get_float_comp(&maybe_diff->read.value.values, i);
         if (maybe_diff->read.diff_bits & (1 << i))
             coord[i] += v;
         else
@@ -367,7 +367,7 @@ static inline void q2proto_maybe_read_diff_apply_int(const q2proto_maybe_diff_co
     for (int i = 0; i < 3; i++)
     {
         if (!(maybe_diff->read.value.delta_bits & (1 << i))) continue;
-        int32_t v = q2proto_var_coord_get_int_comp(&maybe_diff->read.value.values, i);
+        int32_t v = q2proto_var_coords_get_int_comp(&maybe_diff->read.value.values, i);
         if (maybe_diff->read.diff_bits & (1 << i))
             coord[i] += v;
         else
@@ -379,7 +379,7 @@ static inline void q2proto_maybe_read_diff_apply_short(const q2proto_maybe_diff_
     for (int i = 0; i < 3; i++)
     {
         if (!(maybe_diff->read.value.delta_bits & (1 << i))) continue;
-        int16_t v = q2proto_var_coord_get_short_comp(&maybe_diff->read.value.values, i);
+        int16_t v = q2proto_var_coords_get_short_comp(&maybe_diff->read.value.values, i);
         if (maybe_diff->read.diff_bits & (1 << i))
             coord[i] += v;
         else
