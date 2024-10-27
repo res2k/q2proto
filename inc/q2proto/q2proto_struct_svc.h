@@ -126,7 +126,7 @@ typedef struct q2proto_entity_state_delta_s {
     /// origin
     q2proto_maybe_diff_coords_t origin;
     /// angle
-    q2proto_angle_delta_t angle;
+    q2proto_angles_delta_t angle;
     /// old_origin
     q2proto_var_coords_t old_origin;
     /// sound
@@ -431,7 +431,7 @@ typedef struct q2proto_svc_playerstate_s {
     /// pmove gravity
     int16_t pm_gravity;
     /// pmove delta angles
-    q2proto_var_angle_t pm_delta_angles;
+    q2proto_var_angles_t pm_delta_angles;
 #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
     /// rerelease: viewheight
     int8_t pm_viewheight;
@@ -439,7 +439,7 @@ typedef struct q2proto_svc_playerstate_s {
     /// viewoffset
     q2proto_var_small_offset_t viewoffset;
     /// viewangles
-    q2proto_angle_delta_t viewangles;
+    q2proto_angles_delta_t viewangles;
     /// kick_angles
     q2proto_var_small_angle_t kick_angles;
     /// gunindex

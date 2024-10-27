@@ -314,7 +314,7 @@ static q2proto_error_t q2pro_extdemo_client_read_playerstate(q2proto_clientconte
         READ_CHECKED(client_read, io_arg, playerstate->pm_gravity, i16);
 
     if (delta_bits_check(flags, PS_M_DELTA_ANGLES, &playerstate->delta_bits, Q2P_PSD_PM_DELTA_ANGLES))
-        CHECKED(client_read, io_arg, read_var_angle16(io_arg, &playerstate->pm_delta_angles));
+        CHECKED(client_read, io_arg, read_var_angles16(io_arg, &playerstate->pm_delta_angles));
 
     //
     // parse the rest of the player_state_t
@@ -324,7 +324,7 @@ static q2proto_error_t q2pro_extdemo_client_read_playerstate(q2proto_clientconte
 
     if(flags & PS_VIEWANGLES)
     {
-        CHECKED(client_read, io_arg, read_var_angle16(io_arg, &playerstate->viewangles.values));
+        CHECKED(client_read, io_arg, read_var_angles16(io_arg, &playerstate->viewangles.values));
         playerstate->viewangles.delta_bits = 0x7;
     }
 
@@ -665,9 +665,9 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
 
     if (flags & PS_M_DELTA_ANGLES)
     {
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->pm_delta_angles, 0));
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->pm_delta_angles, 1));
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->pm_delta_angles, 2));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->pm_delta_angles, 0));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->pm_delta_angles, 1));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->pm_delta_angles, 2));
     }
 
     if (flags & PS_VIEWOFFSET)
@@ -679,9 +679,9 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
 
     if (flags & PS_VIEWANGLES)
     {
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->viewangles.values, 0));
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->viewangles.values, 1));
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->viewangles.values, 2));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->viewangles.values, 0));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->viewangles.values, 1));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->viewangles.values, 2));
     }
 
     if (flags & PS_KICKANGLES)

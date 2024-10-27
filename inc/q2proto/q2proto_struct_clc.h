@@ -79,7 +79,7 @@ typedef struct q2proto_clc_move_delta_s {
     /// Combination of q2proto_client_move_delta_flags, indicating which fields are set
     uint32_t delta_bits;
     /// view angles
-    q2proto_var_angle_t angles;
+    q2proto_var_angles_t angles;
     /// movement vector, [0]: forward, [1]: side, [2]: up
     q2proto_var_coords_t move;
     /// pressed buttons

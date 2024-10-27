@@ -99,77 +99,77 @@ int16_t q2proto_var_coords_get_short_unscaled_comp(const q2proto_var_coords_t *c
 
 typedef enum
 {
-    VAR_ANGLE_TYPE_SHORT = 0,
-    VAR_ANGLE_TYPE_CHAR = 1,
-    VAR_ANGLE_TYPE_FLOAT = 2,
-} var_angle_type_t;
+    VAR_ANGLES_TYPE_SHORT = 0,
+    VAR_ANGLES_TYPE_CHAR = 1,
+    VAR_ANGLES_TYPE_FLOAT = 2,
+} var_angles_type_t;
 
-static inline void set_var_angle_comp_type(q2proto_var_angle_t *angle, int comp, var_angle_type_t type)
+static inline void set_var_angles_comp_type(q2proto_var_angles_t *angle, int comp, var_angles_type_t type)
 {
     angle->float_bits &= ~(0x3 << (comp * 2));
     angle->float_bits |= type << (comp * 2);
 }
 
-void q2proto_var_angle_set_float_comp(q2proto_var_angle_t *angle, int comp, float f)
+void q2proto_var_angles_set_float_comp(q2proto_var_angles_t *angle, int comp, float f)
 {
     angle->comps[comp].f = f;
-    set_var_angle_comp_type(angle, comp, VAR_ANGLE_TYPE_FLOAT);
+    set_var_angles_comp_type(angle, comp, VAR_ANGLES_TYPE_FLOAT);
 }
 
-void q2proto_var_angle_set_short_comp(q2proto_var_angle_t *angle, int comp, int16_t s)
+void q2proto_var_angles_set_short_comp(q2proto_var_angles_t *angle, int comp, int16_t s)
 {
     angle->comps[comp].s = s;
-    set_var_angle_comp_type(angle, comp, VAR_ANGLE_TYPE_SHORT);
+    set_var_angles_comp_type(angle, comp, VAR_ANGLES_TYPE_SHORT);
 }
 
-void q2proto_var_angle_set_char_comp(q2proto_var_angle_t *angle, int comp, int8_t c)
+void q2proto_var_angles_set_char_comp(q2proto_var_angles_t *angle, int comp, int8_t c)
 {
     angle->comps[comp].c = c;
-    set_var_angle_comp_type(angle, comp, VAR_ANGLE_TYPE_CHAR);
+    set_var_angles_comp_type(angle, comp, VAR_ANGLES_TYPE_CHAR);
 }
 
-static inline var_angle_type_t get_var_angle_comp_type(const q2proto_var_angle_t *angle, int comp)
+static inline var_angles_type_t get_var_angles_comp_type(const q2proto_var_angles_t *angle, int comp)
 {
     return (angle->float_bits >> (comp * 2)) & 0x3;
 }
 
-float q2proto_var_angle_get_float_comp(const q2proto_var_angle_t *angle, int comp)
+float q2proto_var_angles_get_float_comp(const q2proto_var_angles_t *angle, int comp)
 {
-    switch(get_var_angle_comp_type(angle, comp))
+    switch(get_var_angles_comp_type(angle, comp))
     {
-    case VAR_ANGLE_TYPE_SHORT:
+    case VAR_ANGLES_TYPE_SHORT:
         return _q2proto_valenc_short2angle(angle->comps[comp].s);
-    case VAR_ANGLE_TYPE_CHAR:
+    case VAR_ANGLES_TYPE_CHAR:
         return _q2proto_valenc_char2angle(angle->comps[comp].c);
-    case VAR_ANGLE_TYPE_FLOAT:
+    case VAR_ANGLES_TYPE_FLOAT:
         return angle->comps[comp].f;
     }
     return 0;
 }
 
-int16_t q2proto_var_angle_get_short_comp(const q2proto_var_angle_t *angle, int comp)
+int16_t q2proto_var_angles_get_short_comp(const q2proto_var_angles_t *angle, int comp)
 {
-    switch(get_var_angle_comp_type(angle, comp))
+    switch(get_var_angles_comp_type(angle, comp))
     {
-    case VAR_ANGLE_TYPE_SHORT:
+    case VAR_ANGLES_TYPE_SHORT:
         return angle->comps[comp].s;
-    case VAR_ANGLE_TYPE_CHAR:
+    case VAR_ANGLES_TYPE_CHAR:
         return angle->comps[comp].c * 0x101;
-    case VAR_ANGLE_TYPE_FLOAT:
+    case VAR_ANGLES_TYPE_FLOAT:
         return _q2proto_valenc_angle2short(angle->comps[comp].f);
     }
     return 0;
 }
 
-int8_t q2proto_var_angle_get_char_comp(const q2proto_var_angle_t *angle, int comp)
+int8_t q2proto_var_angles_get_char_comp(const q2proto_var_angles_t *angle, int comp)
 {
-    switch(get_var_angle_comp_type(angle, comp))
+    switch(get_var_angles_comp_type(angle, comp))
     {
-    case VAR_ANGLE_TYPE_SHORT:
+    case VAR_ANGLES_TYPE_SHORT:
         return angle->comps[comp].s >> 8;
-    case VAR_ANGLE_TYPE_CHAR:
+    case VAR_ANGLES_TYPE_CHAR:
         return angle->comps[comp].c;
-    case VAR_ANGLE_TYPE_FLOAT:
+    case VAR_ANGLES_TYPE_FLOAT:
         return _q2proto_valenc_angle2char(angle->comps[comp].f);
     }
     return 0;

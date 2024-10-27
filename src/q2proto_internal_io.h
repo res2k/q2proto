@@ -228,28 +228,28 @@ static inline q2proto_error_t read_var_coords_float(uintptr_t io_arg, q2proto_va
 }
 
 /// Read a single component of a 16-bit encoded angle
-#define READ_CHECKED_VAR_ANGLE_COMP_16(SOURCE, IO_ARG, TARGET, COMP) \
-    do                                                               \
-    {                                                                \
-        int16_t a;                                                   \
-        READ_CHECKED(SOURCE, (IO_ARG), a, i16);                      \
-        q2proto_var_angle_set_short_comp(TARGET, COMP, a);           \
+#define READ_CHECKED_VAR_ANGLES_COMP_16(SOURCE, IO_ARG, TARGET, COMP) \
+    do                                                                \
+    {                                                                 \
+        int16_t a;                                                    \
+        READ_CHECKED(SOURCE, (IO_ARG), a, i16);                       \
+        q2proto_var_angles_set_short_comp(TARGET, COMP, a);           \
     } while (0)
 
 /// Read a single component of an 8-bit encoded angle
-#define READ_CHECKED_VAR_ANGLE_COMP_8(SOURCE, IO_ARG, TARGET, COMP)  \
-    do                                                               \
-    {                                                                \
-        int8_t a;                                                    \
-        READ_CHECKED(SOURCE, (IO_ARG), a, i8);                       \
-        q2proto_var_angle_set_char_comp(TARGET, COMP, a);            \
+#define READ_CHECKED_VAR_ANGLES_COMP_8(SOURCE, IO_ARG, TARGET, COMP)  \
+    do                                                                \
+    {                                                                 \
+        int8_t a;                                                     \
+        READ_CHECKED(SOURCE, (IO_ARG), a, i8);                        \
+        q2proto_var_angles_set_char_comp(TARGET, COMP, a);            \
     } while (0)
 
-static inline q2proto_error_t read_var_angle16(uintptr_t io_arg, q2proto_var_angle_t *angle)
+static inline q2proto_error_t read_var_angles16(uintptr_t io_arg, q2proto_var_angles_t *angle)
 {
-    READ_CHECKED_VAR_ANGLE_COMP_16(client_read, io_arg, angle, 0);
-    READ_CHECKED_VAR_ANGLE_COMP_16(client_read, io_arg, angle, 1);
-    READ_CHECKED_VAR_ANGLE_COMP_16(client_read, io_arg, angle, 2);
+    READ_CHECKED_VAR_ANGLES_COMP_16(client_read, io_arg, angle, 0);
+    READ_CHECKED_VAR_ANGLES_COMP_16(client_read, io_arg, angle, 1);
+    READ_CHECKED_VAR_ANGLES_COMP_16(client_read, io_arg, angle, 2);
     return Q2P_ERR_SUCCESS;
 }
 

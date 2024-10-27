@@ -38,17 +38,17 @@ void q2proto_packing_make_entity_state_delta(const q2proto_packed_entity_state_t
     if (to->angles[0] != from->angles[0])
     {
         delta->angle.delta_bits |= BIT(0);
-        q2proto_var_angle_set_short_comp(&delta->angle.values, 0, to->angles[0]);
+        q2proto_var_angles_set_short_comp(&delta->angle.values, 0, to->angles[0]);
     }
     if (to->angles[1] != from->angles[1])
     {
         delta->angle.delta_bits |= BIT(1);
-        q2proto_var_angle_set_short_comp(&delta->angle.values, 1, to->angles[1]);
+        q2proto_var_angles_set_short_comp(&delta->angle.values, 1, to->angles[1]);
     }
     if (to->angles[2] != from->angles[2])
     {
         delta->angle.delta_bits |= BIT(2);
-        q2proto_var_angle_set_short_comp(&delta->angle.values, 2, to->angles[2]);
+        q2proto_var_angles_set_short_comp(&delta->angle.values, 2, to->angles[2]);
     }
 
     if (write_old_origin)
@@ -199,7 +199,7 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
     if (memcmp(&to->pm_delta_angles, &from->pm_delta_angles, sizeof(to->pm_delta_angles)) != 0)
     {
         delta->delta_bits |= Q2P_PSD_PM_DELTA_ANGLES;
-        q2proto_var_angle_set_short(&delta->pm_delta_angles, to->pm_delta_angles);
+        q2proto_var_angles_set_short(&delta->pm_delta_angles, to->pm_delta_angles);
     }
 
 #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
@@ -218,7 +218,7 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
         q2proto_var_small_offset_set_char_comp(&delta->viewoffset, 2, to->viewoffset[2]);
     }
 
-    Q2PROTO_SET_ANGLE_DELTA(delta->viewangles, to->viewangles, from->viewangles, short);
+    Q2PROTO_SET_ANGLES_DELTA(delta->viewangles, to->viewangles, from->viewangles, short);
 
     if (memcmp(to->kick_angles, from->kick_angles, sizeof(to->kick_angles)))
     {

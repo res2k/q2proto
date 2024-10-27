@@ -101,7 +101,7 @@ _GENERATE_VARIANT_FUNCTIONS(var_coords, short_unscaled, int16_t, 3)
 /** @}  */
 
 /// 'Variant angle', storing an angle as either float, or encoded into 16 bit
-typedef struct q2proto_var_angle_s {
+typedef struct q2proto_var_angles_s {
     // Stores types of components
     uint8_t Q2PROTO_PRIVATE_MEMBER(float_bits);
     // Used by coords_delta functions to store set components
@@ -113,19 +113,19 @@ typedef struct q2proto_var_angle_s {
         int16_t s;
         int8_t c;
     } Q2PROTO_PRIVATE_MEMBER(comps)[3];
-} q2proto_var_angle_t;
+} q2proto_var_angles_t;
 
 /** 'Variant angle' functions for float values
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_angle, float, float, 3)
+_GENERATE_VARIANT_FUNCTIONS(var_angles, float, float, 3)
 /** @}  */
 /** 'Variant angle' functions for pre-encoded 16-bit values
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_angle, short, int16_t, 3)
+_GENERATE_VARIANT_FUNCTIONS(var_angles, short, int16_t, 3)
 /** @}  */
 /** 'Variant angle' functions for pre-encoded 8-bit values
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_angle, char, int8_t, 3)
+_GENERATE_VARIANT_FUNCTIONS(var_angles, char, int8_t, 3)
 /** @}  */
 
 /// Variant for "small" offsets with limited range and precision (viewoffset, gunoffset), can be encoded into 8 bit
@@ -213,7 +213,7 @@ _GENERATE_VARIANT_FUNCTIONS(var_color, byte, uint8_t, 4)
 
 /**\name Delta coordinates & angles
  * They store coordinates or angles in different types, using q2proto_var_coords_t and
- * q2proto_angle_delta_t, but also provide access to extra delta bits indicating
+ * q2proto_angles_delta_t, but also provide access to extra delta bits indicating
  * which components actually changed.
  * @{ */
 /// Delta coordinate type
@@ -262,48 +262,48 @@ typedef struct q2proto_coords_delta_s {
     } while (0)
 
 /// Delta angle type
-typedef struct q2proto_angle_delta_s {
+typedef struct q2proto_angles_delta_s {
     union {
         /// Actual angle values
-        q2proto_var_angle_t values;
+        q2proto_var_angles_t values;
         struct {
             uint8_t Q2PROTO_PRIVATE_MEMBER(rsvd0); // float_bits
             uint8_t delta_bits;
             float Q2PROTO_PRIVATE_MEMBER(rsvd1)[3]; // comps
         };
     };
-} q2proto_angle_delta_t;
+} q2proto_angles_delta_t;
 
-/**\def Q2PROTO_SET_ANGLE_DELTA
- * Fills \c ANGLE_DELTA with values from \c TO and determines delta bits by comparing
+/**\def Q2PROTO_SET_ANGLES_DELTA
+ * Fills \c ANGLES_DELTA with values from \c TO and determines delta bits by comparing
  * with \c FROM.
  */
-#define Q2PROTO_SET_ANGLE_DELTA(ANGLE_DELTA, TO, FROM, ANGLE_TYPE)           \
-    do                                                                       \
-    {                                                                        \
-        (ANGLE_DELTA).delta_bits = 0;                                        \
-        if ((TO)[0] != (FROM)[0])                                            \
-            (ANGLE_DELTA).delta_bits |= BIT(0);                              \
-        if ((TO)[1] != (FROM)[1])                                            \
-            (ANGLE_DELTA).delta_bits |= BIT(1);                              \
-        if ((TO)[2] != (FROM)[2])                                            \
-            (ANGLE_DELTA).delta_bits |= BIT(2);                              \
-        if ((ANGLE_DELTA).delta_bits != 0)                                   \
-            q2proto_var_angle_set_##ANGLE_TYPE(&(ANGLE_DELTA).values, (TO)); \
+#define Q2PROTO_SET_ANGLES_DELTA(ANGLES_DELTA, TO, FROM, ANGLE_TYPE)           \
+    do                                                                         \
+    {                                                                          \
+        (ANGLES_DELTA).delta_bits = 0;                                         \
+        if ((TO)[0] != (FROM)[0])                                              \
+            (ANGLES_DELTA).delta_bits |= BIT(0);                               \
+        if ((TO)[1] != (FROM)[1])                                              \
+            (ANGLES_DELTA).delta_bits |= BIT(1);                               \
+        if ((TO)[2] != (FROM)[2])                                              \
+            (ANGLES_DELTA).delta_bits |= BIT(2);                               \
+        if ((ANGLES_DELTA).delta_bits != 0)                                    \
+            q2proto_var_angles_set_##ANGLE_TYPE(&(ANGLES_DELTA).values, (TO)); \
     } while (0)
 
-/**\def Q2PROTO_APPLY_ANGLE_DELTA
- * Change all components of \c TO with values from \c ANGLE_DELTA according to set delta bits.
+/**\def Q2PROTO_APPLY_ANGLES_DELTA
+ * Change all components of \c TO with values from \c ANGLES_DELTA according to set delta bits.
  */
-#define Q2PROTO_APPLY_ANGLE_DELTA(TO, ANGLE_DELTA, ANGLE_TYPE)                             \
-    do                                                                                     \
-    {                                                                                      \
-        if ((ANGLE_DELTA).delta_bits & BIT(0))                                             \
-            (TO)[0] = q2proto_var_angle_get_##ANGLE_TYPE##_comp(&(ANGLE_DELTA).values, 0); \
-        if ((ANGLE_DELTA).delta_bits & BIT(1))                                             \
-            (TO)[1] = q2proto_var_angle_get_##ANGLE_TYPE##_comp(&(ANGLE_DELTA).values, 1); \
-        if ((ANGLE_DELTA).delta_bits & BIT(2))                                             \
-            (TO)[2] = q2proto_var_angle_get_##ANGLE_TYPE##_comp(&(ANGLE_DELTA).values, 2); \
+#define Q2PROTO_APPLY_ANGLES_DELTA(TO, ANGLES_DELTA, ANGLE_TYPE)                             \
+    do                                                                                       \
+    {                                                                                        \
+        if ((ANGLES_DELTA).delta_bits & BIT(0))                                              \
+            (TO)[0] = q2proto_var_angles_get_##ANGLE_TYPE##_comp(&(ANGLES_DELTA).values, 0); \
+        if ((ANGLES_DELTA).delta_bits & BIT(1))                                              \
+            (TO)[1] = q2proto_var_angles_get_##ANGLE_TYPE##_comp(&(ANGLES_DELTA).values, 1); \
+        if ((ANGLES_DELTA).delta_bits & BIT(2))                                              \
+            (TO)[2] = q2proto_var_angles_get_##ANGLE_TYPE##_comp(&(ANGLES_DELTA).values, 2); \
     } while (0)
 /** @} */
 

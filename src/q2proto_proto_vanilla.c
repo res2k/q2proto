@@ -282,17 +282,17 @@ static q2proto_error_t vanilla_client_read_entity_delta(uintptr_t io_arg, uint64
     entity_state->angle.delta_bits = 0;
     if (bits & U_ANGLE1)
     {
-        READ_CHECKED_VAR_ANGLE_COMP_8(client_read, io_arg, &entity_state->angle.values, 0);
+        READ_CHECKED_VAR_ANGLES_COMP_8(client_read, io_arg, &entity_state->angle.values, 0);
         entity_state->angle.delta_bits |= BIT(0);
     }
     if (bits & U_ANGLE2)
     {
-        READ_CHECKED_VAR_ANGLE_COMP_8(client_read, io_arg, &entity_state->angle.values, 1);
+        READ_CHECKED_VAR_ANGLES_COMP_8(client_read, io_arg, &entity_state->angle.values, 1);
         entity_state->angle.delta_bits |= BIT(1);
     }
     if (bits & U_ANGLE3)
     {
-        READ_CHECKED_VAR_ANGLE_COMP_8(client_read, io_arg, &entity_state->angle.values, 2);
+        READ_CHECKED_VAR_ANGLES_COMP_8(client_read, io_arg, &entity_state->angle.values, 2);
         entity_state->angle.delta_bits |= BIT(2);
     }
 
@@ -368,7 +368,7 @@ static q2proto_error_t vanilla_client_read_playerstate(uintptr_t io_arg, q2proto
         READ_CHECKED(client_read, io_arg, playerstate->pm_gravity, i16);
 
     if (delta_bits_check(flags, PS_M_DELTA_ANGLES, &playerstate->delta_bits, Q2P_PSD_PM_DELTA_ANGLES))
-        CHECKED(client_read, io_arg, read_var_angle16(io_arg, &playerstate->pm_delta_angles));
+        CHECKED(client_read, io_arg, read_var_angles16(io_arg, &playerstate->pm_delta_angles));
 
     //
     // parse the rest of the player_state_t
@@ -378,7 +378,7 @@ static q2proto_error_t vanilla_client_read_playerstate(uintptr_t io_arg, q2proto
 
     if(flags & PS_VIEWANGLES)
     {
-        CHECKED(client_read, io_arg, read_var_angle16(io_arg, &playerstate->viewangles.values));
+        CHECKED(client_read, io_arg, read_var_angles16(io_arg, &playerstate->viewangles.values));
         playerstate->viewangles.delta_bits = 0x7;
     }
 
@@ -499,11 +499,11 @@ static q2proto_error_t vanilla_client_write_move_delta(uintptr_t io_arg, const q
     WRITE_CHECKED(client_write, io_arg, u8, bits);
 
     if (bits & CM_ANGLE1)
-        WRITE_CHECKED(client_write, io_arg, i16, q2proto_var_angle_get_short_comp(&move_delta->angles, 0));
+        WRITE_CHECKED(client_write, io_arg, i16, q2proto_var_angles_get_short_comp(&move_delta->angles, 0));
     if (bits & CM_ANGLE2)
-        WRITE_CHECKED(client_write, io_arg, i16, q2proto_var_angle_get_short_comp(&move_delta->angles, 1));
+        WRITE_CHECKED(client_write, io_arg, i16, q2proto_var_angles_get_short_comp(&move_delta->angles, 1));
     if (bits & CM_ANGLE3)
-        WRITE_CHECKED(client_write, io_arg, i16, q2proto_var_angle_get_short_comp(&move_delta->angles, 2));
+        WRITE_CHECKED(client_write, io_arg, i16, q2proto_var_angles_get_short_comp(&move_delta->angles, 2));
 
     if (bits & CM_FORWARD)
         WRITE_CHECKED(client_write, io_arg, i16, q2proto_var_coords_get_short_unscaled_comp(&move_delta->move, 0));
@@ -812,11 +812,11 @@ static q2proto_error_t vanilla_server_write_entity_state_delta(uintptr_t io_arg,
         WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&entity_state_delta->origin.write.current, 2));
 
     if (bits & U_ANGLE1)
-        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_angle_get_char_comp(&entity_state_delta->angle.values, 0));
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_angles_get_char_comp(&entity_state_delta->angle.values, 0));
     if (bits & U_ANGLE2)
-        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_angle_get_char_comp(&entity_state_delta->angle.values, 1));
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_angles_get_char_comp(&entity_state_delta->angle.values, 1));
     if (bits & U_ANGLE3)
-        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_angle_get_char_comp(&entity_state_delta->angle.values, 2));
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_angles_get_char_comp(&entity_state_delta->angle.values, 2));
 
     if (bits & U_OLDORIGIN)
     {
@@ -948,9 +948,9 @@ static q2proto_error_t vanilla_server_write_playerstate(uintptr_t io_arg, const 
 
     if (flags & PS_M_DELTA_ANGLES)
     {
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->pm_delta_angles, 0));
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->pm_delta_angles, 1));
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->pm_delta_angles, 2));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->pm_delta_angles, 0));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->pm_delta_angles, 1));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->pm_delta_angles, 2));
     }
 
     if (flags & PS_VIEWOFFSET)
@@ -962,9 +962,9 @@ static q2proto_error_t vanilla_server_write_playerstate(uintptr_t io_arg, const 
 
     if (flags & PS_VIEWANGLES)
     {
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->viewangles.values, 0));
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->viewangles.values, 1));
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angle_get_short_comp(&playerstate->viewangles.values, 2));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->viewangles.values, 0));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->viewangles.values, 1));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->viewangles.values, 2));
     }
 
     if (flags & PS_KICKANGLES)
@@ -1114,11 +1114,11 @@ static q2proto_error_t vanilla_server_read_move_delta(uintptr_t io_arg, q2proto_
     READ_CHECKED(server_read, io_arg, bits, u8);
 
     if (delta_bits_check(bits, CM_ANGLE1, &move_delta->delta_bits, Q2P_CMD_ANGLE0))
-        READ_CHECKED_VAR_ANGLE_COMP_16(server_read, io_arg, &move_delta->angles, 0);
+        READ_CHECKED_VAR_ANGLES_COMP_16(server_read, io_arg, &move_delta->angles, 0);
     if (delta_bits_check(bits, CM_ANGLE2, &move_delta->delta_bits, Q2P_CMD_ANGLE1))
-        READ_CHECKED_VAR_ANGLE_COMP_16(server_read, io_arg, &move_delta->angles, 1);
+        READ_CHECKED_VAR_ANGLES_COMP_16(server_read, io_arg, &move_delta->angles, 1);
     if (delta_bits_check(bits, CM_ANGLE3, &move_delta->delta_bits, Q2P_CMD_ANGLE2))
-        READ_CHECKED_VAR_ANGLE_COMP_16(server_read, io_arg, &move_delta->angles, 2);
+        READ_CHECKED_VAR_ANGLES_COMP_16(server_read, io_arg, &move_delta->angles, 2);
 
     if (delta_bits_check(bits, CM_FORWARD, &move_delta->delta_bits, Q2P_CMD_MOVE_FORWARD))
         READ_CHECKED_VAR_COORDS_COMP_16_UNSCALED(server_read, io_arg, &move_delta->move, 0);
