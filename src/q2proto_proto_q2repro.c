@@ -586,7 +586,7 @@ static q2proto_error_t q2repro_client_read_entity_delta(q2proto_clientcontext_t 
         entity_state->sound = sound_word & 0x3fff;
         if (delta_bits_check(sound_word, SOUND_FLAG_VOLUME, &entity_state->delta_bits, Q2P_ESD_LOOP_VOLUME))
         {
-            uint8_t loop_volume;
+            MAYBE_UNUSED uint8_t loop_volume;
             READ_CHECKED(client_read, io_arg, loop_volume, u8);
         #if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
             entity_state->loop_volume = loop_volume;
@@ -594,7 +594,7 @@ static q2proto_error_t q2repro_client_read_entity_delta(q2proto_clientcontext_t 
         }
         if (delta_bits_check(sound_word, SOUND_FLAG_ATTENUATION, &entity_state->delta_bits, Q2P_ESD_LOOP_ATTENUATION))
         {
-            uint8_t loop_attenuation;
+            MAYBE_UNUSED uint8_t loop_attenuation;
             READ_CHECKED(client_read, io_arg, loop_attenuation, u8);
         #if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
             entity_state->loop_attenuation = loop_attenuation;
@@ -610,7 +610,7 @@ static q2proto_error_t q2repro_client_read_entity_delta(q2proto_clientcontext_t 
 
     if (delta_bits_check(bits, U_MOREFX32, &entity_state->delta_bits, Q2P_ESD_EFFECTS_MORE))
     {
-        uint32_t effects_more;
+        MAYBE_UNUSED uint32_t effects_more;
         if ((bits & U_MOREFX32) == U_MOREFX32)
             READ_CHECKED(client_read, io_arg, effects_more, u32);
         else if (bits & U_MOREFX16)
@@ -624,7 +624,7 @@ static q2proto_error_t q2repro_client_read_entity_delta(q2proto_clientcontext_t 
 
     if (delta_bits_check(bits, U_ALPHA, &entity_state->delta_bits, Q2P_ESD_ALPHA))
     {
-        uint8_t alpha;
+        MAYBE_UNUSED uint8_t alpha;
         READ_CHECKED(client_read, io_arg, alpha, u8);
     #if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
         entity_state->alpha = alpha;
@@ -633,7 +633,7 @@ static q2proto_error_t q2repro_client_read_entity_delta(q2proto_clientcontext_t 
 
     if (delta_bits_check(bits, U_SCALE, &entity_state->delta_bits, Q2P_ESD_SCALE))
     {
-        uint8_t scale;
+        MAYBE_UNUSED uint8_t scale;
         READ_CHECKED(client_read, io_arg, scale, u8);
     #if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
         entity_state->scale = scale;
