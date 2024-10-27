@@ -129,7 +129,7 @@ _GENERATE_VARIANT_FUNCTIONS(var_angles, char, int8_t, 3)
 /** @}  */
 
 /// Variant for "small" offsets with limited range and precision (viewoffset, gunoffset), can be encoded into 8 bit
-typedef struct q2proto_var_small_offset_s {
+typedef struct q2proto_var_small_offsets_s {
     // Stores types of components
     uint8_t Q2PROTO_PRIVATE_MEMBER(type_bits);
     // Component values
@@ -139,23 +139,23 @@ typedef struct q2proto_var_small_offset_s {
         int8_t c;
         int16_t s;
     } Q2PROTO_PRIVATE_MEMBER(comps)[3];
-} q2proto_var_small_offset_t;
+} q2proto_var_small_offsets_t;
 
 /** 'Small offset' functions for float values
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_small_offset, float, float, 3)
+_GENERATE_VARIANT_FUNCTIONS(var_small_offsets, float, float, 3)
 /** @}  */
 /** 'Small offset' functions for pre-encoded 8-bit values
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_small_offset, char, int8_t, 3)
+_GENERATE_VARIANT_FUNCTIONS(var_small_offsets, char, int8_t, 3)
 /** @}  */
 /** 'Small offset' functions for Q2rePRO viewoffset encoding
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_small_offset, q2repro_viewoffset, int16_t, 3)
+_GENERATE_VARIANT_FUNCTIONS(var_small_offsets, q2repro_viewoffset, int16_t, 3)
 /** @}  */
 /** 'Small offset' functions for Q2rePRO gunoffset encoding
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_small_offset, q2repro_gunoffset, int16_t, 3)
+_GENERATE_VARIANT_FUNCTIONS(var_small_offsets, q2repro_gunoffset, int16_t, 3)
 /** @}  */
 
 /// Variant for "small" angles with limited range and precision (kick_angles, gunangles), can be encoded into 8 bit

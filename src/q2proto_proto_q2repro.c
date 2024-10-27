@@ -59,15 +59,15 @@ const char *q2proto_q2repro_connect_tail(const q2proto_connect_t *connect)
 //
 
 // Q2rePRO-specific encodings for some values
-#define READ_CHECKED_VIEWOFFSET_COMP(SOURCE, IO_ARG, TARGET, COMP)             \
-    do                                                                         \
-    {                                                                          \
-        int16_t o;                                                             \
-        READ_CHECKED(SOURCE, (IO_ARG), o, i16);                                \
-        q2proto_var_small_offset_set_q2repro_viewoffset_comp(TARGET, COMP, o); \
+#define READ_CHECKED_VIEWOFFSET_COMP(SOURCE, IO_ARG, TARGET, COMP)              \
+    do                                                                          \
+    {                                                                           \
+        int16_t o;                                                              \
+        READ_CHECKED(SOURCE, (IO_ARG), o, i16);                                 \
+        q2proto_var_small_offsets_set_q2repro_viewoffset_comp(TARGET, COMP, o); \
     } while (0)
 
-static inline q2proto_error_t read_short_viewoffset(uintptr_t io_arg, q2proto_var_small_offset_t* offs)
+static inline q2proto_error_t read_short_viewoffset(uintptr_t io_arg, q2proto_var_small_offsets_t* offs)
 {
     READ_CHECKED_VIEWOFFSET_COMP(client_read, io_arg, offs, 0);
     READ_CHECKED_VIEWOFFSET_COMP(client_read, io_arg, offs, 1);
@@ -91,15 +91,15 @@ static inline q2proto_error_t read_short_kick_angles(uintptr_t io_arg, q2proto_v
     return Q2P_ERR_SUCCESS;
 }
 
-#define READ_CHECKED_GUNOFFSET_COMP(SOURCE, IO_ARG, TARGET, COMP)             \
-    do                                                                        \
-    {                                                                         \
-        int16_t o;                                                            \
-        READ_CHECKED(SOURCE, (IO_ARG), o, i16);                               \
-        q2proto_var_small_offset_set_q2repro_gunoffset_comp(TARGET, COMP, o); \
+#define READ_CHECKED_GUNOFFSET_COMP(SOURCE, IO_ARG, TARGET, COMP)              \
+    do                                                                         \
+    {                                                                          \
+        int16_t o;                                                             \
+        READ_CHECKED(SOURCE, (IO_ARG), o, i16);                                \
+        q2proto_var_small_offsets_set_q2repro_gunoffset_comp(TARGET, COMP, o); \
     } while (0)
 
-static inline q2proto_error_t read_short_gunoffset(uintptr_t io_arg, q2proto_var_small_offset_t* offs)
+static inline q2proto_error_t read_short_gunoffset(uintptr_t io_arg, q2proto_var_small_offsets_t* offs)
 {
     READ_CHECKED_GUNOFFSET_COMP(client_read, io_arg, offs, 0);
     READ_CHECKED_GUNOFFSET_COMP(client_read, io_arg, offs, 1);
@@ -1585,9 +1585,9 @@ static void q2repro_server_make_player_state_delta(q2proto_servercontext_t *cont
     if (memcmp(to->viewoffset, from->viewoffset, sizeof(to->viewoffset)) != 0)
     {
         delta->delta_bits |= Q2P_PSD_VIEWOFFSET;
-        q2proto_var_small_offset_set_q2repro_viewoffset_comp(&delta->viewoffset, 0, to->viewoffset[0]);
-        q2proto_var_small_offset_set_q2repro_viewoffset_comp(&delta->viewoffset, 1, to->viewoffset[1]);
-        q2proto_var_small_offset_set_q2repro_viewoffset_comp(&delta->viewoffset, 2, to->viewoffset[2]);
+        q2proto_var_small_offsets_set_q2repro_viewoffset_comp(&delta->viewoffset, 0, to->viewoffset[0]);
+        q2proto_var_small_offsets_set_q2repro_viewoffset_comp(&delta->viewoffset, 1, to->viewoffset[1]);
+        q2proto_var_small_offsets_set_q2repro_viewoffset_comp(&delta->viewoffset, 2, to->viewoffset[2]);
     }
 
     Q2PROTO_SET_ANGLES_DELTA(delta->viewangles, to->viewangles, from->viewangles, short);
@@ -1637,9 +1637,9 @@ static void q2repro_server_make_player_state_delta(q2proto_servercontext_t *cont
     if (delta->delta_bits & (Q2P_PSD_GUNFRAME | Q2P_PSD_GUNOFFSET | Q2P_PSD_GUNANGLES))
     {
         delta->gunframe = to->gunframe;
-        q2proto_var_small_offset_set_q2repro_gunoffset_comp(&delta->gunoffset, 0, to->gunoffset[0]);
-        q2proto_var_small_offset_set_q2repro_gunoffset_comp(&delta->gunoffset, 1, to->gunoffset[1]);
-        q2proto_var_small_offset_set_q2repro_gunoffset_comp(&delta->gunoffset, 2, to->gunoffset[2]);
+        q2proto_var_small_offsets_set_q2repro_gunoffset_comp(&delta->gunoffset, 0, to->gunoffset[0]);
+        q2proto_var_small_offsets_set_q2repro_gunoffset_comp(&delta->gunoffset, 1, to->gunoffset[1]);
+        q2proto_var_small_offsets_set_q2repro_gunoffset_comp(&delta->gunoffset, 2, to->gunoffset[2]);
         q2proto_var_small_angle_set_q2repro_gunangles_comp(&delta->gunangles, 0, to->gunangles[0]);
         q2proto_var_small_angle_set_q2repro_gunangles_comp(&delta->gunangles, 1, to->gunangles[1]);
         q2proto_var_small_angle_set_q2repro_gunangles_comp(&delta->gunangles, 2, to->gunangles[2]);
@@ -2096,9 +2096,9 @@ static q2proto_error_t q2repro_server_write_playerstate(q2proto_servercontext_t 
 
     if (flags & PS_VIEWOFFSET)
     {
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_offset_get_q2repro_viewoffset_comp(&playerstate->viewoffset, 0));
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_offset_get_q2repro_viewoffset_comp(&playerstate->viewoffset, 1));
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_offset_get_q2repro_viewoffset_comp(&playerstate->viewoffset, 2));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_offsets_get_q2repro_viewoffset_comp(&playerstate->viewoffset, 0));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_offsets_get_q2repro_viewoffset_comp(&playerstate->viewoffset, 1));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_offsets_get_q2repro_viewoffset_comp(&playerstate->viewoffset, 2));
     }
 
     if (flags & PS_VIEWANGLES)
@@ -2129,9 +2129,9 @@ static q2proto_error_t q2repro_server_write_playerstate(q2proto_servercontext_t 
         WRITE_CHECKED(server_write, io_arg, u16, playerstate->gunframe);
     if (*extraflags & EPS_GUNOFFSET)
     {
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_offset_get_q2repro_gunoffset_comp(&playerstate->gunoffset, 0));
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_offset_get_q2repro_gunoffset_comp(&playerstate->gunoffset, 1));
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_offset_get_q2repro_gunoffset_comp(&playerstate->gunoffset, 2));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_offsets_get_q2repro_gunoffset_comp(&playerstate->gunoffset, 0));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_offsets_get_q2repro_gunoffset_comp(&playerstate->gunoffset, 1));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_offsets_get_q2repro_gunoffset_comp(&playerstate->gunoffset, 2));
     }
     if (*extraflags & EPS_GUNANGLES)
     {

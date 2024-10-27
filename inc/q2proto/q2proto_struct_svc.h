@@ -437,7 +437,7 @@ typedef struct q2proto_svc_playerstate_s {
     int8_t pm_viewheight;
 #endif
     /// viewoffset
-    q2proto_var_small_offset_t viewoffset;
+    q2proto_var_small_offsets_t viewoffset;
     /// viewangles
     q2proto_angles_delta_t viewangles;
     /// kick_angles
@@ -451,7 +451,7 @@ typedef struct q2proto_svc_playerstate_s {
     /// gunframe
     uint16_t gunframe;
     /// gunoffset
-    q2proto_var_small_offset_t gunoffset;
+    q2proto_var_small_offsets_t gunoffset;
     /// gunangles
     q2proto_var_small_angle_t gunangles;
     /// screen blend

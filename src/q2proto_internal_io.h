@@ -254,19 +254,19 @@ static inline q2proto_error_t read_var_angles16(uintptr_t io_arg, q2proto_var_an
 }
 
 /// Read a single component of an 8-bit small offset
-#define READ_CHECKED_VAR_SMALL_OFFSET_COMP(SOURCE, IO_ARG, TARGET, COMP) \
-    do                                                                   \
-    {                                                                    \
-        int8_t o;                                                        \
-        READ_CHECKED(SOURCE, (IO_ARG), o, i8);                           \
-        q2proto_var_small_offset_set_char_comp(TARGET, COMP, o);         \
+#define READ_CHECKED_VAR_SMALL_OFFSETS_COMP(SOURCE, IO_ARG, TARGET, COMP) \
+    do                                                                    \
+    {                                                                     \
+        int8_t o;                                                         \
+        READ_CHECKED(SOURCE, (IO_ARG), o, i8);                            \
+        q2proto_var_small_offsets_set_char_comp(TARGET, COMP, o);         \
     } while (0)
 
-static inline q2proto_error_t read_var_small_offset(uintptr_t io_arg, q2proto_var_small_offset_t* offs)
+static inline q2proto_error_t read_var_small_offsets(uintptr_t io_arg, q2proto_var_small_offsets_t* offs)
 {
-    READ_CHECKED_VAR_SMALL_OFFSET_COMP(client_read, io_arg, offs, 0);
-    READ_CHECKED_VAR_SMALL_OFFSET_COMP(client_read, io_arg, offs, 1);
-    READ_CHECKED_VAR_SMALL_OFFSET_COMP(client_read, io_arg, offs, 2);
+    READ_CHECKED_VAR_SMALL_OFFSETS_COMP(client_read, io_arg, offs, 0);
+    READ_CHECKED_VAR_SMALL_OFFSETS_COMP(client_read, io_arg, offs, 1);
+    READ_CHECKED_VAR_SMALL_OFFSETS_COMP(client_read, io_arg, offs, 2);
     return Q2P_ERR_SUCCESS;
 }
 

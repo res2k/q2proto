@@ -177,124 +177,124 @@ int8_t q2proto_var_angles_get_char_comp(const q2proto_var_angles_t *angle, int c
 
 typedef enum
 {
-    VAR_SMALL_OFFSET_TYPE_FLOAT = 0,
-    VAR_SMALL_OFFSET_TYPE_CHAR = 1,
-    VAR_SMALL_OFFSET_TYPE_Q2REPRO_VIEWOFFSET = 2,
-    VAR_SMALL_OFFSET_TYPE_Q2REPRO_GUNOFFSET = 3,
+    VAR_SMALL_OFFSETS_TYPE_FLOAT = 0,
+    VAR_SMALL_OFFSETS_TYPE_CHAR = 1,
+    VAR_SMALL_OFFSETS_TYPE_Q2REPRO_VIEWOFFSET = 2,
+    VAR_SMALL_OFFSETS_TYPE_Q2REPRO_GUNOFFSET = 3,
 
-    _VAR_SMALL_OFFSET_TYPE_MAX
-} var_small_offset_type_t;
+    _VAR_SMALL_OFFSETS_TYPE_MAX
+} var_small_offsets_type_t;
 
-#define VAR_SMALL_OFFSET_TYPE_BITS  2
-#define VAR_SMALL_OFFSET_TYPE_MASK  (BIT(VAR_SMALL_OFFSET_TYPE_BITS) - 1)
+#define VAR_SMALL_OFFSETS_TYPE_BITS  2
+#define VAR_SMALL_OFFSETS_TYPE_MASK  (BIT(VAR_SMALL_OFFSETS_TYPE_BITS) - 1)
 
-static inline void set_var_small_offset_comp_type(q2proto_var_small_offset_t *coord, int comp, var_small_offset_type_t type)
+static inline void set_var_small_offsets_comp_type(q2proto_var_small_offsets_t *coord, int comp, var_small_offsets_type_t type)
 {
-    static_assert(sizeof(coord->type_bits) * CHAR_BIT >= 3 * VAR_SMALL_OFFSET_TYPE_BITS);
-    static_assert((_VAR_SMALL_OFFSET_TYPE_MAX - 1) <= VAR_SMALL_OFFSET_TYPE_MASK);
-    coord->type_bits &= ~(VAR_SMALL_OFFSET_TYPE_MASK << (comp * VAR_SMALL_OFFSET_TYPE_BITS));
-    coord->type_bits |= type << (comp * VAR_SMALL_OFFSET_TYPE_BITS);
+    static_assert(sizeof(coord->type_bits) * CHAR_BIT >= 3 * VAR_SMALL_OFFSETS_TYPE_BITS);
+    static_assert((_VAR_SMALL_OFFSETS_TYPE_MAX - 1) <= VAR_SMALL_OFFSETS_TYPE_MASK);
+    coord->type_bits &= ~(VAR_SMALL_OFFSETS_TYPE_MASK << (comp * VAR_SMALL_OFFSETS_TYPE_BITS));
+    coord->type_bits |= type << (comp * VAR_SMALL_OFFSETS_TYPE_BITS);
 }
 
-void q2proto_var_small_offset_set_float_comp(q2proto_var_small_offset_t *coord, int comp, float f)
+void q2proto_var_small_offsets_set_float_comp(q2proto_var_small_offsets_t *coord, int comp, float f)
 {
     coord->comps[comp].f = f;
-    set_var_small_offset_comp_type(coord, comp, VAR_SMALL_OFFSET_TYPE_FLOAT);
+    set_var_small_offsets_comp_type(coord, comp, VAR_SMALL_OFFSETS_TYPE_FLOAT);
 }
 
-void q2proto_var_small_offset_set_char_comp(q2proto_var_small_offset_t *coord, int comp, int8_t c)
+void q2proto_var_small_offsets_set_char_comp(q2proto_var_small_offsets_t *coord, int comp, int8_t c)
 {
     coord->comps[comp].c = c;
-    set_var_small_offset_comp_type(coord, comp, VAR_SMALL_OFFSET_TYPE_CHAR);
+    set_var_small_offsets_comp_type(coord, comp, VAR_SMALL_OFFSETS_TYPE_CHAR);
 }
 
-void q2proto_var_small_offset_set_q2repro_viewoffset_comp(q2proto_var_small_offset_t *coord, int comp, int16_t x)
+void q2proto_var_small_offsets_set_q2repro_viewoffset_comp(q2proto_var_small_offsets_t *coord, int comp, int16_t x)
 {
     coord->comps[comp].s = x;
-    set_var_small_offset_comp_type(coord, comp, VAR_SMALL_OFFSET_TYPE_Q2REPRO_VIEWOFFSET);
+    set_var_small_offsets_comp_type(coord, comp, VAR_SMALL_OFFSETS_TYPE_Q2REPRO_VIEWOFFSET);
 }
 
-void q2proto_var_small_offset_set_q2repro_gunoffset_comp(q2proto_var_small_offset_t *coord, int comp, int16_t x)
+void q2proto_var_small_offsets_set_q2repro_gunoffset_comp(q2proto_var_small_offsets_t *coord, int comp, int16_t x)
 {
     coord->comps[comp].s = x;
-    set_var_small_offset_comp_type(coord, comp, VAR_SMALL_OFFSET_TYPE_Q2REPRO_GUNOFFSET);
+    set_var_small_offsets_comp_type(coord, comp, VAR_SMALL_OFFSETS_TYPE_Q2REPRO_GUNOFFSET);
 }
 
-static inline var_small_offset_type_t get_var_small_offset_comp_type(const q2proto_var_small_offset_t *coord, int comp)
+static inline var_small_offsets_type_t get_var_small_offsets_comp_type(const q2proto_var_small_offsets_t *coord, int comp)
 {
-    return (coord->type_bits >> (comp * VAR_SMALL_OFFSET_TYPE_BITS)) & VAR_SMALL_OFFSET_TYPE_MASK;
+    return (coord->type_bits >> (comp * VAR_SMALL_OFFSETS_TYPE_BITS)) & VAR_SMALL_OFFSETS_TYPE_MASK;
 }
 
-float q2proto_var_small_offset_get_float_comp(const q2proto_var_small_offset_t *coord, int comp)
+float q2proto_var_small_offsets_get_float_comp(const q2proto_var_small_offsets_t *coord, int comp)
 {
-    switch(get_var_small_offset_comp_type(coord, comp))
+    switch(get_var_small_offsets_comp_type(coord, comp))
     {
-    case VAR_SMALL_OFFSET_TYPE_FLOAT:
+    case VAR_SMALL_OFFSETS_TYPE_FLOAT:
         return coord->comps[comp].f;
-    case VAR_SMALL_OFFSET_TYPE_CHAR:
+    case VAR_SMALL_OFFSETS_TYPE_CHAR:
         return _q2proto_valenc_char2smalloffset(coord->comps[comp].c);
-    case VAR_SMALL_OFFSET_TYPE_Q2REPRO_VIEWOFFSET:
+    case VAR_SMALL_OFFSETS_TYPE_Q2REPRO_VIEWOFFSET:
         return _q2proto_valenc_q2repro_short2viewoffset(coord->comps[comp].s);
-    case VAR_SMALL_OFFSET_TYPE_Q2REPRO_GUNOFFSET:
+    case VAR_SMALL_OFFSETS_TYPE_Q2REPRO_GUNOFFSET:
         return _q2proto_valenc_int2coord(coord->comps[comp].s);
-    case _VAR_SMALL_OFFSET_TYPE_MAX:
+    case _VAR_SMALL_OFFSETS_TYPE_MAX:
         break;
     }
     assert(false);
     return 0;
 }
 
-int8_t q2proto_var_small_offset_get_char_comp(const q2proto_var_small_offset_t *coord, int comp)
+int8_t q2proto_var_small_offsets_get_char_comp(const q2proto_var_small_offsets_t *coord, int comp)
 {
-    switch(get_var_small_offset_comp_type(coord, comp))
+    switch(get_var_small_offsets_comp_type(coord, comp))
     {
-    case VAR_SMALL_OFFSET_TYPE_FLOAT:
+    case VAR_SMALL_OFFSETS_TYPE_FLOAT:
         return _q2proto_valenc_smalloffset2char(coord->comps[comp].f);
-    case VAR_SMALL_OFFSET_TYPE_CHAR:
+    case VAR_SMALL_OFFSETS_TYPE_CHAR:
         return coord->comps[comp].c;
-    case VAR_SMALL_OFFSET_TYPE_Q2REPRO_VIEWOFFSET:
+    case VAR_SMALL_OFFSETS_TYPE_Q2REPRO_VIEWOFFSET:
         return clip_int8(coord->comps[comp].s >> 2);
-    case VAR_SMALL_OFFSET_TYPE_Q2REPRO_GUNOFFSET:
+    case VAR_SMALL_OFFSETS_TYPE_Q2REPRO_GUNOFFSET:
         return clip_int8(coord->comps[comp].s >> 1);
-    case _VAR_SMALL_OFFSET_TYPE_MAX:
+    case _VAR_SMALL_OFFSETS_TYPE_MAX:
         break;
     }
     assert(false);
     return 0;
 }
 
-int16_t q2proto_var_small_offset_get_q2repro_viewoffset_comp(const q2proto_var_small_offset_t *coord, int comp)
+int16_t q2proto_var_small_offsets_get_q2repro_viewoffset_comp(const q2proto_var_small_offsets_t *coord, int comp)
 {
-    switch(get_var_small_offset_comp_type(coord, comp))
+    switch(get_var_small_offsets_comp_type(coord, comp))
     {
-    case VAR_SMALL_OFFSET_TYPE_FLOAT:
+    case VAR_SMALL_OFFSETS_TYPE_FLOAT:
         return _q2proto_valenc_q2repro_viewoffset2short(coord->comps[comp].f);
-    case VAR_SMALL_OFFSET_TYPE_CHAR:
+    case VAR_SMALL_OFFSETS_TYPE_CHAR:
         return coord->comps[comp].c << 2;
-    case VAR_SMALL_OFFSET_TYPE_Q2REPRO_VIEWOFFSET:
+    case VAR_SMALL_OFFSETS_TYPE_Q2REPRO_VIEWOFFSET:
         return coord->comps[comp].s;
-    case VAR_SMALL_OFFSET_TYPE_Q2REPRO_GUNOFFSET:
+    case VAR_SMALL_OFFSETS_TYPE_Q2REPRO_GUNOFFSET:
         return clip_int16(coord->comps[comp].s << 1);
-    case _VAR_SMALL_OFFSET_TYPE_MAX:
+    case _VAR_SMALL_OFFSETS_TYPE_MAX:
         break;
     }
     assert(false);
     return 0;
 }
 
-int16_t q2proto_var_small_offset_get_q2repro_gunoffset_comp(const q2proto_var_small_offset_t *coord, int comp)
+int16_t q2proto_var_small_offsets_get_q2repro_gunoffset_comp(const q2proto_var_small_offsets_t *coord, int comp)
 {
-    switch(get_var_small_offset_comp_type(coord, comp))
+    switch(get_var_small_offsets_comp_type(coord, comp))
     {
-    case VAR_SMALL_OFFSET_TYPE_FLOAT:
+    case VAR_SMALL_OFFSETS_TYPE_FLOAT:
         return clip_int16(_q2proto_valenc_coord2int(coord->comps[comp].f));
-    case VAR_SMALL_OFFSET_TYPE_CHAR:
+    case VAR_SMALL_OFFSETS_TYPE_CHAR:
         return coord->comps[comp].c << 1;
-    case VAR_SMALL_OFFSET_TYPE_Q2REPRO_VIEWOFFSET:
+    case VAR_SMALL_OFFSETS_TYPE_Q2REPRO_VIEWOFFSET:
         return coord->comps[comp].s >> 1;
-    case VAR_SMALL_OFFSET_TYPE_Q2REPRO_GUNOFFSET:
+    case VAR_SMALL_OFFSETS_TYPE_Q2REPRO_GUNOFFSET:
         return coord->comps[comp].s;
-    case _VAR_SMALL_OFFSET_TYPE_MAX:
+    case _VAR_SMALL_OFFSETS_TYPE_MAX:
         break;
     }
     assert(false);

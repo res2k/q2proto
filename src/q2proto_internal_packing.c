@@ -213,9 +213,9 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
     if (memcmp(to->viewoffset, from->viewoffset, sizeof(to->viewoffset)) != 0)
     {
         delta->delta_bits |= Q2P_PSD_VIEWOFFSET;
-        q2proto_var_small_offset_set_char_comp(&delta->viewoffset, 0, to->viewoffset[0]);
-        q2proto_var_small_offset_set_char_comp(&delta->viewoffset, 1, to->viewoffset[1]);
-        q2proto_var_small_offset_set_char_comp(&delta->viewoffset, 2, to->viewoffset[2]);
+        q2proto_var_small_offsets_set_char_comp(&delta->viewoffset, 0, to->viewoffset[0]);
+        q2proto_var_small_offsets_set_char_comp(&delta->viewoffset, 1, to->viewoffset[1]);
+        q2proto_var_small_offsets_set_char_comp(&delta->viewoffset, 2, to->viewoffset[2]);
     }
 
     Q2PROTO_SET_ANGLES_DELTA(delta->viewangles, to->viewangles, from->viewangles, short);
@@ -265,9 +265,9 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
     if (delta->delta_bits & (Q2P_PSD_GUNFRAME | Q2P_PSD_GUNOFFSET | Q2P_PSD_GUNANGLES))
     {
         delta->gunframe = to->gunframe;
-        q2proto_var_small_offset_set_char_comp(&delta->gunoffset, 0, to->gunoffset[0]);
-        q2proto_var_small_offset_set_char_comp(&delta->gunoffset, 1, to->gunoffset[1]);
-        q2proto_var_small_offset_set_char_comp(&delta->gunoffset, 2, to->gunoffset[2]);
+        q2proto_var_small_offsets_set_char_comp(&delta->gunoffset, 0, to->gunoffset[0]);
+        q2proto_var_small_offsets_set_char_comp(&delta->gunoffset, 1, to->gunoffset[1]);
+        q2proto_var_small_offsets_set_char_comp(&delta->gunoffset, 2, to->gunoffset[2]);
         q2proto_var_small_angle_set_char_comp(&delta->gunangles, 0, to->gunangles[0]);
         q2proto_var_small_angle_set_char_comp(&delta->gunangles, 1, to->gunangles[1]);
         q2proto_var_small_angle_set_char_comp(&delta->gunangles, 2, to->gunangles[2]);
