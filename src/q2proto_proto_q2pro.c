@@ -420,17 +420,17 @@ q2proto_error_t q2proto_q2pro_client_read_entity_delta(q2proto_clientcontext_t *
     entity_state->origin.read.value.delta_bits = 0;
     if (bits & U_ORIGIN1)
     {
-        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &entity_state->origin, 0));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coords_comp(context, io_arg, &entity_state->origin, 0));
         entity_state->origin.read.value.delta_bits |= BIT(0);
     }
     if (bits & U_ORIGIN2)
     {
-        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &entity_state->origin, 1));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coords_comp(context, io_arg, &entity_state->origin, 1));
         entity_state->origin.read.value.delta_bits |= BIT(1);
     }
     if (bits & U_ORIGIN3)
     {
-        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &entity_state->origin, 2));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coords_comp(context, io_arg, &entity_state->origin, 2));
         entity_state->origin.read.value.delta_bits |= BIT(2);
     }
 
@@ -591,25 +591,25 @@ static q2proto_error_t q2pro_client_read_playerstate(q2proto_clientcontext_t *co
 
     if (flags & PS_M_ORIGIN)
     {
-        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_origin, 0));
-        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_origin, 1));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_origin, 0));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_origin, 1));
         playerstate->pm_origin.read.value.delta_bits |= BIT(0) | BIT(1);
     }
     if (extraflags & EPS_M_ORIGIN2)
     {
-        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_origin, 2));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_origin, 2));
         playerstate->pm_origin.read.value.delta_bits |= BIT(2);
     }
 
     if (flags & PS_M_VELOCITY)
     {
-        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_velocity, 0));
-        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_velocity, 1));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_velocity, 0));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_velocity, 1));
         playerstate->pm_velocity.read.value.delta_bits |= BIT(0) | BIT(1);
     }
     if (extraflags & EPS_M_VELOCITY2)
     {
-        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_velocity, 2));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_velocity, 2));
         playerstate->pm_velocity.read.value.delta_bits |= BIT(2);
     }
 
@@ -1190,7 +1190,7 @@ static void q2pro_unpack_solid(q2proto_clientcontext_t *context, uint32_t solid,
 // SERVER: INITIALIZATION
 //
 
-static q2proto_error_t q2proto_server_write_maybe_diff_coord_comp(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_maybe_diff_coord_t *coord, int comp)
+static q2proto_error_t q2proto_server_write_maybe_diff_coords_comp(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_maybe_diff_coords_t *coord, int comp)
 {
     if (context->server_info->game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
     {
@@ -1373,7 +1373,7 @@ q2proto_error_t q2proto_q2pro_server_write_entity_state_delta(q2proto_servercont
     bool has_q2pro_extensions_v2 = context->server_info->game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
     uint64_t bits = 0;
 
-    unsigned origin_changes = q2proto_maybe_diff_coord_write_differs_int(&entity_state_delta->origin);
+    unsigned origin_changes = q2proto_maybe_diff_coords_write_differs_int(&entity_state_delta->origin);
     if (origin_changes & BIT(0))
         bits |= U_ORIGIN1;
     if (origin_changes & BIT(1))
@@ -1513,11 +1513,11 @@ q2proto_error_t q2proto_q2pro_server_write_entity_state_delta(q2proto_servercont
         WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->renderfx);
 
     if (bits & U_ORIGIN1)
-        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coord_comp(context, io_arg, &entity_state_delta->origin, 0));
+        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coords_comp(context, io_arg, &entity_state_delta->origin, 0));
     if (bits & U_ORIGIN2)
-        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coord_comp(context, io_arg, &entity_state_delta->origin, 1));
+        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coords_comp(context, io_arg, &entity_state_delta->origin, 1));
     if (bits & U_ORIGIN3)
-        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coord_comp(context, io_arg, &entity_state_delta->origin, 2));
+        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coords_comp(context, io_arg, &entity_state_delta->origin, 2));
 
     if (bits & U_ANGLE16)
     {
@@ -1624,8 +1624,8 @@ static q2proto_error_t q2pro_server_write_playerstate(q2proto_servercontext_t *c
     uint16_t flags = 0;
     *extraflags = 0;
 
-    unsigned origin_differs = q2proto_maybe_diff_coord_write_differs_int(&playerstate->pm_origin);
-    unsigned velocity_differs = q2proto_maybe_diff_coord_write_differs_int(&playerstate->pm_velocity);
+    unsigned origin_differs = q2proto_maybe_diff_coords_write_differs_int(&playerstate->pm_origin);
+    unsigned velocity_differs = q2proto_maybe_diff_coords_write_differs_int(&playerstate->pm_velocity);
     if(playerstate->delta_bits & Q2P_PSD_PM_TYPE)
         flags |= PS_M_TYPE;
     if(origin_differs & (BIT(0) | BIT(1)))
@@ -1712,19 +1712,19 @@ static q2proto_error_t q2pro_server_write_playerstate(q2proto_servercontext_t *c
 
     if (flags & PS_M_ORIGIN)
     {
-        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_origin, 0));
-        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_origin, 1));
+        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_origin, 0));
+        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_origin, 1));
     }
     if (*extraflags & EPS_M_ORIGIN2)
-        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_origin, 2));
+        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_origin, 2));
 
     if (flags & PS_M_VELOCITY)
     {
-        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_velocity, 0));
-        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_velocity, 1));
+        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_velocity, 0));
+        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_velocity, 1));
     }
     if (*extraflags & EPS_M_VELOCITY2)
-        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_velocity, 2));
+        CHECKED(server_write, io_arg, q2proto_server_write_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_velocity, 2));
 
     if (flags & PS_M_TIME)
     {

@@ -124,7 +124,7 @@ typedef struct q2proto_entity_state_delta_s {
     /// renderfx
     uint32_t renderfx;
     /// origin
-    q2proto_maybe_diff_coord_t origin;
+    q2proto_maybe_diff_coords_t origin;
     /// angle
     q2proto_angle_delta_t angle;
     /// old_origin
@@ -421,9 +421,9 @@ typedef struct q2proto_svc_playerstate_s {
     /// pmove type
     uint8_t pm_type;
     /// pmove origin
-    q2proto_maybe_diff_coord_t pm_origin;
+    q2proto_maybe_diff_coords_t pm_origin;
     /// pmove velocity
-    q2proto_maybe_diff_coord_t pm_velocity;
+    q2proto_maybe_diff_coords_t pm_velocity;
     /// pmove time
     uint16_t pm_time;
     /// pmove flags

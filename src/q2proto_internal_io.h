@@ -336,7 +336,7 @@ static inline q2proto_error_t read_float_coord(uintptr_t io_arg, float coord[3])
     return Q2P_ERR_SUCCESS;
 }
 
-static inline q2proto_error_t client_read_maybe_diff_coord_comp(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_maybe_diff_coord_t *coord, int comp)
+static inline q2proto_error_t client_read_maybe_diff_coords_comp(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_maybe_diff_coords_t *coord, int comp)
 {
     int val;
     if (context->features.server_game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
@@ -494,8 +494,8 @@ static inline bool delta_bits_check(uint64_t bits, uint64_t check, uint32_t* del
 }
 /** @} */
 
-/// Check if the integer encodings of in the "write" part of a q2proto_maybe_diff_coord_t differ
-static inline unsigned q2proto_maybe_diff_coord_write_differs_int(const q2proto_maybe_diff_coord_t *coord)
+/// Check if the integer encodings of in the "write" part of a q2proto_maybe_diff_coords_t differ
+static inline unsigned q2proto_maybe_diff_coords_write_differs_int(const q2proto_maybe_diff_coords_t *coord)
 {
     unsigned bits = 0;
     if (q2proto_var_coords_get_int_comp(&coord->write.prev, 0) != q2proto_var_coords_get_int_comp(&coord->write.current, 0))
@@ -507,8 +507,8 @@ static inline unsigned q2proto_maybe_diff_coord_write_differs_int(const q2proto_
     return bits;
 }
 
-/// Check if the float values of in the "write" part of a q2proto_maybe_diff_coord_t differ
-static inline unsigned q2proto_maybe_diff_coord_write_differs_float(const q2proto_maybe_diff_coord_t *coord)
+/// Check if the float values of in the "write" part of a q2proto_maybe_diff_coords_t differ
+static inline unsigned q2proto_maybe_diff_coords_write_differs_float(const q2proto_maybe_diff_coords_t *coord)
 {
     unsigned bits = 0;
     if (q2proto_var_coords_get_float_comp(&coord->write.prev, 0) != q2proto_var_coords_get_float_comp(&coord->write.current, 0))

@@ -325,7 +325,7 @@ typedef struct q2proto_color_delta_s {
  * The contents differ by use; the read member is used when reading coordinates, the write member
  * is used when writing coordinates.
  */
-typedef struct q2proto_maybe_diff_coord_s {
+typedef struct q2proto_maybe_diff_coords_s {
     union
     {
         /// Coordinate that was read
@@ -346,11 +346,11 @@ typedef struct q2proto_maybe_diff_coord_s {
             q2proto_var_coords_t current;
         } write;
     };
-} q2proto_maybe_diff_coord_t;
+} q2proto_maybe_diff_coords_t;
 
 //@{
 /// Apply the "read" part maybe_diff to coord
-static inline void q2proto_maybe_read_diff_apply_float(const q2proto_maybe_diff_coord_t *maybe_diff, q2proto_vec3_t coord)
+static inline void q2proto_maybe_read_diff_apply_float(const q2proto_maybe_diff_coords_t *maybe_diff, q2proto_vec3_t coord)
 {
     for (int i = 0; i < 3; i++)
     {
@@ -362,7 +362,7 @@ static inline void q2proto_maybe_read_diff_apply_float(const q2proto_maybe_diff_
             coord[i] = v;
     }
 }
-static inline void q2proto_maybe_read_diff_apply_int(const q2proto_maybe_diff_coord_t *maybe_diff, int32_t coord[3])
+static inline void q2proto_maybe_read_diff_apply_int(const q2proto_maybe_diff_coords_t *maybe_diff, int32_t coord[3])
 {
     for (int i = 0; i < 3; i++)
     {
@@ -374,7 +374,7 @@ static inline void q2proto_maybe_read_diff_apply_int(const q2proto_maybe_diff_co
             coord[i] = v;
     }
 }
-static inline void q2proto_maybe_read_diff_apply_short(const q2proto_maybe_diff_coord_t *maybe_diff, int16_t coord[3])
+static inline void q2proto_maybe_read_diff_apply_short(const q2proto_maybe_diff_coords_t *maybe_diff, int16_t coord[3])
 {
     for (int i = 0; i < 3; i++)
     {

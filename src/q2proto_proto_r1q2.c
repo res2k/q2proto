@@ -939,7 +939,7 @@ static q2proto_error_t r1q2_server_write_entity_state_delta(q2proto_servercontex
 {
     uint32_t bits = 0;
 
-    unsigned origin_changes = q2proto_maybe_diff_coord_write_differs_int(&entity_state_delta->origin);
+    unsigned origin_changes = q2proto_maybe_diff_coords_write_differs_int(&entity_state_delta->origin);
     if (origin_changes & BIT(0))
         bits |= U_ORIGIN1;
     if (origin_changes & BIT(1))
@@ -1126,13 +1126,13 @@ static q2proto_error_t r1q2_server_write_playerstate(uintptr_t io_arg, const q2p
 
     if(playerstate->delta_bits & Q2P_PSD_PM_TYPE)
         flags |= PS_M_TYPE;
-    if(q2proto_maybe_diff_coord_write_differs_int(&playerstate->pm_origin) & (BIT(0) | BIT(1)))
+    if(q2proto_maybe_diff_coords_write_differs_int(&playerstate->pm_origin) & (BIT(0) | BIT(1)))
         flags |= PS_M_ORIGIN;
-    if(q2proto_maybe_diff_coord_write_differs_int(&playerstate->pm_origin) & (BIT(2)))
+    if(q2proto_maybe_diff_coords_write_differs_int(&playerstate->pm_origin) & (BIT(2)))
         *extraflags |= EPS_M_ORIGIN2;
-    if(q2proto_maybe_diff_coord_write_differs_int(&playerstate->pm_velocity) & (BIT(0) | BIT(1)))
+    if(q2proto_maybe_diff_coords_write_differs_int(&playerstate->pm_velocity) & (BIT(0) | BIT(1)))
         flags |= PS_M_VELOCITY;
-    if(q2proto_maybe_diff_coord_write_differs_int(&playerstate->pm_origin) & (BIT(2)))
+    if(q2proto_maybe_diff_coords_write_differs_int(&playerstate->pm_origin) & (BIT(2)))
         *extraflags |= EPS_M_VELOCITY2;
     if(playerstate->delta_bits & Q2P_PSD_PM_TIME)
     {

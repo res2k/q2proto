@@ -280,17 +280,17 @@ static q2proto_error_t q2pro_extdemo_client_read_playerstate(q2proto_clientconte
 
     if(flags & PS_M_ORIGIN)
     {
-        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_origin, 0));
-        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_origin, 1));
-        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_origin, 2));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_origin, 0));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_origin, 1));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_origin, 2));
         playerstate->pm_origin.read.value.delta_bits = 0x7;
     }
 
     if(flags & PS_M_VELOCITY)
     {
-        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_velocity, 0));
-        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_velocity, 1));
-        CHECKED(client_read, io_arg, client_read_maybe_diff_coord_comp(context, io_arg, &playerstate->pm_velocity, 2));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_velocity, 0));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_velocity, 1));
+        CHECKED(client_read, io_arg, client_read_maybe_diff_coords_comp(context, io_arg, &playerstate->pm_velocity, 2));
         playerstate->pm_velocity.read.value.delta_bits = 0x7;
     }
 
@@ -555,9 +555,9 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
 
     if(playerstate->delta_bits & Q2P_PSD_PM_TYPE)
         flags |= PS_M_TYPE;
-    if(q2proto_maybe_diff_coord_write_differs_int(&playerstate->pm_origin) != 0)
+    if(q2proto_maybe_diff_coords_write_differs_int(&playerstate->pm_origin) != 0)
         flags |= PS_M_ORIGIN;
-    if(q2proto_maybe_diff_coord_write_differs_int(&playerstate->pm_velocity) != 0)
+    if(q2proto_maybe_diff_coords_write_differs_int(&playerstate->pm_velocity) != 0)
         flags |= PS_M_VELOCITY;
     if(playerstate->delta_bits & Q2P_PSD_PM_TIME)
     {
