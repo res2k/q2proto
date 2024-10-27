@@ -969,9 +969,9 @@ static q2proto_error_t vanilla_server_write_playerstate(uintptr_t io_arg, const 
 
     if (flags & PS_KICKANGLES)
     {
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->kick_angles, 0));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->kick_angles, 1));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->kick_angles, 2));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->kick_angles, 0));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->kick_angles, 1));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->kick_angles, 2));
     }
 
     if (flags & PS_WEAPONINDEX)
@@ -987,9 +987,9 @@ static q2proto_error_t vanilla_server_write_playerstate(uintptr_t io_arg, const 
         WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offsets_get_char_comp(&playerstate->gunoffset, 0));
         WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offsets_get_char_comp(&playerstate->gunoffset, 1));
         WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offsets_get_char_comp(&playerstate->gunoffset, 2));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->gunangles, 0));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->gunangles, 1));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->gunangles, 2));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->gunangles, 0));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->gunangles, 1));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->gunangles, 2));
     }
 
     if (flags & PS_BLEND)

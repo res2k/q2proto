@@ -75,15 +75,15 @@ static inline q2proto_error_t read_short_viewoffset(uintptr_t io_arg, q2proto_va
     return Q2P_ERR_SUCCESS;
 }
 
-#define READ_CHECKED_KICK_ANGLES_COMP(SOURCE, IO_ARG, TARGET, COMP)            \
-    do                                                                         \
-    {                                                                          \
-        int16_t a;                                                             \
-        READ_CHECKED(SOURCE, (IO_ARG), a, i16);                                \
-        q2proto_var_small_angle_set_q2repro_kick_angles_comp(TARGET, COMP, a); \
+#define READ_CHECKED_KICK_ANGLES_COMP(SOURCE, IO_ARG, TARGET, COMP)             \
+    do                                                                          \
+    {                                                                           \
+        int16_t a;                                                              \
+        READ_CHECKED(SOURCE, (IO_ARG), a, i16);                                 \
+        q2proto_var_small_angles_set_q2repro_kick_angles_comp(TARGET, COMP, a); \
     } while (0)
 
-static inline q2proto_error_t read_short_kick_angles(uintptr_t io_arg, q2proto_var_small_angle_t* angles)
+static inline q2proto_error_t read_short_kick_angles(uintptr_t io_arg, q2proto_var_small_angles_t* angles)
 {
     READ_CHECKED_KICK_ANGLES_COMP(client_read, io_arg, angles, 0);
     READ_CHECKED_KICK_ANGLES_COMP(client_read, io_arg, angles, 1);
@@ -107,15 +107,15 @@ static inline q2proto_error_t read_short_gunoffset(uintptr_t io_arg, q2proto_var
     return Q2P_ERR_SUCCESS;
 }
 
-#define READ_CHECKED_GUNANGLES_COMP(SOURCE, IO_ARG, TARGET, COMP)            \
-    do                                                                       \
-    {                                                                        \
-        int16_t a;                                                           \
-        READ_CHECKED(SOURCE, (IO_ARG), a, i16);                              \
-        q2proto_var_small_angle_set_q2repro_gunangles_comp(TARGET, COMP, a); \
+#define READ_CHECKED_GUNANGLES_COMP(SOURCE, IO_ARG, TARGET, COMP)             \
+    do                                                                        \
+    {                                                                         \
+        int16_t a;                                                            \
+        READ_CHECKED(SOURCE, (IO_ARG), a, i16);                               \
+        q2proto_var_small_angles_set_q2repro_gunangles_comp(TARGET, COMP, a); \
     } while (0)
 
-static inline q2proto_error_t read_short_gunangles(uintptr_t io_arg, q2proto_var_small_angle_t* angles)
+static inline q2proto_error_t read_short_gunangles(uintptr_t io_arg, q2proto_var_small_angles_t* angles)
 {
     READ_CHECKED_GUNANGLES_COMP(client_read, io_arg, angles, 0);
     READ_CHECKED_GUNANGLES_COMP(client_read, io_arg, angles, 1);
@@ -1595,9 +1595,9 @@ static void q2repro_server_make_player_state_delta(q2proto_servercontext_t *cont
     if (memcmp(to->kick_angles, from->kick_angles, sizeof(to->kick_angles)))
     {
         delta->delta_bits |= Q2P_PSD_KICKANGLES;
-        q2proto_var_small_angle_set_q2repro_kick_angles_comp(&delta->kick_angles, 0, to->kick_angles[0]);
-        q2proto_var_small_angle_set_q2repro_kick_angles_comp(&delta->kick_angles, 1, to->kick_angles[1]);
-        q2proto_var_small_angle_set_q2repro_kick_angles_comp(&delta->kick_angles, 2, to->kick_angles[2]);
+        q2proto_var_small_angles_set_q2repro_kick_angles_comp(&delta->kick_angles, 0, to->kick_angles[0]);
+        q2proto_var_small_angles_set_q2repro_kick_angles_comp(&delta->kick_angles, 1, to->kick_angles[1]);
+        q2proto_var_small_angles_set_q2repro_kick_angles_comp(&delta->kick_angles, 2, to->kick_angles[2]);
     }
 
     for (int c = 0; c < 4; c++)
@@ -1640,9 +1640,9 @@ static void q2repro_server_make_player_state_delta(q2proto_servercontext_t *cont
         q2proto_var_small_offsets_set_q2repro_gunoffset_comp(&delta->gunoffset, 0, to->gunoffset[0]);
         q2proto_var_small_offsets_set_q2repro_gunoffset_comp(&delta->gunoffset, 1, to->gunoffset[1]);
         q2proto_var_small_offsets_set_q2repro_gunoffset_comp(&delta->gunoffset, 2, to->gunoffset[2]);
-        q2proto_var_small_angle_set_q2repro_gunangles_comp(&delta->gunangles, 0, to->gunangles[0]);
-        q2proto_var_small_angle_set_q2repro_gunangles_comp(&delta->gunangles, 1, to->gunangles[1]);
-        q2proto_var_small_angle_set_q2repro_gunangles_comp(&delta->gunangles, 2, to->gunangles[2]);
+        q2proto_var_small_angles_set_q2repro_gunangles_comp(&delta->gunangles, 0, to->gunangles[0]);
+        q2proto_var_small_angles_set_q2repro_gunangles_comp(&delta->gunangles, 1, to->gunangles[1]);
+        q2proto_var_small_angles_set_q2repro_gunangles_comp(&delta->gunangles, 2, to->gunangles[2]);
     }
 
     if (to->gunindex != from->gunindex)
@@ -2111,9 +2111,9 @@ static q2proto_error_t q2repro_server_write_playerstate(q2proto_servercontext_t 
 
     if (flags & PS_KICKANGLES)
     {
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_angle_get_q2repro_kick_angles_comp(&playerstate->kick_angles, 0));
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_angle_get_q2repro_kick_angles_comp(&playerstate->kick_angles, 1));
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_angle_get_q2repro_kick_angles_comp(&playerstate->kick_angles, 2));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_angles_get_q2repro_kick_angles_comp(&playerstate->kick_angles, 0));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_angles_get_q2repro_kick_angles_comp(&playerstate->kick_angles, 1));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_angles_get_q2repro_kick_angles_comp(&playerstate->kick_angles, 2));
     }
 
     if (flags & PS_WEAPONINDEX)
@@ -2135,9 +2135,9 @@ static q2proto_error_t q2repro_server_write_playerstate(q2proto_servercontext_t 
     }
     if (*extraflags & EPS_GUNANGLES)
     {
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_angle_get_q2repro_gunangles_comp(&playerstate->gunangles, 0));
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_angle_get_q2repro_gunangles_comp(&playerstate->gunangles, 1));
-        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_angle_get_q2repro_gunangles_comp(&playerstate->gunangles, 2));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_angles_get_q2repro_gunangles_comp(&playerstate->gunangles, 0));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_angles_get_q2repro_gunangles_comp(&playerstate->gunangles, 1));
+        WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_small_angles_get_q2repro_gunangles_comp(&playerstate->gunangles, 2));
     }
 
     if (flags & PS_BLEND)

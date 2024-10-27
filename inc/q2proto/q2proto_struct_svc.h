@@ -441,7 +441,7 @@ typedef struct q2proto_svc_playerstate_s {
     /// viewangles
     q2proto_angles_delta_t viewangles;
     /// kick_angles
-    q2proto_var_small_angle_t kick_angles;
+    q2proto_var_small_angles_t kick_angles;
     /// gunindex
     uint16_t gunindex;
 #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
@@ -453,7 +453,7 @@ typedef struct q2proto_svc_playerstate_s {
     /// gunoffset
     q2proto_var_small_offsets_t gunoffset;
     /// gunangles
-    q2proto_var_small_angle_t gunangles;
+    q2proto_var_small_angles_t gunangles;
     /// screen blend
     q2proto_color_delta_t blend;
 #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2

@@ -159,7 +159,7 @@ _GENERATE_VARIANT_FUNCTIONS(var_small_offsets, q2repro_gunoffset, int16_t, 3)
 /** @}  */
 
 /// Variant for "small" angles with limited range and precision (kick_angles, gunangles), can be encoded into 8 bit
-typedef struct q2proto_var_small_angle_s {
+typedef struct q2proto_var_small_angles_s {
     // Stores types of components
     uint8_t Q2PROTO_PRIVATE_MEMBER(type_bits);
     // Component values
@@ -169,23 +169,23 @@ typedef struct q2proto_var_small_angle_s {
         int8_t c;
         int16_t s;
     } Q2PROTO_PRIVATE_MEMBER(comps)[3];
-} q2proto_var_small_angle_t;
+} q2proto_var_small_angles_t;
 
 /** 'Small angle' functions for float values
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_small_angle, float, float, 3)
+_GENERATE_VARIANT_FUNCTIONS(var_small_angles, float, float, 3)
 /** @}  */
 /** 'Small angle' functions for pre-encoded 8-bit values
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_small_angle, char, int8_t, 3)
+_GENERATE_VARIANT_FUNCTIONS(var_small_angles, char, int8_t, 3)
 /** @}  */
 /** 'Small angle' functions for Q2rePRO kick_angles encoding
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_small_angle, q2repro_kick_angles, int16_t, 3)
+_GENERATE_VARIANT_FUNCTIONS(var_small_angles, q2repro_kick_angles, int16_t, 3)
 /** @}  */
 /** 'Small angle' functions for Q2rePRO gunangles encoding
  * @{ */
-_GENERATE_VARIANT_FUNCTIONS(var_small_angle, q2repro_gunangles, int16_t, 3)
+_GENERATE_VARIANT_FUNCTIONS(var_small_angles, q2repro_gunangles, int16_t, 3)
 /** @}  */
 
 /// Variant for color values (RGBA, each component stored as a float or as a byte)

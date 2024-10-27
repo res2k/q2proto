@@ -223,9 +223,9 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
     if (memcmp(to->kick_angles, from->kick_angles, sizeof(to->kick_angles)))
     {
         delta->delta_bits |= Q2P_PSD_KICKANGLES;
-        q2proto_var_small_angle_set_char_comp(&delta->kick_angles, 0, to->kick_angles[0]);
-        q2proto_var_small_angle_set_char_comp(&delta->kick_angles, 1, to->kick_angles[1]);
-        q2proto_var_small_angle_set_char_comp(&delta->kick_angles, 2, to->kick_angles[2]);
+        q2proto_var_small_angles_set_char_comp(&delta->kick_angles, 0, to->kick_angles[0]);
+        q2proto_var_small_angles_set_char_comp(&delta->kick_angles, 1, to->kick_angles[1]);
+        q2proto_var_small_angles_set_char_comp(&delta->kick_angles, 2, to->kick_angles[2]);
     }
 
     for (int c = 0; c < 4; c++)
@@ -268,9 +268,9 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
         q2proto_var_small_offsets_set_char_comp(&delta->gunoffset, 0, to->gunoffset[0]);
         q2proto_var_small_offsets_set_char_comp(&delta->gunoffset, 1, to->gunoffset[1]);
         q2proto_var_small_offsets_set_char_comp(&delta->gunoffset, 2, to->gunoffset[2]);
-        q2proto_var_small_angle_set_char_comp(&delta->gunangles, 0, to->gunangles[0]);
-        q2proto_var_small_angle_set_char_comp(&delta->gunangles, 1, to->gunangles[1]);
-        q2proto_var_small_angle_set_char_comp(&delta->gunangles, 2, to->gunangles[2]);
+        q2proto_var_small_angles_set_char_comp(&delta->gunangles, 0, to->gunangles[0]);
+        q2proto_var_small_angles_set_char_comp(&delta->gunangles, 1, to->gunangles[1]);
+        q2proto_var_small_angles_set_char_comp(&delta->gunangles, 2, to->gunangles[2]);
     }
 
     if (to->gunindex != from->gunindex)

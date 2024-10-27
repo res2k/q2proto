@@ -1769,9 +1769,9 @@ static q2proto_error_t q2pro_server_write_playerstate(q2proto_servercontext_t *c
 
     if (flags & PS_KICKANGLES)
     {
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->kick_angles, 0));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->kick_angles, 1));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->kick_angles, 2));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->kick_angles, 0));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->kick_angles, 1));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->kick_angles, 2));
     }
 
     if (flags & PS_WEAPONINDEX)
@@ -1798,9 +1798,9 @@ static q2proto_error_t q2pro_server_write_playerstate(q2proto_servercontext_t *c
     }
     if (*extraflags & EPS_GUNANGLES)
     {
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->gunangles, 0));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->gunangles, 1));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angle_get_char_comp(&playerstate->gunangles, 2));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->gunangles, 0));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->gunangles, 1));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->gunangles, 2));
     }
 
     if (flags & PS_BLEND)

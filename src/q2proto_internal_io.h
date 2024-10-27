@@ -276,10 +276,10 @@ static inline q2proto_error_t read_var_small_offsets(uintptr_t io_arg, q2proto_v
     {                                                                    \
         int8_t a;                                                        \
         READ_CHECKED(SOURCE, (IO_ARG), a, i8);                           \
-        q2proto_var_small_angle_set_char_comp(TARGET, COMP, a);          \
+        q2proto_var_small_angles_set_char_comp(TARGET, COMP, a);         \
     } while (0)
 
-static inline q2proto_error_t read_var_small_angles(uintptr_t io_arg, q2proto_var_small_angle_t* angle)
+static inline q2proto_error_t read_var_small_angles(uintptr_t io_arg, q2proto_var_small_angles_t* angle)
 {
     READ_CHECKED_VAR_SMALL_ANGLES_COMP(client_read, io_arg, angle, 0);
     READ_CHECKED_VAR_SMALL_ANGLES_COMP(client_read, io_arg, angle, 1);
