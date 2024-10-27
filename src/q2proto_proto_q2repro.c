@@ -758,7 +758,7 @@ static q2proto_error_t q2repro_client_read_playerstate(q2proto_clientcontext_t *
 
     if (flags & PS_BLEND)
     {
-        q2proto_color_delta_t damage_blend;
+        q2proto_color_delta_t damage_blend = {0};
         CHECKED(client_read, io_arg, client_read_q2pro_extv2_blends(io_arg, &playerstate->blend, &damage_blend));
     #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
         memcpy(&playerstate->damage_blend, &damage_blend, sizeof(damage_blend));
