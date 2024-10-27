@@ -291,7 +291,7 @@ static inline q2proto_error_t read_var_small_angles(uintptr_t io_arg, q2proto_va
 #define READ_CHECKED_VAR_COLOR_COMP(SOURCE, IO_ARG, TARGET, COMP) \
     do                                                            \
     {                                                             \
-        int8_t c;                                                 \
+        uint8_t c;                                                \
         READ_CHECKED(SOURCE, (IO_ARG), c, u8);                    \
         q2proto_var_color_set_byte_comp(TARGET, COMP, c);         \
     } while (0)
