@@ -549,14 +549,8 @@ enum q2proto_fog_flags
 {
     /// 'density', 'skyfactor' are set
     Q2P_FOG_DENSITY_SKYFACTOR = 0x1,
-    /// 'r' is set
-    Q2P_FOG_R = 0x2,
-    /// 'g' is set
-    Q2P_FOG_G = 0x4,
-    /// 'b' is set
-    Q2P_FOG_B = 0x8,
     /// 'time' is set
-    Q2P_FOG_TIME = 0x10,
+    Q2P_FOG_TIME = 0x2,
 };
 
 /// Flag bits for fields set in a q2proto_svc_fog_t.heightfog structure
@@ -566,22 +560,10 @@ enum q2proto_heightfog_flags
     Q2P_HEIGHTFOG_FALLOFF = 0x1,
     /// 'density' is set
     Q2P_HEIGHTFOG_DENSITY = 0x2,
-    /// 'start_r' is set
-    Q2P_HEIGHTFOG_START_R = 0x4,
-    /// 'start_g' is set
-    Q2P_HEIGHTFOG_START_G = 0x8,
-    /// 'start_b' is set
-    Q2P_HEIGHTFOG_START_B = 0x10,
     /// 'start_dist' is set
-    Q2P_HEIGHTFOG_START_DIST = 0x20,
-    /// 'end_r' is set
-    Q2P_HEIGHTFOG_END_R = 0x40,
-    /// 'end_g' is set
-    Q2P_HEIGHTFOG_END_G = 0x80,
-    /// 'end_b' is set
-    Q2P_HEIGHTFOG_END_B = 0x100,
+    Q2P_HEIGHTFOG_START_DIST = 0x4,
     /// 'end_dist' is set
-    Q2P_HEIGHTFOG_END_DIST = 0x200,
+    Q2P_HEIGHTFOG_END_DIST = 0x8,
 };
 
 /// Rerelease fog
@@ -592,12 +574,8 @@ typedef struct q2proto_svc_fog_s {
     float density;
     /// skyfactor
     uint8_t skyfactor;
-    /// color: red
-    uint8_t r;
-    /// color: green
-    uint8_t g;
-    /// color: blue
-    uint8_t b;
+    /// color (alpha is ignored)
+    q2proto_color_delta_t color;
     /// time
     uint16_t time;
 
@@ -608,20 +586,12 @@ typedef struct q2proto_svc_fog_s {
         float falloff;
         /// density
         float density;
-        /// start color: red
-        uint8_t start_r;
-        /// start color: green
-        uint8_t start_g;
-        /// start color: blue
-        uint8_t start_b;
+        /// start color (alpha is ignored)
+        q2proto_color_delta_t start_color;
         /// start distance
         int32_t start_dist;
-        /// end color: red
-        uint8_t end_r;
-        /// end color: green
-        uint8_t end_g;
-        /// end color: blue
-        uint8_t end_b;
+        /// end color (alpha is ignored)
+        q2proto_color_delta_t end_color;
         /// end distance
         int32_t end_dist;
     } heightfog;

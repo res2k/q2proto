@@ -862,6 +862,16 @@ static q2proto_error_t q2repro_client_read_damage(uintptr_t io_arg, q2proto_svc_
     return Q2P_ERR_SUCCESS;
 }
 
+static inline bool fog_color_bits_check(unsigned int bits, unsigned int check, uint8_t* delta_new, uint8_t new_bits)
+{
+    if (bits & check)
+    {
+        *delta_new |= new_bits;
+        return true;
+    }
+    return false;
+}
+
 static q2proto_error_t q2repro_client_read_fog(uintptr_t io_arg, q2proto_svc_fog_t *fog)
 {
     unsigned int bits;
@@ -878,12 +888,12 @@ static q2proto_error_t q2repro_client_read_fog(uintptr_t io_arg, q2proto_svc_fog
         READ_CHECKED(client_read, io_arg, fog->density, float);
         READ_CHECKED(client_read, io_arg, fog->skyfactor, u8);
     }
-    if (delta_bits_check(bits, FOG_BIT_R, &fog->flags, Q2P_FOG_R))
-        READ_CHECKED(client_read, io_arg, fog->r, u8);
-    if (delta_bits_check(bits, FOG_BIT_G, &fog->flags, Q2P_FOG_G))
-        READ_CHECKED(client_read, io_arg, fog->g, u8);
-    if (delta_bits_check(bits, FOG_BIT_B, &fog->flags, Q2P_FOG_B))
-        READ_CHECKED(client_read, io_arg, fog->b, u8);
+    if (fog_color_bits_check(bits, FOG_BIT_R, &fog->color.delta_bits, BIT(0)))
+        READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &fog->color.values, 0);
+    if (fog_color_bits_check(bits, FOG_BIT_G, &fog->color.delta_bits, BIT(1)))
+        READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &fog->color.values, 1);
+    if (fog_color_bits_check(bits, FOG_BIT_B, &fog->color.delta_bits, BIT(2)))
+        READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &fog->color.values, 2);
     if (delta_bits_check(bits, FOG_BIT_TIME, &fog->flags, Q2P_FOG_TIME))
         READ_CHECKED(client_read, io_arg, fog->time, u16);
 
@@ -892,21 +902,21 @@ static q2proto_error_t q2repro_client_read_fog(uintptr_t io_arg, q2proto_svc_fog
     if (delta_bits_check(bits, FOG_BIT_HEIGHTFOG_DENSITY, &fog->heightfog.flags, Q2P_HEIGHTFOG_DENSITY))
         READ_CHECKED(client_read, io_arg, fog->heightfog.density, float);
 
-    if (delta_bits_check(bits, FOG_BIT_HEIGHTFOG_START_R, &fog->heightfog.flags, Q2P_HEIGHTFOG_START_R))
-        READ_CHECKED(client_read, io_arg, fog->heightfog.start_r, u8);
-    if (delta_bits_check(bits, FOG_BIT_HEIGHTFOG_START_G, &fog->heightfog.flags, Q2P_HEIGHTFOG_START_G))
-        READ_CHECKED(client_read, io_arg, fog->heightfog.start_g, u8);
-    if (delta_bits_check(bits, FOG_BIT_HEIGHTFOG_START_B, &fog->heightfog.flags, Q2P_HEIGHTFOG_START_B))
-        READ_CHECKED(client_read, io_arg, fog->heightfog.start_b, u8);
+    if (fog_color_bits_check(bits, FOG_BIT_HEIGHTFOG_START_R, &fog->heightfog.start_color.delta_bits, BIT(0)))
+        READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &fog->heightfog.start_color.values, 0);
+    if (fog_color_bits_check(bits, FOG_BIT_HEIGHTFOG_START_G, &fog->heightfog.start_color.delta_bits, BIT(1)))
+        READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &fog->heightfog.start_color.values, 1);
+    if (fog_color_bits_check(bits, FOG_BIT_HEIGHTFOG_START_B, &fog->heightfog.start_color.delta_bits, BIT(2)))
+        READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &fog->heightfog.start_color.values, 2);
     if (delta_bits_check(bits, FOG_BIT_HEIGHTFOG_START_DIST, &fog->heightfog.flags, Q2P_HEIGHTFOG_START_DIST))
         READ_CHECKED(client_read, io_arg, fog->heightfog.start_dist, i32);
 
-    if (delta_bits_check(bits, FOG_BIT_HEIGHTFOG_END_R, &fog->heightfog.flags, Q2P_HEIGHTFOG_END_R))
-        READ_CHECKED(client_read, io_arg, fog->heightfog.end_r, u8);
-    if (delta_bits_check(bits, FOG_BIT_HEIGHTFOG_END_G, &fog->heightfog.flags, Q2P_HEIGHTFOG_END_G))
-        READ_CHECKED(client_read, io_arg, fog->heightfog.end_g, u8);
-    if (delta_bits_check(bits, FOG_BIT_HEIGHTFOG_END_B, &fog->heightfog.flags, Q2P_HEIGHTFOG_END_B))
-        READ_CHECKED(client_read, io_arg, fog->heightfog.end_b, u8);
+    if (fog_color_bits_check(bits, FOG_BIT_HEIGHTFOG_END_R, &fog->heightfog.end_color.delta_bits, BIT(0)))
+        READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &fog->heightfog.end_color.values, 0);
+    if (fog_color_bits_check(bits, FOG_BIT_HEIGHTFOG_END_G, &fog->heightfog.end_color.delta_bits, BIT(1)))
+        READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &fog->heightfog.end_color.values, 1);
+    if (fog_color_bits_check(bits, FOG_BIT_HEIGHTFOG_END_B, &fog->heightfog.end_color.delta_bits, BIT(2)))
+        READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &fog->heightfog.end_color.values, 2);
     if (delta_bits_check(bits, FOG_BIT_HEIGHTFOG_END_DIST, &fog->heightfog.flags, Q2P_HEIGHTFOG_END_DIST))
         READ_CHECKED(client_read, io_arg, fog->heightfog.end_dist, i32);
 
