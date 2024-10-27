@@ -2164,19 +2164,19 @@ static q2proto_error_t q2pro_server_read_batch_move_delta(bitreader_t *bitreader
     {
         int move_value;
         CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, -10, &move_value));
-        q2proto_var_coord_set_int_comp(&move_delta->move, 0, move_value);
+        q2proto_var_coord_set_int_unscaled_comp(&move_delta->move, 0, move_value);
     }
     if (delta_bits_check(bits, CM_SIDE, &move_delta->delta_bits, Q2P_CMD_MOVE_SIDE))
     {
         int move_value;
         CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, -10, &move_value));
-        q2proto_var_coord_set_int_comp(&move_delta->move, 1, move_value);
+        q2proto_var_coord_set_int_unscaled_comp(&move_delta->move, 1, move_value);
     }
     if (delta_bits_check(bits, CM_UP, &move_delta->delta_bits, Q2P_CMD_MOVE_UP))
     {
         int move_value;
         CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, -10, &move_value));
-        q2proto_var_coord_set_int_comp(&move_delta->move, 2, move_value);
+        q2proto_var_coord_set_int_unscaled_comp(&move_delta->move, 2, move_value);
     }
 
     if (delta_bits_check(bits, CM_BUTTONS, &move_delta->delta_bits, Q2P_CMD_BUTTONS))
