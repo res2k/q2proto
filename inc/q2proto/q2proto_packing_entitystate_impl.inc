@@ -78,8 +78,8 @@ static void _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME(const void * restrict entity_
     {
         entity_packed->loop_volume = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, loop_volume), 255, 0, UINT8_MAX);
         entity_packed->loop_attenuation = q2proto_sound_encode_loop_attenuation(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, loop_attenuation));
-        entity_packed->alpha = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, alpha), 255, 0, UINT8_MAX);
-        entity_packed->scale = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, scale), 16, 0, UINT8_MAX);
+        entity_packed->alpha = _q2proto_valenc_entityalpha2byte(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, alpha));
+        entity_packed->scale = _q2proto_valenc_entityscale2byte(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, scale));
     }
 #endif
 }
@@ -105,8 +105,8 @@ static void _Q2P_PACK_ENTITY_Q2REPRO_FUNCTION_NAME(const void * restrict entity_
 #if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
     entity_packed->loop_volume = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, loop_volume), 255, 0, UINT8_MAX);
     entity_packed->loop_attenuation = q2proto_sound_encode_loop_attenuation(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, loop_attenuation));
-    entity_packed->alpha = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, alpha), 255, 0, UINT8_MAX);
-    entity_packed->scale = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, scale), 16, 0, UINT8_MAX);
+    entity_packed->alpha = _q2proto_valenc_entityalpha2byte(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, alpha));
+    entity_packed->scale = _q2proto_valenc_entityscale2byte(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, scale));
 #endif
 }
 

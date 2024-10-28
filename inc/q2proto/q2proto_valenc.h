@@ -132,6 +132,24 @@ static inline uint8_t _q2proto_valenc_color2byte(float x)
     return _q2proto_valenc_clamped_mul(x, 255, 0, UINT8_MAX);
 }
 
+// Encode a Q2PRO extended/rerelease game entity alpha value to unsigned 8-bit integer
+static inline uint8_t _q2proto_valenc_entityalpha2byte(float x)
+{
+    /* An entity alpha value of 0 is special (means "default") so make
+     * sure only true 0 encodes to 0, and small values don't accidentally
+     * get reduced to it */
+    return x != 0 ? _q2proto_valenc_clamped_mul(x, 255, 1, UINT8_MAX) : 0;
+}
+
+// Encode a Q2PRO extended/rerelease game entity alpha value to unsigned 8-bit integer
+static inline uint8_t _q2proto_valenc_entityscale2byte(float x)
+{
+    /* An entity scale value of 0 is special (means "default") so make
+     * sure only true 0 encodes to 0, and small values don't accidentally
+     * get reduced to it */
+    return x != 0 ? _q2proto_valenc_clamped_mul(x, 16, 1, UINT8_MAX) : 0;
+}
+
 // Decode a viewoffset component for Q2rePRO protocol
 static inline float _q2proto_valenc_q2repro_short2viewoffset(int16_t x)
 {
