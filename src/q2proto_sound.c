@@ -71,21 +71,21 @@ void q2proto_sound_encode_message(const q2proto_sound_t *sound_data, q2proto_svc
         q2proto_var_coords_set_float(&sound_msg->pos, sound_data->pos);
         sound_msg->flags |= SND_POS;
     }
-    int volume = sound_data->volume * 255;
+    int volume = (int)(sound_data->volume * 255);
     uint8_t volume_enc = (uint8_t)CLAMP(volume, 0, 255);
     if (volume_enc != SOUND_DEFAULT_VOLUME)
     {
         sound_msg->volume = volume_enc;
         sound_msg->flags |= SND_VOLUME;
     }
-    int attn = sound_data->attenuation * 64;
+    int attn = (int)(sound_data->attenuation * 64);
     uint8_t attn_enc = (uint8_t)CLAMP(attn, 0, 255);
     if (attn_enc != SOUND_DEFAULT_ATTENUATION)
     {
         sound_msg->attenuation = attn_enc;
         sound_msg->flags |= SND_ATTENUATION;
     }
-    int time = sound_data->timeofs * 1000;
+    int time = (int)(sound_data->timeofs * 1000);
     uint8_t time_enc = (uint8_t)CLAMP(time, 0, 255);
     if (time_enc != 0)
     {

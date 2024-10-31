@@ -28,9 +28,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Assumes x/y are equal and symmetric. Z does not have to be symmetric, and z maxs can be negative.
 uint16_t q2proto_pack_solid_16(const q2proto_vec3_t mins, const q2proto_vec3_t maxs)
 {
-    int x = maxs[0] / 8;
-    int zd = -mins[2] / 8;
-    int zu = (maxs[2] + 32) / 8;
+    int x = (int)(maxs[0] / 8);
+    int zd = (int)(-mins[2] / 8);
+    int zu = (int)((maxs[2] + 32) / 8);
 
     x = CLAMP(x, 1, 31);
     zd = CLAMP(zd, 1, 31);
@@ -45,20 +45,20 @@ void q2proto_unpack_solid_16(uint16_t solid, q2proto_vec3_t mins, q2proto_vec3_t
     int zd = 8 * ((solid >> 5) & 31);
     int zu = 8 * ((solid >> 10) & 63) - 32;
 
-    mins[0] = -x;
-    mins[1] = -x;
-    mins[2] = -zd;
-    maxs[0] =  x;
-    maxs[1] =  x;
-    maxs[2] =  zu;
+    mins[0] = (float)-x;
+    mins[1] = (float)-x;
+    mins[2] = (float)-zd;
+    maxs[0] =  (float)x;
+    maxs[1] =  (float)x;
+    maxs[2] =  (float)zu;
 }
 
 // Assumes x/y are equal and symmetric. Z does not have to be symmetric, and z maxs can be negative.
 uint32_t q2proto_pack_solid_32_r1q2(const q2proto_vec3_t mins, const q2proto_vec3_t maxs)
 {
-    int x = maxs[0];
-    int zd = -mins[2];
-    int zu = maxs[2] + 32768;
+    int x = (int)(maxs[0]);
+    int zd = (int)(-mins[2]);
+    int zu = (int)(maxs[2] + 32768);
 
     x = CLAMP(x, 1, 255);
     zd = CLAMP(zd, 0, 0xff);
@@ -73,21 +73,21 @@ void q2proto_unpack_solid_32_r1q2(uint32_t solid, q2proto_vec3_t mins, q2proto_v
     int zd = (solid >> 8) & 255;
     int zu = ((solid >> 16) & 65535) - 32768;
 
-    mins[0] = -x;
-    mins[1] = -x;
-    mins[2] = -zd;
-    maxs[0] =  x;
-    maxs[1] =  x;
-    maxs[2] =  zu;
+    mins[0] = (float)-x;
+    mins[1] = (float)-x;
+    mins[2] = (float)-zd;
+    maxs[0] =  (float)x;
+    maxs[1] =  (float)x;
+    maxs[2] =  (float)zu;
 }
 
 // Assumes x/y are equal. Z does not have to be symmetric, and z maxs can be negative.
 uint32_t q2proto_pack_solid_32_q2pro_v2(const q2proto_vec3_t mins, const q2proto_vec3_t maxs)
 {
-    int x = maxs[0];
-    int y = maxs[1];
-    int zd = -mins[2];
-    int zu = maxs[2] + 32;
+    int x = (int)(maxs[0]);
+    int y = (int)(maxs[1]);
+    int zd = (int)(-mins[2]);
+    int zu = (int)(maxs[2] + 32);
 
     x = CLAMP(x, 1, 255);
     y = CLAMP(y, 1, 255);
@@ -104,10 +104,10 @@ void q2proto_unpack_solid_32_q2pro_v2(uint32_t solid, q2proto_vec3_t mins, q2pro
     int zd = (solid >> 16) & 255;
     int zu = ((solid >> 24) & 255) - 32;
 
-    mins[0] = -x;
-    mins[1] = -y;
-    mins[2] = -zd;
-    maxs[0] =  x;
-    maxs[1] =  y;
-    maxs[2] =  zu;
+    mins[0] = (float)-x;
+    mins[1] = (float)-y;
+    mins[2] = (float)-zd;
+    maxs[0] =  (float)x;
+    maxs[1] =  (float)y;
+    maxs[2] =  (float)zu;
 }

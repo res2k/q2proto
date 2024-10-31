@@ -2517,13 +2517,13 @@ static q2proto_error_t q2repro_server_read_batch_move_delta(bitreader_t *bitread
     {
         int move_value = 0;
         CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, -10, &move_value));
-        q2proto_var_coords_set_float_comp(&move_delta->move, 0, move_value);
+        q2proto_var_coords_set_int_unscaled_comp(&move_delta->move, 0, move_value);
     }
     if (delta_bits_check(bits, CM_SIDE, &move_delta->delta_bits, Q2P_CMD_MOVE_SIDE))
     {
         int move_value = 0;
         CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, -10, &move_value));
-        q2proto_var_coords_set_float_comp(&move_delta->move, 1, move_value);
+        q2proto_var_coords_set_int_unscaled_comp(&move_delta->move, 1, move_value);
     }
     if (delta_bits_check(bits, CM_UP, &move_delta->delta_bits, Q2P_CMD_MOVE_UP))
         return Q2P_ERR_BAD_DATA;
