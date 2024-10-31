@@ -278,7 +278,7 @@ float q2proto_var_small_offsets_get_float_comp(const q2proto_var_small_offsets_t
     case VAR_SMALL_OFFSETS_TYPE_Q2REPRO_VIEWOFFSET:
         return _q2proto_valenc_q2repro_short2viewoffset(coord->comps[comp].s);
     case VAR_SMALL_OFFSETS_TYPE_Q2REPRO_GUNOFFSET:
-        return _q2proto_valenc_int2coord(coord->comps[comp].s);
+        return _q2proto_valenc_q2repro_short2gunoffset(coord->comps[comp].s);
     case _VAR_SMALL_OFFSETS_TYPE_MAX:
         break;
     }
@@ -297,7 +297,7 @@ int8_t q2proto_var_small_offsets_get_char_comp(const q2proto_var_small_offsets_t
     case VAR_SMALL_OFFSETS_TYPE_Q2REPRO_VIEWOFFSET:
         return clip_int8(coord->comps[comp].s >> 2);
     case VAR_SMALL_OFFSETS_TYPE_Q2REPRO_GUNOFFSET:
-        return clip_int8(coord->comps[comp].s >> 1);
+        return clip_int8(coord->comps[comp].s >> 7);
     case _VAR_SMALL_OFFSETS_TYPE_MAX:
         break;
     }
@@ -316,7 +316,7 @@ int16_t q2proto_var_small_offsets_get_q2repro_viewoffset_comp(const q2proto_var_
     case VAR_SMALL_OFFSETS_TYPE_Q2REPRO_VIEWOFFSET:
         return coord->comps[comp].s;
     case VAR_SMALL_OFFSETS_TYPE_Q2REPRO_GUNOFFSET:
-        return clip_int16(coord->comps[comp].s << 1);
+        return clip_int16(coord->comps[comp].s >> 5);
     case _VAR_SMALL_OFFSETS_TYPE_MAX:
         break;
     }
@@ -329,11 +329,11 @@ int16_t q2proto_var_small_offsets_get_q2repro_gunoffset_comp(const q2proto_var_s
     switch(get_var_small_offsets_comp_type(coord, comp))
     {
     case VAR_SMALL_OFFSETS_TYPE_FLOAT:
-        return clip_int16(_q2proto_valenc_coord2int(coord->comps[comp].f));
+        return _q2proto_valenc_q2repro_gunoffset2short(coord->comps[comp].f);
     case VAR_SMALL_OFFSETS_TYPE_CHAR:
-        return coord->comps[comp].c << 1;
+        return coord->comps[comp].c << 7;
     case VAR_SMALL_OFFSETS_TYPE_Q2REPRO_VIEWOFFSET:
-        return coord->comps[comp].s >> 1;
+        return clip_int16(coord->comps[comp].s << 5);
     case VAR_SMALL_OFFSETS_TYPE_Q2REPRO_GUNOFFSET:
         return coord->comps[comp].s;
     case _VAR_SMALL_OFFSETS_TYPE_MAX:
@@ -404,7 +404,7 @@ float q2proto_var_small_angles_get_float_comp(const q2proto_var_small_angles_t *
     case VAR_SMALL_ANGLES_TYPE_Q2REPRO_KICK_ANGLE:
         return _q2proto_valenc_q2repro_short2kick_angle(angle->comps[comp].s);
     case VAR_SMALL_ANGLES_TYPE_Q2REPRO_GUNANGLE:
-        return _q2proto_valenc_short2angle(angle->comps[comp].s);
+        return _q2proto_valenc_q2repro_short2gunangle(angle->comps[comp].s);
     case _VAR_SMALL_ANGLES_TYPE_MAX:
         break;
     }
@@ -423,8 +423,7 @@ int8_t q2proto_var_small_angles_get_char_comp(const q2proto_var_small_angles_t *
     case VAR_SMALL_ANGLES_TYPE_Q2REPRO_KICK_ANGLE:
         return clip_int8(angle->comps[comp].s >> 8);
     case VAR_SMALL_ANGLES_TYPE_Q2REPRO_GUNANGLE:
-        // Equivalent to: _q2proto_valenc_smallangle2char(_q2proto_valenc_short2angle(angle->comps[comp].s));
-        return clip_int8((angle->comps[comp].s * (360.0f / 16384)));
+        return clip_int8(angle->comps[comp].s >> 10);
     case _VAR_SMALL_ANGLES_TYPE_MAX:
         break;
     }
@@ -443,8 +442,7 @@ int16_t q2proto_var_small_angles_get_q2repro_kick_angles_comp(const q2proto_var_
     case VAR_SMALL_ANGLES_TYPE_Q2REPRO_KICK_ANGLE:
         return angle->comps[comp].s;
     case VAR_SMALL_ANGLES_TYPE_Q2REPRO_GUNANGLE:
-        // Equivalent to: _q2proto_valenc_q2repro_kick_angle2short(_q2proto_valenc_short2angle(angle->comps[comp].s));
-        return clip_int16(angle->comps[comp].s * (360.0f / 64));
+        return angle->comps[comp].s >> 2;
     case _VAR_SMALL_ANGLES_TYPE_MAX:
         break;
     }
@@ -457,13 +455,11 @@ int16_t q2proto_var_small_angles_get_q2repro_gunangles_comp(const q2proto_var_sm
     switch(get_var_small_angles_comp_type(angle, comp))
     {
     case VAR_SMALL_ANGLES_TYPE_FLOAT:
-        return _q2proto_valenc_angle2short(angle->comps[comp].f);
+        return _q2proto_valenc_q2repro_gunangle2short(angle->comps[comp].f);
     case VAR_SMALL_ANGLES_TYPE_CHAR:
-        // Equivalent to: _q2proto_valenc_angle2short(_q2proto_valenc_char2smallangle(angle->comps[comp].c));
-        return clip_int16(angle->comps[comp].c * 16384 / 360);
+        return angle->comps[comp].s >> 10;
     case VAR_SMALL_ANGLES_TYPE_Q2REPRO_KICK_ANGLE:
-        // Equivalent to: _q2proto_valenc_angle2short(_q2proto_valenc_q2repro_short2kick_angle(angle->comps[comp].s));
-        return clip_int16(angle->comps[comp].s * 64 / 360);
+        return angle->comps[comp].s << 2;
     case VAR_SMALL_ANGLES_TYPE_Q2REPRO_GUNANGLE:
         return angle->comps[comp].s;
     case _VAR_SMALL_ANGLES_TYPE_MAX:

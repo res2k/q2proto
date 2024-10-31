@@ -195,13 +195,13 @@ static void _Q2P_PACK_PLAYER_Q2REPRO_FUNCTION_NAME(const void * restrict player_
 #endif
     player_packed->gunframe = (uint8_t)Q2P_PACK_GET_PLAYER_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, gunframe);
     const float* gunoffset = Q2P_PACK_GET_PLAYER_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, gunoffset);
-    player_packed->gunoffset[0] = _q2proto_valenc_int2coord(gunoffset[0]);
-    player_packed->gunoffset[1] = _q2proto_valenc_int2coord(gunoffset[1]);
-    player_packed->gunoffset[2] = _q2proto_valenc_int2coord(gunoffset[2]);
+    player_packed->gunoffset[0] = _q2proto_valenc_q2repro_gunoffset2short(gunoffset[0]);
+    player_packed->gunoffset[1] = _q2proto_valenc_q2repro_gunoffset2short(gunoffset[1]);
+    player_packed->gunoffset[2] = _q2proto_valenc_q2repro_gunoffset2short(gunoffset[2]);
     const float* gunangles = Q2P_PACK_GET_PLAYER_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, gunangles);
-    player_packed->gunangles[0] = _q2proto_valenc_angle2short(gunangles[0]);
-    player_packed->gunangles[1] = _q2proto_valenc_angle2short(gunangles[1]);
-    player_packed->gunangles[2] = _q2proto_valenc_angle2short(gunangles[2]);
+    player_packed->gunangles[0] = _q2proto_valenc_q2repro_gunangle2short(gunangles[0]);
+    player_packed->gunangles[1] = _q2proto_valenc_q2repro_gunangle2short(gunangles[1]);
+    player_packed->gunangles[2] = _q2proto_valenc_q2repro_gunangle2short(gunangles[2]);
     const float* blend = Q2P_PACK_GET_PLAYER_VALUE(_Q2PROTO_PACKING_CAST_PLAYERSTATE, blend);
     player_packed->blend[0] = _q2proto_valenc_color2byte(blend[0]);
     player_packed->blend[1] = _q2proto_valenc_color2byte(blend[1]);

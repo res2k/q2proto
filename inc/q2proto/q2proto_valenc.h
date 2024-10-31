@@ -162,6 +162,18 @@ static inline int16_t _q2proto_valenc_q2repro_viewoffset2short(float x)
     return _q2proto_valenc_clamped_mul(x, 16, INT16_MIN, INT16_MAX);
 }
 
+// Decode a gunoffset component for Q2rePRO protocol
+static inline float _q2proto_valenc_q2repro_short2gunoffset(int16_t x)
+{
+    return x / 512.f;
+}
+
+// Encode a gunoffset component for Q2rePRO protocol
+static inline int16_t _q2proto_valenc_q2repro_gunoffset2short(float x)
+{
+    return _q2proto_valenc_clamped_mul(x, 512, INT16_MIN, INT16_MAX);
+}
+
 // Encode a kick_angles component for Q2rePRO protocol
 static inline float _q2proto_valenc_q2repro_short2kick_angle(int16_t x)
 {
@@ -172,6 +184,18 @@ static inline float _q2proto_valenc_q2repro_short2kick_angle(int16_t x)
 static inline int16_t _q2proto_valenc_q2repro_kick_angle2short(float x)
 {
     return _q2proto_valenc_clamped_mul(x, 1024, INT16_MIN, INT16_MAX);
+}
+
+// Decode a gunangles component for Q2rePRO protocol
+static inline float _q2proto_valenc_q2repro_short2gunangle(int16_t x)
+{
+    return x / 4096.f;
+}
+
+// Encode a gunangles component for Q2rePRO protocol
+static inline int16_t _q2proto_valenc_q2repro_gunangle2short(float x)
+{
+    return _q2proto_valenc_clamped_mul(x, 4096, INT16_MIN, INT16_MAX);
 }
 
 #if defined(__cplusplus)
