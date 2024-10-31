@@ -1969,7 +1969,7 @@ static q2proto_error_t q2proto_q2repro_server_write_entity_state_delta(q2proto_s
 
     if (bits & U_OLDORIGIN)
     {
-        CHECKED_IO(q2repro_server_write, io_arg, q2protoio_write_var_coords_float(io_arg, &entity_state_delta->old_origin), "write old_origin");
+        CHECKED_IO(server_write, io_arg, q2protoio_write_var_coords_float(io_arg, &entity_state_delta->old_origin), "write old_origin");
     }
 
     if (bits & U_SOUND)

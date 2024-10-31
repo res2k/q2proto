@@ -1657,9 +1657,9 @@ q2proto_error_t q2proto_q2pro_server_write_entity_state_delta(q2proto_servercont
     if (bits & U_OLDORIGIN)
     {
         if (has_q2pro_extensions_v2)
-            CHECKED_IO(q2pro_server_write, io_arg, q2protoio_write_var_coords_q2pro_i23(io_arg, &entity_state_delta->old_origin), "write old_origin");
+            CHECKED_IO(server_write, io_arg, q2protoio_write_var_coords_q2pro_i23(io_arg, &entity_state_delta->old_origin), "write old_origin");
         else
-            CHECKED_IO(q2pro_server_write, io_arg, q2protoio_write_var_coords_short(io_arg, &entity_state_delta->old_origin), "write old_origin");
+            CHECKED_IO(server_write, io_arg, q2protoio_write_var_coords_short(io_arg, &entity_state_delta->old_origin), "write old_origin");
     }
 
     if (bits & U_SOUND)
