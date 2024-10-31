@@ -122,6 +122,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if !defined(Q2PROTO_EXTERNALLY_PROVIDED_DECL)
     #define Q2PROTO_EXTERNALLY_PROVIDED_DECL   extern
 #endif
+/**\def Q2PROTO_COMPRESSION_DEFLATE
+ * Indicates deflate compression support is available and enables relevant q2proto functions,
+ * but also requires provision of \c q2protoio_inflate_* and \c q2protoio_deflate_* functions.
+ */
 #if !defined(Q2PROTO_COMPRESSION_DEFLATE)
     #define Q2PROTO_COMPRESSION_DEFLATE 0
 #endif
