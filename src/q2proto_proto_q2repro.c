@@ -2650,7 +2650,7 @@ static q2proto_error_t q2repro_download_data(q2proto_server_download_state_t *st
         }
 
         size_t in_consumed = 0;
-        CHECKED_IO(server_write, deflate_io, q2protoio_write_raw(state->deflate_io, *data, *remaining, &in_consumed), "write download data");
+        CHECKED_IO(server_write, state->deflate_io, q2protoio_write_raw(state->deflate_io, *data, *remaining, &in_consumed), "write download data");
         *data += in_consumed;
         *remaining -= in_consumed;
 

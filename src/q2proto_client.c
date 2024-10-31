@@ -298,7 +298,7 @@ q2proto_error_t q2proto_client_download_reset(q2proto_clientcontext_t *context)
 #if Q2PROTO_COMPRESSION_DEFLATE
     if (context->has_zdownload_inflate_io_arg)
     {
-        CHECKED_IO(client_read, io_arg, q2protoio_inflate_end(context->zdownload_inflate_io_arg), "finishing inflate");
+        CHECKED_IO(client_read, context->zdownload_inflate_io_arg, q2protoio_inflate_end(context->zdownload_inflate_io_arg), "finishing inflate");
         context->has_zdownload_inflate_io_arg = false;
     }
 #endif
