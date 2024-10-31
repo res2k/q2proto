@@ -436,7 +436,7 @@ int16_t q2proto_var_small_angles_get_q2repro_kick_angles_comp(const q2proto_var_
     switch(get_var_small_angles_comp_type(angle, comp))
     {
     case VAR_SMALL_ANGLES_TYPE_FLOAT:
-        return _q2proto_valenc_q2repro_short2kick_angle(angle->comps[comp].f);
+        return _q2proto_valenc_q2repro_kick_angle2short(angle->comps[comp].f);
     case VAR_SMALL_ANGLES_TYPE_CHAR:
         return angle->comps[comp].c << 8;
     case VAR_SMALL_ANGLES_TYPE_Q2REPRO_KICK_ANGLE:
