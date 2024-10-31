@@ -25,4 +25,9 @@ void q2protoio_write_u16(uintptr_t io_arg, uint16_t x) {}
 void q2protoio_write_u32(uintptr_t io_arg, uint32_t x) {}
 void q2protoio_write_u64(uintptr_t io_arg, uint64_t x) {}
 void *q2protoio_write_reserve_raw(uintptr_t io_arg, size_t size) { return NULL; }
+void q2protoio_write_raw(uintptr_t io_arg, const void *data, size_t size, size_t *written)
+{
+    if (written)
+        *written = NULL;
+}
 size_t q2protoio_write_available(uintptr_t io_arg) { return 0; }
