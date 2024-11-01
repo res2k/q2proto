@@ -232,8 +232,8 @@ typedef enum
 
 static inline void set_var_small_offsets_comp_type(q2proto_var_small_offsets_t *coord, int comp, var_small_offsets_type_t type)
 {
-    static_assert(sizeof(coord->type_bits) * CHAR_BIT >= 3 * VAR_SMALL_OFFSETS_TYPE_BITS);
-    static_assert((_VAR_SMALL_OFFSETS_TYPE_MAX - 1) <= VAR_SMALL_OFFSETS_TYPE_MASK);
+    static_assert(sizeof(coord->type_bits) * CHAR_BIT >= 3 * VAR_SMALL_OFFSETS_TYPE_BITS, "VAR_SMALL_OFFSETS_TYPE_BITS is too large");
+    static_assert((_VAR_SMALL_OFFSETS_TYPE_MAX - 1) <= VAR_SMALL_OFFSETS_TYPE_MASK, "VAR_SMALL_OFFSETS_TYPE_MASK is too small");
     coord->type_bits &= ~(VAR_SMALL_OFFSETS_TYPE_MASK << (comp * VAR_SMALL_OFFSETS_TYPE_BITS));
     coord->type_bits |= type << (comp * VAR_SMALL_OFFSETS_TYPE_BITS);
 }
@@ -358,8 +358,8 @@ typedef enum
 
 static inline void set_var_small_angles_comp_type(q2proto_var_small_angles_t *coord, int comp, var_small_angles_type_t type)
 {
-    static_assert(sizeof(coord->type_bits) * CHAR_BIT >= 3 * VAR_SMALL_ANGLES_TYPE_BITS);
-    static_assert((_VAR_SMALL_ANGLES_TYPE_MAX - 1) <= VAR_SMALL_ANGLES_TYPE_MASK);
+    static_assert(sizeof(coord->type_bits) * CHAR_BIT >= 3 * VAR_SMALL_ANGLES_TYPE_BITS, "VAR_SMALL_ANGLES_TYPE_BITS is too large");
+    static_assert((_VAR_SMALL_ANGLES_TYPE_MAX - 1) <= VAR_SMALL_ANGLES_TYPE_MASK, "VAR_SMALL_ANGLES_TYPE_MASK is too small");
     coord->type_bits &= ~(VAR_SMALL_ANGLES_TYPE_MASK << (comp * VAR_SMALL_ANGLES_TYPE_BITS));
     coord->type_bits |= type << (comp * VAR_SMALL_ANGLES_TYPE_BITS);
 }
