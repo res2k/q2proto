@@ -35,11 +35,13 @@ dummy_src = [
   '../src/dummy_q2protoerr_client_write.c',
   '../src/dummy_q2protoerr_server_read.c',
   '../src/dummy_q2protoerr_server_write.c',
-  '../src/dummy_q2protoio_deflate.c',
   '../src/dummy_q2protoio_get_error.c',
-  '../src/dummy_q2protoio_inflate.c',
   '../src/dummy_q2protoio_read.c',
   '../src/dummy_q2protoio_write.c',
+]
+dummy_deflate_src = [
+  '../src/dummy_q2protoio_deflate.c',
+  '../src/dummy_q2protoio_inflate.c',
 ]
 
 q2proto_inc = include_directories('../inc')
@@ -81,7 +83,7 @@ foreach flavor : test_flavors
     c_args:                [],
   )
 
-  executable(f'build_@flavor@_deflate', q2proto_src, dummy_src, flavor_src,
+  executable(f'build_@flavor@_deflate', q2proto_src, dummy_src, dummy_deflate_src, flavor_src,
     include_directories:   [q2proto_inc, flavor_inc],
     gnu_symbol_visibility: 'hidden',
     win_subsystem:         'console,6.0',
