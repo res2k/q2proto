@@ -24,9 +24,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "q2proto/q2proto_string.h"
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) || defined(__MINGW32__)
 #include <malloc.h>
+#if !defined(alloca)
 #define alloca _alloca
+#endif
 #else
 #include <alloca.h>
 #endif
