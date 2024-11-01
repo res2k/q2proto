@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define NUM_VA_STR  8
 
 static thread_local int va_index;
-static thread_local char va_str[VA_STR_SIZE][NUM_VA_STR];
+static thread_local char va_str[NUM_VA_STR][VA_STR_SIZE];
 
 const char *q2proto_va(const char *fmt, ...)
 {
