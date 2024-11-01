@@ -847,3 +847,7 @@ static q2proto_error_t q2pro_extdemo_server_write_frame_entity_delta(q2proto_ser
 #define WRITE_GAMESTATE_BASELINE(C, I, S)   q2pro_extdemo_server_write_spawnbaseline(C, I, S)
 
 #include "q2proto_write_gamestate.inc"
+
+#undef WRITE_GAMESTATE_FUNCTION_NAME
+#undef WRITE_GAMESTATE_BASELINE_SIZE
+#undef WRITE_GAMESTATE_BASELINE

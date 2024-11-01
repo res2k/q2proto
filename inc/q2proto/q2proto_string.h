@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef Q2PROTO_STRING_H_
 #define Q2PROTO_STRING_H_
 
+#include "q2proto_defs.h"
 #include <string.h>
 
 #if defined(__cplusplus)
@@ -46,7 +47,7 @@ static inline q2proto_string_t q2proto_make_string(const char *s)
 }
 
 /// Helper: Copy a q2proto_string_t into a character buffer
-size_t q2pslcpy(char *dest, size_t dest_size, const q2proto_string_t *src);
+Q2PROTO_PUBLIC_API size_t q2pslcpy(char *dest, size_t dest_size, const q2proto_string_t *src);
 /** @} */
 
 #if defined(__cplusplus)

@@ -122,6 +122,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if !defined(Q2PROTO_EXTERNALLY_PROVIDED_DECL)
     #define Q2PROTO_EXTERNALLY_PROVIDED_DECL   extern
 #endif
+/**\def Q2PROTO_PUBLIC_API
+ * Declaration for Q2PROTO public functions.
+ * Can be used to eg make q2proto functions \c static, when including as a single source, multiple times,
+ * or tweaking external visibility (\c dllimport, \c dllexport, \c "visibility" attribute and the likes).
+ */
+#if !defined(Q2PROTO_PUBLIC_API)
+    #define Q2PROTO_PUBLIC_API  extern
+#endif
+/**\def Q2PROTO_PRIVATE_API
+ * Declaration for Q2PROTO private (internal) functions.
+ * Can be used to eg make q2proto functions \c static, when including as a single source, multiple times,
+ * or tweaking external visibility (\c dllimport, \c dllexport, \c "visibility" attribute and the likes).
+ */
+#if !defined(Q2PROTO_PRIVATE_API)
+    #define Q2PROTO_PRIVATE_API
+#endif
 /**\def Q2PROTO_COMPRESSION_DEFLATE
  * Indicates deflate compression support is available and enables relevant q2proto functions,
  * but also requires provision of \c q2protoio_inflate_* and \c q2protoio_deflate_* functions.
@@ -137,13 +153,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * outside q2proto.
  * Inside q2proto (when Q2PROTO_BUILD is defined) the un-obscured names are visible. */
 #if defined(Q2PROTO_BUILD)
-#define Q2PROTO_PRIVATE_MEMBER(NAME)                NAME
-#define Q2PROTO_PRIVATE_FUNC_PTR(RET, NAME, ...)    RET (*NAME)(__VA_ARGS__)
+#define Q2PROTO_PRIVATE_API_MEMBER(NAME)                NAME
+#define Q2PROTO_PRIVATE_API_FUNC_PTR(RET, NAME, ...)    RET (*NAME)(__VA_ARGS__)
 #else
-#define _Q2PROTO_PRIVATE_MEMBER_CONCAT2(X, Y)       X ## Y
-#define _Q2PROTO_PRIVATE_MEMBER_CONCAT(X, Y)        _Q2PROTO_PRIVATE_MEMBER_CONCAT2(X, Y)
-#define Q2PROTO_PRIVATE_MEMBER(NAME)                _Q2PROTO_PRIVATE_MEMBER_CONCAT(_private_, __LINE__)
-#define Q2PROTO_PRIVATE_FUNC_PTR(RET, NAME, ...)    void* Q2PROTO_PRIVATE_MEMBER(NAME)
+#define _Q2PROTO_PRIVATE_API_MEMBER_CONCAT2(X, Y)       X ## Y
+#define _Q2PROTO_PRIVATE_API_MEMBER_CONCAT(X, Y)        _Q2PROTO_PRIVATE_API_MEMBER_CONCAT2(X, Y)
+#define Q2PROTO_PRIVATE_API_MEMBER(NAME)                _Q2PROTO_PRIVATE_API_MEMBER_CONCAT(_private_, __LINE__)
+#define Q2PROTO_PRIVATE_API_FUNC_PTR(RET, NAME, ...)    void* Q2PROTO_PRIVATE_API_MEMBER(NAME)
 #endif
 
 #endif // Q2PROTO_DEFS_H_

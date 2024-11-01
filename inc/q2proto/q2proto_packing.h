@@ -143,7 +143,7 @@ typedef struct _q2proto_packing_entity_dispatch_s
 } _q2proto_packing_entity_dispatch_t;
 
 // Call actual entity packing function
-void _q2proto_pack_entity_state_dispatch(q2proto_servercontext_t *context, const _q2proto_packing_entity_dispatch_t *dispatch, const void *entity_state_p, q2proto_packed_entity_state_t *entity_packed);
+Q2PROTO_PUBLIC_API void _q2proto_pack_entity_state_dispatch(q2proto_servercontext_t *context, const _q2proto_packing_entity_dispatch_t *dispatch, const void *entity_state_p, q2proto_packed_entity_state_t *entity_packed);
 
 // Structure with actual player packing functions, which one depends on server context
 typedef struct _q2proto_packing_player_dispatch_s
@@ -155,7 +155,7 @@ typedef struct _q2proto_packing_player_dispatch_s
 } _q2proto_packing_player_dispatch_t;
 
 // Call actual player packing function
-void _q2proto_pack_player_state_dispatch(q2proto_servercontext_t *context, const _q2proto_packing_player_dispatch_t *dispatch, const void *player_state_p, q2proto_packed_player_state_t *player_packed);
+Q2PROTO_PUBLIC_API void _q2proto_pack_player_state_dispatch(q2proto_servercontext_t *context, const _q2proto_packing_player_dispatch_t *dispatch, const void *player_state_p, q2proto_packed_player_state_t *player_packed);
 /** @} */
 
 #endif // Q2PROTO_STRUCT_PACKING_H_

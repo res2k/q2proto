@@ -53,7 +53,7 @@ typedef struct q2proto_challenge_s {
  * \param parsed_challenge Filled with parsed challenge data
  * \returns Error code
  */
-q2proto_error_t q2proto_parse_challenge(const char *challenge_args, const q2proto_protocol_t *accepted_protocols, size_t num_accepted_protocols, q2proto_challenge_t *parsed_challenge);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_parse_challenge(const char *challenge_args, const q2proto_protocol_t *accepted_protocols, size_t num_accepted_protocols, q2proto_challenge_t *parsed_challenge);
 
 /**
  * Complete values of a q2proto_connect_t structure, based on contained protocol.
@@ -65,7 +65,7 @@ q2proto_error_t q2proto_parse_challenge(const char *challenge_args, const q2prot
  * - \c qport
  * \param connect Structure to change.
  */
-q2proto_error_t q2proto_complete_connect(q2proto_connect_t *connect);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_complete_connect(q2proto_connect_t *connect);
 
 /**
  * Create a string with arguments to "connect" command sent by client.
@@ -76,7 +76,7 @@ q2proto_error_t q2proto_complete_connect(q2proto_connect_t *connect);
  * \returns Error code. If \c Q2P_ERR_BUFFER_TOO_SMALL is returned, use \c need_size
  *   to provide an adequately sized larger buffer.
  */
-q2proto_error_t q2proto_get_connect_arguments(char *args_str, size_t size, size_t* need_size, const q2proto_connect_t *connect);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_get_connect_arguments(char *args_str, size_t size, size_t* need_size, const q2proto_connect_t *connect);
 
 typedef struct q2proto_clientcontext_s q2proto_clientcontext_t;
 
@@ -103,28 +103,28 @@ struct q2proto_clientcontext_s {
     } features;
 
     /// Server protocol number
-    q2proto_protocol_t Q2PROTO_PRIVATE_MEMBER(server_protocol);
+    q2proto_protocol_t Q2PROTO_PRIVATE_API_MEMBER(server_protocol);
     /// Protocol version (for R1Q2/Q2PRO)
-    int Q2PROTO_PRIVATE_MEMBER(protocol_version);
+    int Q2PROTO_PRIVATE_API_MEMBER(protocol_version);
 
     /// Whether a "inflate" ioarg should be used to read packets
-    bool Q2PROTO_PRIVATE_MEMBER(has_inflate_io_arg);
+    bool Q2PROTO_PRIVATE_API_MEMBER(has_inflate_io_arg);
     /// inflate ioarg
-    uintptr_t Q2PROTO_PRIVATE_MEMBER(inflate_io_arg);
+    uintptr_t Q2PROTO_PRIVATE_API_MEMBER(inflate_io_arg);
 
     /// Whether we have a zdownload inflate io_arg
-    bool Q2PROTO_PRIVATE_MEMBER(has_zdownload_inflate_io_arg);
+    bool Q2PROTO_PRIVATE_API_MEMBER(has_zdownload_inflate_io_arg);
     /// zdownload inflate ioarg
-    uintptr_t Q2PROTO_PRIVATE_MEMBER(zdownload_inflate_io_arg);
+    uintptr_t Q2PROTO_PRIVATE_API_MEMBER(zdownload_inflate_io_arg);
 
     /// "Pack solid" function
-    Q2PROTO_PRIVATE_FUNC_PTR(uint32_t, pack_solid, q2proto_clientcontext_t *context, const q2proto_vec3_t mins, const q2proto_vec3_t maxs);
+    Q2PROTO_PRIVATE_API_FUNC_PTR(uint32_t, pack_solid, q2proto_clientcontext_t *context, const q2proto_vec3_t mins, const q2proto_vec3_t maxs);
     /// "Unpack solid" function
-    Q2PROTO_PRIVATE_FUNC_PTR(void, unpack_solid, q2proto_clientcontext_t *context, uint32_t solid, q2proto_vec3_t mins, q2proto_vec3_t maxs);
+    Q2PROTO_PRIVATE_API_FUNC_PTR(void, unpack_solid, q2proto_clientcontext_t *context, uint32_t solid, q2proto_vec3_t mins, q2proto_vec3_t maxs);
     /// Packet parsing function
-    Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, client_read, q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
+    Q2PROTO_PRIVATE_API_FUNC_PTR(q2proto_error_t, client_read, q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
     /// "Send client command" function
-    Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, client_write, q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message);
+    Q2PROTO_PRIVATE_API_FUNC_PTR(q2proto_error_t, client_write, q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message);
 };
 
 /**
@@ -132,7 +132,7 @@ struct q2proto_clientcontext_s {
  * \param context Context structure, filled with context-specific data.
  * \returns Error code
  */
-q2proto_error_t q2proto_init_clientcontext(q2proto_clientcontext_t* context);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_init_clientcontext(q2proto_clientcontext_t* context);
 
 /**
  * Read next message from server.
@@ -141,7 +141,7 @@ q2proto_error_t q2proto_init_clientcontext(q2proto_clientcontext_t* context);
  * \param svc_message Will be filled with message data.
  * \returns Error code.
  */
-q2proto_error_t q2proto_client_read(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_client_read(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
 
 /**
  * Reset/clean up client download state.
@@ -151,7 +151,7 @@ q2proto_error_t q2proto_client_read(q2proto_clientcontext_t *context, uintptr_t 
  * \param context Client communications context.
  * \returns Error code.
  */
-q2proto_error_t q2proto_client_download_reset(q2proto_clientcontext_t *context);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_client_download_reset(q2proto_clientcontext_t *context);
 
 /**
  * Write a message for sending from the client to the server.
@@ -160,7 +160,7 @@ q2proto_error_t q2proto_client_download_reset(q2proto_clientcontext_t *context);
  * \param clc_message Message data.
  * \returns Error code.
  */
-q2proto_error_t q2proto_client_write(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_client_write(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message);
 
 /**
  * Pack a bounding box into a q2proto_entity_state_delta_t::solid value
@@ -169,7 +169,7 @@ q2proto_error_t q2proto_client_write(q2proto_clientcontext_t *context, uintptr_t
  * \param maxs Bounding box maximum point
  * \returns q2proto_entity_state_delta_t::solid value
  */
-uint32_t q2proto_client_pack_solid(q2proto_clientcontext_t *context, const q2proto_vec3_t mins, const q2proto_vec3_t maxs);
+Q2PROTO_PUBLIC_API uint32_t q2proto_client_pack_solid(q2proto_clientcontext_t *context, const q2proto_vec3_t mins, const q2proto_vec3_t maxs);
 /**
  * Unpack a q2proto_entity_state_delta_t::solid value into a bounding box
  * \param context Client context for solid unpacking
@@ -177,7 +177,7 @@ uint32_t q2proto_client_pack_solid(q2proto_clientcontext_t *context, const q2pro
  * \param mins Bounding box minimum point
  * \param maxs Bounding box maximum point
  */
-void q2proto_client_unpack_solid(q2proto_clientcontext_t *context, uint32_t solid, q2proto_vec3_t mins, q2proto_vec3_t maxs);
+Q2PROTO_PUBLIC_API void q2proto_client_unpack_solid(q2proto_clientcontext_t *context, uint32_t solid, q2proto_vec3_t mins, q2proto_vec3_t maxs);
 /** @} */
 
 #if defined(__cplusplus)

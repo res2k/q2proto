@@ -30,28 +30,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /**\name R1Q2 protocol
  * @{ */
 /// "connect" token parsing
-q2proto_error_t q2proto_r1q2_parse_connect(q2proto_string_t *connect_str, q2proto_connect_t *parsed_connect);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_r1q2_parse_connect(q2proto_string_t *connect_str, q2proto_connect_t *parsed_connect);
 /// connect struct completion
-q2proto_error_t q2proto_r1q2_complete_connect(q2proto_connect_t *connect);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_r1q2_complete_connect(q2proto_connect_t *connect);
 /// Get "connect" string tail
-const char *q2proto_r1q2_connect_tail(const q2proto_connect_t *connect);
+Q2PROTO_PRIVATE_API const char *q2proto_r1q2_connect_tail(const q2proto_connect_t *connect);
 
 /// Client context setup
-q2proto_error_t q2proto_r1q2_continue_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_r1q2_continue_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata);
 
 /// Server context setup
-q2proto_error_t q2proto_r1q2_init_servercontext(q2proto_servercontext_t *context, const q2proto_connect_t* connect_info);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_r1q2_init_servercontext(q2proto_servercontext_t *context, const q2proto_connect_t* connect_info);
 /** @} */
 
 /**\name R1Q2 protocol parts reused by Q2PRO
  * @{ */
 /// Parse svc_r1q2_zpacket
-q2proto_error_t r1q2_client_read_zpacket(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
+Q2PROTO_PRIVATE_API q2proto_error_t r1q2_client_read_zpacket(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
 /// Parse svc_r1q2_setting
-q2proto_error_t r1q2_client_read_setting(uintptr_t io_arg, q2proto_svc_setting_t *setting);
+Q2PROTO_PRIVATE_API q2proto_error_t r1q2_client_read_setting(uintptr_t io_arg, q2proto_svc_setting_t *setting);
 
 /// Write clc_r1q2_setting
-q2proto_error_t r1q2_client_write_setting(uintptr_t io_arg, const q2proto_clc_setting_t *setting);
+Q2PROTO_PRIVATE_API q2proto_error_t r1q2_client_write_setting(uintptr_t io_arg, const q2proto_clc_setting_t *setting);
 /** @} */
 
 #endif // Q2PROTO_PROTO_R1Q2_H_

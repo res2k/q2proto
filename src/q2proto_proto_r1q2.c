@@ -97,7 +97,7 @@ static q2proto_error_t r1q2_client_read_baseline(q2proto_clientcontext_t *contex
 static q2proto_error_t r1q2_client_read_frame(q2proto_clientcontext_t *context, uintptr_t io_arg, uint8_t extrabits, q2proto_svc_frame_t *frame);
 static q2proto_error_t r1q2_client_read_zdownload(uintptr_t io_arg, q2proto_svc_download_t *download);
 
-static MAYBE_UNUSED const char* server_cmd_string(int command)
+static MAYBE_UNUSED const char* r1q2_server_cmd_string(int command)
 {
 #define S(X) \
     case X:  \
@@ -143,7 +143,7 @@ static q2proto_error_t r1q2_client_read(q2proto_clientcontext_t *context, uintpt
     uint8_t command = *(const uint8_t*)command_ptr;
     uint8_t extrabits = command & 0xE0;
     command &= 0x1F;
-    SHOWNET(io_arg, 1, -1, "%s", server_cmd_string(command));
+    SHOWNET(io_arg, 1, -1, "%s", r1q2_server_cmd_string(command));
 
     switch (command)
     {
@@ -1388,6 +1388,11 @@ static q2proto_error_t r1q2_server_write_frame_entity_delta(q2proto_servercontex
 
 #include "q2proto_write_gamestate.inc"
 
+#undef WRITE_GAMESTATE_FUNCTION_NAME
+#undef WRITE_GAMESTATE_BASELINE_SIZE
+#undef WRITE_GAMESTATE_BASELINE
+#undef WRITE_GAMESTATE_ENABLE_DEFLATE
+
 static q2proto_error_t r1q2_server_read_move(q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_move_t *move);
 static q2proto_error_t r1q2_server_read_setting(uintptr_t io_arg, q2proto_clc_setting_t *setting);
 
@@ -1590,3 +1595,5 @@ static q2proto_error_t r1q2_download_data(q2proto_server_download_state_t *state
 
     return q2proto_download_common_data(state, data, remaining, packet_remaining, svc_download);
 }
+
+#undef SVC_ZDOWNLOAD_SIZE

@@ -238,7 +238,7 @@ q2proto_error_t q2proto_client_read(q2proto_clientcontext_t *context, uintptr_t 
     return context->client_read(context, io_arg, svc_message);
 }
 
-static MAYBE_UNUSED const char* server_cmd_string(int command)
+static MAYBE_UNUSED const char* default_server_cmd_string(int command)
 {
     const char *str = q2proto_debug_common_svc_string(command);
     return str ? str : q2proto_va("%d", command);
@@ -255,7 +255,7 @@ static q2proto_error_t default_client_packet_parse(q2proto_clientcontext_t *cont
         return Q2P_ERR_NO_MORE_INPUT;
 
     uint8_t command = *(const uint8_t*)command_ptr;
-    SHOWNET(io_arg, 1, -1, "%s", server_cmd_string(command));
+    SHOWNET(io_arg, 1, -1, "%s", default_server_cmd_string(command));
     if (command == svc_stufftext)
     {
         svc_message->type = Q2P_SVC_STUFFTEXT;

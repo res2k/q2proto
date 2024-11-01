@@ -40,16 +40,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /**\name Debug output helpers
  * @{ */
 /// Return string describing the (common) server command \a command, or \c NULL.
-const char *q2proto_debug_common_svc_string(int command);
+Q2PROTO_PRIVATE_API const char *q2proto_debug_common_svc_string(int command);
 
 /// Stringify entity delta bits (U_xxx) to buffer
-void q2proto_debug_common_entity_delta_bits_to_str(char *buf, size_t size, uint64_t bits);
+Q2PROTO_PRIVATE_API void q2proto_debug_common_entity_delta_bits_to_str(char *buf, size_t size, uint64_t bits);
 
 /// Stringify player delta bits (PS_xxx) to buffer
-void q2proto_debug_common_player_delta_bits_to_str(char *buf, size_t size, uint32_t bits);
+Q2PROTO_PRIVATE_API void q2proto_debug_common_player_delta_bits_to_str(char *buf, size_t size, uint32_t bits);
 
 /// Stringify extra player delta bits (EPS_xxx) to buffer
-void q2proto_debug_common_player_delta_extrabits_to_str(char *buf, size_t size, uint32_t bits);
+Q2PROTO_PRIVATE_API void q2proto_debug_common_player_delta_extrabits_to_str(char *buf, size_t size, uint32_t bits);
 /** @} */
 
 

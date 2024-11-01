@@ -43,22 +43,22 @@ typedef float q2proto_vec3_t[3];
  * - Full setter: `q2proto_<VEC_TYPE>_set_<TYPE_NAME>`
  * - Full getter: `q2proto_<VEC_TYPE>_get_<TYPE_NAME>`
  */
-#define _GENERATE_VARIANT_FUNCTIONS(VEC_TYPE, TYPE_NAME, TYPE_TYPE, NUM_COMPS)                                           \
-    void q2proto_##VEC_TYPE##_set_##TYPE_NAME##_comp(q2proto_##VEC_TYPE##_t *coord, int comp, TYPE_TYPE x);              \
-    TYPE_TYPE q2proto_##VEC_TYPE##_get_##TYPE_NAME##_comp(const q2proto_##VEC_TYPE##_t *coord, int comp);                \
-    static inline void q2proto_##VEC_TYPE##_set_##TYPE_NAME(q2proto_##VEC_TYPE##_t *vec, const TYPE_TYPE in[NUM_COMPS])  \
-    {                                                                                                                    \
-        for (int c = 0; c < NUM_COMPS; c++)                                                                              \
-            q2proto_##VEC_TYPE##_set_##TYPE_NAME##_comp(vec, c, in[c]);                                                  \
-    }                                                                                                                    \
-    static inline void q2proto_##VEC_TYPE##_get_##TYPE_NAME(const q2proto_##VEC_TYPE##_t *vec, TYPE_TYPE out[NUM_COMPS]) \
-    {                                                                                                                    \
-        for (int c = 0; c < NUM_COMPS; c++)                                                                              \
-            out[c] = q2proto_##VEC_TYPE##_get_##TYPE_NAME##_comp(vec, c);                                                \
+#define _GENERATE_VARIANT_FUNCTIONS(VEC_TYPE, TYPE_NAME, TYPE_TYPE, NUM_COMPS)                                             \
+    Q2PROTO_PUBLIC_API void q2proto_##VEC_TYPE##_set_##TYPE_NAME##_comp(q2proto_##VEC_TYPE##_t *coord, int comp, TYPE_TYPE x); \
+    Q2PROTO_PUBLIC_API TYPE_TYPE q2proto_##VEC_TYPE##_get_##TYPE_NAME##_comp(const q2proto_##VEC_TYPE##_t *coord, int comp);   \
+    static inline void q2proto_##VEC_TYPE##_set_##TYPE_NAME(q2proto_##VEC_TYPE##_t *vec, const TYPE_TYPE in[NUM_COMPS])    \
+    {                                                                                                                      \
+        for (int c = 0; c < NUM_COMPS; c++)                                                                                \
+            q2proto_##VEC_TYPE##_set_##TYPE_NAME##_comp(vec, c, in[c]);                                                    \
+    }                                                                                                                      \
+    static inline void q2proto_##VEC_TYPE##_get_##TYPE_NAME(const q2proto_##VEC_TYPE##_t *vec, TYPE_TYPE out[NUM_COMPS])   \
+    {                                                                                                                      \
+        for (int c = 0; c < NUM_COMPS; c++)                                                                                \
+            out[c] = q2proto_##VEC_TYPE##_get_##TYPE_NAME##_comp(vec, c);                                                  \
     }
-#define _GENERATE_VARIANT_FUNCTIONS_SINGLE(VEC_TYPE, TYPE_NAME, TYPE_TYPE)                 \
-    void q2proto_##VEC_TYPE##_set_##TYPE_NAME(q2proto_##VEC_TYPE##_t *coord, TYPE_TYPE x); \
-    TYPE_TYPE q2proto_##VEC_TYPE##_get_##TYPE_NAME(const q2proto_##VEC_TYPE##_t *coord);
+#define _GENERATE_VARIANT_FUNCTIONS_SINGLE(VEC_TYPE, TYPE_NAME, TYPE_TYPE)                                \
+    Q2PROTO_PUBLIC_API void q2proto_##VEC_TYPE##_set_##TYPE_NAME(q2proto_##VEC_TYPE##_t *coord, TYPE_TYPE x); \
+    Q2PROTO_PUBLIC_API TYPE_TYPE q2proto_##VEC_TYPE##_get_##TYPE_NAME(const q2proto_##VEC_TYPE##_t *coord);
 
 /**\name Float/short variants
  * Coordinates and angles may be transmitted/stored as either float or short values.
@@ -70,15 +70,15 @@ typedef float q2proto_vec3_t[3];
 /// 'Variant coordinates', storing a coordinate as either float, or encoded into an integer
 typedef struct q2proto_var_coords_s {
     // Stores types of components
-    uint8_t Q2PROTO_PRIVATE_MEMBER(float_bits);
+    uint8_t Q2PROTO_PRIVATE_API_MEMBER(float_bits);
     // Used by coords_delta functions to store set components
-    uint8_t Q2PROTO_PRIVATE_MEMBER(delta_bits_space);
+    uint8_t Q2PROTO_PRIVATE_API_MEMBER(delta_bits_space);
     // Component values
     union
     {
         float f;
         int32_t i;
-    } Q2PROTO_PRIVATE_MEMBER(comps)[3];
+    } Q2PROTO_PRIVATE_API_MEMBER(comps)[3];
 } q2proto_var_coords_t;
 
 
@@ -107,13 +107,13 @@ _GENERATE_VARIANT_FUNCTIONS(var_coords, short_unscaled, int16_t, 3)
 /// Single coordinate value, stored as either float, or encoded into an integer
 typedef struct q2proto_var_coord_s {
     // Stores type of component
-    uint8_t Q2PROTO_PRIVATE_MEMBER(type);
+    uint8_t Q2PROTO_PRIVATE_API_MEMBER(type);
     // Values
     union
     {
         float f;
         int32_t i;
-    } Q2PROTO_PRIVATE_MEMBER(val);
+    } Q2PROTO_PRIVATE_API_MEMBER(val);
 } q2proto_var_coord_t;
 
 /** 'Variant coordinate' functions for float values
@@ -133,16 +133,16 @@ _GENERATE_VARIANT_FUNCTIONS_SINGLE(var_coord, int_unscaled, int32_t)
 /// 'Variant angle', storing an angle as either float, or encoded into 16 bit
 typedef struct q2proto_var_angles_s {
     // Stores types of components
-    uint8_t Q2PROTO_PRIVATE_MEMBER(float_bits);
+    uint8_t Q2PROTO_PRIVATE_API_MEMBER(float_bits);
     // Used by coords_delta functions to store set components
-    uint8_t Q2PROTO_PRIVATE_MEMBER(delta_bits_space);
+    uint8_t Q2PROTO_PRIVATE_API_MEMBER(delta_bits_space);
     // Component values
     union
     {
         float f;
         int16_t s;
         int8_t c;
-    } Q2PROTO_PRIVATE_MEMBER(comps)[3];
+    } Q2PROTO_PRIVATE_API_MEMBER(comps)[3];
 } q2proto_var_angles_t;
 
 /** 'Variant angle' functions for float values
@@ -161,14 +161,14 @@ _GENERATE_VARIANT_FUNCTIONS(var_angles, char, int8_t, 3)
 /// Variant for "small" offsets with limited range and precision (viewoffset, gunoffset), can be encoded into 8 bit
 typedef struct q2proto_var_small_offsets_s {
     // Stores types of components
-    uint8_t Q2PROTO_PRIVATE_MEMBER(type_bits);
+    uint8_t Q2PROTO_PRIVATE_API_MEMBER(type_bits);
     // Component values
     union
     {
         float f;
         int8_t c;
         int16_t s;
-    } Q2PROTO_PRIVATE_MEMBER(comps)[3];
+    } Q2PROTO_PRIVATE_API_MEMBER(comps)[3];
 } q2proto_var_small_offsets_t;
 
 /** 'Small offset' functions for float values
@@ -191,14 +191,14 @@ _GENERATE_VARIANT_FUNCTIONS(var_small_offsets, q2repro_gunoffset, int16_t, 3)
 /// Variant for "small" angles with limited range and precision (kick_angles, gunangles), can be encoded into 8 bit
 typedef struct q2proto_var_small_angles_s {
     // Stores types of components
-    uint8_t Q2PROTO_PRIVATE_MEMBER(type_bits);
+    uint8_t Q2PROTO_PRIVATE_API_MEMBER(type_bits);
     // Component values
     union
     {
         float f;
         int8_t c;
         int16_t s;
-    } Q2PROTO_PRIVATE_MEMBER(comps)[3];
+    } Q2PROTO_PRIVATE_API_MEMBER(comps)[3];
 } q2proto_var_small_angles_t;
 
 /** 'Small angle' functions for float values
@@ -221,15 +221,15 @@ _GENERATE_VARIANT_FUNCTIONS(var_small_angles, q2repro_gunangles, int16_t, 3)
 /// Variant for color values (RGBA, each component stored as a float or as a byte)
 typedef struct q2proto_var_color_s {
     // Stores types of components
-    uint8_t Q2PROTO_PRIVATE_MEMBER(float_bits);
+    uint8_t Q2PROTO_PRIVATE_API_MEMBER(float_bits);
     // Used by color_delta functions to store set components
-    uint8_t Q2PROTO_PRIVATE_MEMBER(delta_bits_space);
+    uint8_t Q2PROTO_PRIVATE_API_MEMBER(delta_bits_space);
     // Component values
     union
     {
         float f;
         uint8_t c;
-    } Q2PROTO_PRIVATE_MEMBER(comps)[4];
+    } Q2PROTO_PRIVATE_API_MEMBER(comps)[4];
 } q2proto_var_color_t;
 
 /** Color functions for float values
@@ -244,14 +244,14 @@ _GENERATE_VARIANT_FUNCTIONS(var_color, byte, uint8_t, 4)
 /// Store some fractional value (0..1, inclusive) as floats or an integer encoding
 typedef struct q2proto_var_fraction_s {
     // Stores type of component
-    uint8_t Q2PROTO_PRIVATE_MEMBER(type);
+    uint8_t Q2PROTO_PRIVATE_API_MEMBER(type);
     // Values
     union
     {
         float f;
         uint16_t w;
         uint8_t b;
-    } Q2PROTO_PRIVATE_MEMBER(val);
+    } Q2PROTO_PRIVATE_API_MEMBER(val);
 } q2proto_var_fraction_t;
 
 /** 'Fraction' functions for float values
@@ -278,9 +278,9 @@ typedef struct q2proto_coords_delta_s {
         /// Actual coordinate values
         q2proto_var_coords_t values;
         struct {
-            uint8_t Q2PROTO_PRIVATE_MEMBER(rsvd0); // float_bits
+            uint8_t Q2PROTO_PRIVATE_API_MEMBER(rsvd0); // float_bits
             uint8_t delta_bits;
-            float Q2PROTO_PRIVATE_MEMBER(rsvd1)[3]; // comps
+            float Q2PROTO_PRIVATE_API_MEMBER(rsvd1)[3]; // comps
         };
     };
 } q2proto_coords_delta_t;
@@ -323,9 +323,9 @@ typedef struct q2proto_angles_delta_s {
         /// Actual angle values
         q2proto_var_angles_t values;
         struct {
-            uint8_t Q2PROTO_PRIVATE_MEMBER(rsvd0); // float_bits
+            uint8_t Q2PROTO_PRIVATE_API_MEMBER(rsvd0); // float_bits
             uint8_t delta_bits;
-            float Q2PROTO_PRIVATE_MEMBER(rsvd1)[3]; // comps
+            float Q2PROTO_PRIVATE_API_MEMBER(rsvd1)[3]; // comps
         };
     };
 } q2proto_angles_delta_t;
@@ -369,9 +369,9 @@ typedef struct q2proto_color_delta_s {
         /// Actual coordinate values
         q2proto_var_color_t values;
         struct {
-            uint8_t Q2PROTO_PRIVATE_MEMBER(rsvd0); // float_bits
+            uint8_t Q2PROTO_PRIVATE_API_MEMBER(rsvd0); // float_bits
             uint8_t delta_bits;
-            float Q2PROTO_PRIVATE_MEMBER(rsvd1)[4]; // comps
+            float Q2PROTO_PRIVATE_API_MEMBER(rsvd1)[4]; // comps
         };
     };
 } q2proto_color_delta_t;

@@ -24,9 +24,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define Q2PROTO_INTERNAL_PACKING_H_
 
 #include "q2proto/q2proto.h"
+#include "q2proto_internal_defs.h"
 
-extern const q2proto_packed_entity_state_t q2proto_null_packed_entity_state;
-extern const q2proto_packed_player_state_t q2proto_null_packed_player_state;
+static MAYBE_UNUSED const q2proto_packed_entity_state_t q2proto_null_packed_entity_state;
+static MAYBE_UNUSED const q2proto_packed_player_state_t q2proto_null_packed_player_state;
 
 /**
  * Compute delta message from changes between two entity states.
@@ -37,7 +38,7 @@ extern const q2proto_packed_player_state_t q2proto_null_packed_player_state;
  * \param extended_state Whether to consider Q2PRO extended fields.
  * \param delta Receives delta message.
  */
-void q2proto_packing_make_entity_state_delta(const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, bool extended_state, q2proto_entity_state_delta_t *delta);
+Q2PROTO_PRIVATE_API void q2proto_packing_make_entity_state_delta(const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, bool extended_state, q2proto_entity_state_delta_t *delta);
 /**
  * Compute delta message from changes between two player states.
  * Vanilla, R1Q2, Q2PRO, Q2PRO extended are relatively similar and can be handled with a single function.
@@ -45,6 +46,6 @@ void q2proto_packing_make_entity_state_delta(const q2proto_packed_entity_state_t
  * \param to To/new/current player state.
  * \param delta Receives delta message.
  */
-void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta);
+Q2PROTO_PRIVATE_API void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta);
 
 #endif // Q2PROTO_INTERNAL_PACKING_H_

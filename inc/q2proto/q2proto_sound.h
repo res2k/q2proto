@@ -44,14 +44,14 @@ typedef struct q2proto_sound_s
 } q2proto_sound_t;
 
 /// "Decode" a sound message into easier to use sound info.
-void q2proto_sound_decode_message(const q2proto_svc_sound_t *sound_msg, q2proto_sound_t *sound_data);
+Q2PROTO_PUBLIC_API void q2proto_sound_decode_message(const q2proto_svc_sound_t *sound_msg, q2proto_sound_t *sound_data);
 /**
  * "Encode" sound info into a sound message.
  * \note Does some clamping internally, but does not range-check input values!
  * Especially \c index must be in range (<= 255) on "non-extended" servers,
  * as otherwise a broken message would be written.
  */
-void q2proto_sound_encode_message(const q2proto_sound_t *sound_data, q2proto_svc_sound_t *sound_msg);
+Q2PROTO_PUBLIC_API void q2proto_sound_encode_message(const q2proto_sound_t *sound_data, q2proto_svc_sound_t *sound_msg);
 /** @} */
 
 /**\name Loop attenuation
@@ -59,9 +59,9 @@ void q2proto_sound_encode_message(const q2proto_sound_t *sound_data, q2proto_svc
  * These functions take care of that.
  * @{ */
 /// Decode a loop attenuation sent over network
-float q2proto_sound_decode_loop_attenuation(uint8_t protocol_loop_attenuation);
+Q2PROTO_PUBLIC_API float q2proto_sound_decode_loop_attenuation(uint8_t protocol_loop_attenuation);
 /// Encode a loop attenuation for sending over network
-uint8_t q2proto_sound_encode_loop_attenuation(float loop_attenuation);
+Q2PROTO_PUBLIC_API uint8_t q2proto_sound_encode_loop_attenuation(float loop_attenuation);
 /** @} */
 
 #endif // Q2PROTO_SOUND_H_

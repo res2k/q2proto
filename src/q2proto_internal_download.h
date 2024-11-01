@@ -50,15 +50,15 @@ struct q2proto_download_funcs_s {
 };
 
 /// Common "begin download" logic
-void q2proto_download_common_begin(q2proto_servercontext_t *context, size_t total_size, q2proto_server_download_state_t* state);
+Q2PROTO_PRIVATE_API void q2proto_download_common_begin(q2proto_servercontext_t *context, size_t total_size, q2proto_server_download_state_t* state);
 /// Compute transferred size, completion percentage after preparing a chunk of data
-q2proto_error_t q2proto_download_common_complete_struct(q2proto_server_download_state_t *state, size_t download_remaining, q2proto_svc_download_t *svc_download);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_download_common_complete_struct(q2proto_server_download_state_t *state, size_t download_remaining, q2proto_svc_download_t *svc_download);
 /// Default "data chunk" implementation (uncompressed only)
-q2proto_error_t q2proto_download_common_data(q2proto_server_download_state_t *state, const uint8_t **data, size_t *remaining, size_t max_message_size, q2proto_svc_download_t *svc_download);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_download_common_data(q2proto_server_download_state_t *state, const uint8_t **data, size_t *remaining, size_t max_message_size, q2proto_svc_download_t *svc_download);
 /// Default "finish download" implementation
-q2proto_error_t q2proto_download_common_finish(q2proto_server_download_state_t *state, q2proto_svc_download_t *svc_download);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_download_common_finish(q2proto_server_download_state_t *state, q2proto_svc_download_t *svc_download);
 /// Default "abort download" implementation
-q2proto_error_t q2proto_download_common_abort(q2proto_server_download_state_t *state, q2proto_svc_download_t *svc_download);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_download_common_abort(q2proto_server_download_state_t *state, q2proto_svc_download_t *svc_download);
 /** @} */
 
 #endif // Q2PROTO_INTERNAL_DOWNLOAD_H_

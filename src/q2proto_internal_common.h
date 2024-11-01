@@ -46,39 +46,39 @@ static inline uint64_t q2proto_common_choose_width_flags(uint32_t value, uint64_
         return flag8;
 }
 
-q2proto_error_t q2proto_common_client_read_entity_bits(uintptr_t io_arg, uint64_t *bits, uint16_t *entnum);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_entity_bits(uintptr_t io_arg, uint64_t *bits, uint16_t *entnum);
 /// Debug helper: Return number of bytes occupied by given entity bits
-int q2proto_common_entity_bits_size(uint64_t bits);
-q2proto_error_t q2proto_common_server_write_entity_bits(uintptr_t io_arg, uint64_t bits, uint16_t entnum);
+Q2PROTO_PRIVATE_API int q2proto_common_entity_bits_size(uint64_t bits);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_entity_bits(uintptr_t io_arg, uint64_t bits, uint16_t entnum);
 
-q2proto_error_t q2proto_common_client_read_muzzleflash(uintptr_t io_arg, q2proto_svc_muzzleflash_t *muzzleflash, uint16_t silenced_mask);
-q2proto_error_t q2proto_common_client_read_temp_entity(uintptr_t io_arg, q2proto_game_type_t game_type, q2proto_svc_temp_entity_t *temp_entity);
-q2proto_error_t q2proto_common_client_read_layout(uintptr_t io_arg, q2proto_svc_layout_t *layout);
-q2proto_error_t q2proto_common_client_read_inventory(uintptr_t io_arg, q2proto_svc_inventory_t *inventory);
-q2proto_error_t q2proto_common_client_read_sound(uintptr_t io_arg, q2proto_game_type_t game_type, q2proto_svc_sound_t *sound);
-q2proto_error_t q2proto_common_client_read_print(uintptr_t io_arg, q2proto_svc_print_t *print);
-q2proto_error_t q2proto_common_client_read_stufftext(uintptr_t io_arg, q2proto_svc_stufftext_t *stufftext);
-q2proto_error_t q2proto_common_client_read_configstring(uintptr_t io_arg, q2proto_svc_configstring_t *configstring);
-q2proto_error_t q2proto_common_client_read_centerprint(uintptr_t io_arg, q2proto_svc_centerprint_t *centerprint);
-q2proto_error_t q2proto_common_client_read_download(uintptr_t io_arg, q2proto_svc_download_t *download);
-q2proto_error_t q2proto_common_client_read_packed_direction(uintptr_t io_arg, float dir[3]);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_muzzleflash(uintptr_t io_arg, q2proto_svc_muzzleflash_t *muzzleflash, uint16_t silenced_mask);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_temp_entity(uintptr_t io_arg, q2proto_game_type_t game_type, q2proto_svc_temp_entity_t *temp_entity);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_layout(uintptr_t io_arg, q2proto_svc_layout_t *layout);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_inventory(uintptr_t io_arg, q2proto_svc_inventory_t *inventory);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_sound(uintptr_t io_arg, q2proto_game_type_t game_type, q2proto_svc_sound_t *sound);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_print(uintptr_t io_arg, q2proto_svc_print_t *print);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_stufftext(uintptr_t io_arg, q2proto_svc_stufftext_t *stufftext);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_configstring(uintptr_t io_arg, q2proto_svc_configstring_t *configstring);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_centerprint(uintptr_t io_arg, q2proto_svc_centerprint_t *centerprint);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_download(uintptr_t io_arg, q2proto_svc_download_t *download);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_packed_direction(uintptr_t io_arg, float dir[3]);
 
-q2proto_error_t q2proto_common_server_write_layout(uintptr_t io_arg, const q2proto_svc_layout_t *layout);
-q2proto_error_t q2proto_common_server_write_nop(uintptr_t io_arg);
-q2proto_error_t q2proto_common_server_write_disconnect(uintptr_t io_arg);
-q2proto_error_t q2proto_common_server_write_reconnect(uintptr_t io_arg);
-q2proto_error_t q2proto_common_server_write_sound(uintptr_t io_arg, q2proto_game_type_t game_type, const q2proto_svc_sound_t *sound);
-q2proto_error_t q2proto_common_server_write_print(uintptr_t io_arg, const q2proto_svc_print_t *print);
-q2proto_error_t q2proto_common_server_write_stufftext(uintptr_t io_arg, const q2proto_svc_stufftext_t *stufftext);
-q2proto_error_t q2proto_common_server_write_configstring(uintptr_t io_arg, const q2proto_svc_configstring_t *configstring);
-q2proto_error_t q2proto_common_server_write_centerprint(uintptr_t io_arg, const q2proto_svc_centerprint_t *centerprint);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_layout(uintptr_t io_arg, const q2proto_svc_layout_t *layout);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_nop(uintptr_t io_arg);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_disconnect(uintptr_t io_arg);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_reconnect(uintptr_t io_arg);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_sound(uintptr_t io_arg, q2proto_game_type_t game_type, const q2proto_svc_sound_t *sound);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_print(uintptr_t io_arg, const q2proto_svc_print_t *print);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_stufftext(uintptr_t io_arg, const q2proto_svc_stufftext_t *stufftext);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_configstring(uintptr_t io_arg, const q2proto_svc_configstring_t *configstring);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_centerprint(uintptr_t io_arg, const q2proto_svc_centerprint_t *centerprint);
 
-q2proto_error_t q2proto_common_client_write_nop(uintptr_t io_arg);
-q2proto_error_t q2proto_common_client_write_userinfo(uintptr_t io_arg, const q2proto_clc_userinfo_t *userinfo);
-q2proto_error_t q2proto_common_client_write_stringcmd(uintptr_t io_arg, const q2proto_clc_stringcmd_t *stringcmd);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_write_nop(uintptr_t io_arg);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_write_userinfo(uintptr_t io_arg, const q2proto_clc_userinfo_t *userinfo);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_write_stringcmd(uintptr_t io_arg, const q2proto_clc_stringcmd_t *stringcmd);
 
-q2proto_error_t q2proto_common_server_read_userinfo(uintptr_t io_arg, q2proto_clc_userinfo_t *userinfo);
-q2proto_error_t q2proto_common_server_read_stringcmd(uintptr_t io_arg, q2proto_clc_stringcmd_t *stringcmd);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_read_userinfo(uintptr_t io_arg, q2proto_clc_userinfo_t *userinfo);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_read_stringcmd(uintptr_t io_arg, q2proto_clc_stringcmd_t *stringcmd);
 /** @} */
 
 #endif // Q2PROTO_INTERNAL_COMMON_H_

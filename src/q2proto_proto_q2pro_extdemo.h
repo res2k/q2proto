@@ -27,10 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /**\name Q2PRO "extended demo" protocol
  * @{ */
 /// Client context setup (Note: Only supports reading server messages)
-q2proto_error_t q2proto_q2pro_extdemo_continue_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_extdemo_continue_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata);
 
 /// Server context setup (Note: Only supports writing server messages)
-q2proto_error_t q2proto_q2pro_extdemo_init_servercontext(q2proto_servercontext_t *context, const q2proto_connect_t* connect_info);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_extdemo_init_servercontext(q2proto_servercontext_t *context, const q2proto_connect_t* connect_info);
 /** @} */
 
 #endif // Q2PROTO_PROTO_Q2PRO_EXTDEMO_H_

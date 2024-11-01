@@ -22,9 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_internal_defs.h"
 #include "q2proto_internal_io.h"
 
-const q2proto_packed_entity_state_t q2proto_null_packed_entity_state;
-const q2proto_packed_player_state_t q2proto_null_packed_player_state;
-
 void q2proto_packing_make_entity_state_delta(const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, bool extended_state, q2proto_entity_state_delta_t *delta)
 {
     memset(delta, 0, sizeof(*delta));

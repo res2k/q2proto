@@ -46,7 +46,7 @@ typedef struct q2proto_maybe_zpacket_s {
  * packet space is available for the zpacket header. (It may still be possible to write
  * an uncompressed packet, though.)
  */
-q2proto_error_t q2proto_maybe_zpacket_begin(q2proto_servercontext_t *context, q2protoio_deflate_args_t *deflate_args, uintptr_t io_arg, q2proto_maybe_zpacket_t *state, uintptr_t *new_io_arg);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_maybe_zpacket_begin(q2proto_servercontext_t *context, q2protoio_deflate_args_t *deflate_args, uintptr_t io_arg, q2proto_maybe_zpacket_t *state, uintptr_t *new_io_arg);
 /**
  * End zpacket (maybe) writing.
  * Writes out the compressed data to the original "I/O" argument.
@@ -54,6 +54,6 @@ q2proto_error_t q2proto_maybe_zpacket_begin(q2proto_servercontext_t *context, q2
  * \param new_io_arg New "I/O argument" returned by q2proto_maybe_zpacket_begin().
  * \returns Error code.
  */
-q2proto_error_t q2proto_maybe_zpacket_end(q2proto_maybe_zpacket_t *state, uintptr_t new_io_arg);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_maybe_zpacket_end(q2proto_maybe_zpacket_t *state, uintptr_t new_io_arg);
 
 #endif // Q2PROTO_INTERNAL_MAYBE_ZPACKET_H_

@@ -16,25 +16,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-/**\file
- * Formatting helpers
- */
-#ifndef Q2PROTO_INTERNAL_FMT_H_
-#define Q2PROTO_INTERNAL_FMT_H_
+// Use this for single source q2proto builds
 
-#include "q2proto/q2proto_defs.h"
-#include <stddef.h>
-
-/**\name Formatting helpers
- * @{ */
-/// Helper: Format into a string with static lifetime
-Q2PROTO_PRIVATE_API const char *q2proto_va(const char *fmt, ...);
-
-/**
- * snprintf() to a buffer, and update pointer and remaining size.
- * \returns Return value of snprintf().
- */
-Q2PROTO_PRIVATE_API int q2proto_snprintf_update(char **buf, size_t *buf_size, const char *format, ...);
-/** @} */
-
-#endif // Q2PROTO_INTERNAL_FMT_H_
+#include "q2proto_client.c"
+#include "q2proto_coords.c"
+#include "q2proto_crc.c"
+#include "q2proto_internal_common.c"
+#include "q2proto_internal_debug.c"
+#include "q2proto_internal_download.c"
+#include "q2proto_internal_fmt.c"
+#include "q2proto_internal_maybe_zpacket.c"
+#include "q2proto_internal_packing.c"
+#include "q2proto_multicast.c"
+#include "q2proto_proto_q2pro.c"
+#include "q2proto_proto_q2pro_extdemo.c"
+#include "q2proto_proto_q2repro.c"
+#include "q2proto_proto_r1q2.c"
+#include "q2proto_proto_vanilla.c"
+#include "q2proto_protocol.c"
+#include "q2proto_server.c"
+#include "q2proto_solid.c"
+#include "q2proto_sound.c"
+#include "q2proto_string.c"

@@ -27,13 +27,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /**\name Vanilla protocol
  * @{ */
 /// Client context setup
-q2proto_error_t q2proto_vanilla_continue_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_vanilla_continue_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata);
 
 /// Input checksum
-q2proto_error_t q2proto_block_sequence_crc_byte(const uint8_t *base, size_t length, int sequence, uint8_t *result);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_block_sequence_crc_byte(const uint8_t *base, size_t length, int sequence, uint8_t *result);
 
 /// Server context setup
-q2proto_error_t q2proto_vanilla_init_servercontext(q2proto_servercontext_t *context, const q2proto_connect_t* connect_info);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_vanilla_init_servercontext(q2proto_servercontext_t *context, const q2proto_connect_t* connect_info);
 /** @} */
 
 #endif // Q2PROTO_PROTO_VANILLA_H_

@@ -23,14 +23,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_internal.h"
 #include "q2proto_internal_bit_read_write.h"
 
-#define FOG_BIT_COLOR               BIT(0)
-#define FOG_BIT_DENSITY             BIT(1)
-#define FOG_BIT_HEIGHT_DENSITY      BIT(2)
-#define FOG_BIT_HEIGHT_FALLOFF      BIT(3)
-#define FOG_BIT_HEIGHT_START_COLOR  BIT(4)
-#define FOG_BIT_HEIGHT_END_COLOR    BIT(5)
-#define FOG_BIT_HEIGHT_START_DIST   BIT(6)
-#define FOG_BIT_HEIGHT_END_DIST     BIT(7)
+#define Q2PRO_FOG_BIT_COLOR               BIT(0)
+#define Q2PRO_FOG_BIT_DENSITY             BIT(1)
+#define Q2PRO_FOG_BIT_HEIGHT_DENSITY      BIT(2)
+#define Q2PRO_FOG_BIT_HEIGHT_FALLOFF      BIT(3)
+#define Q2PRO_FOG_BIT_HEIGHT_START_COLOR  BIT(4)
+#define Q2PRO_FOG_BIT_HEIGHT_END_COLOR    BIT(5)
+#define Q2PRO_FOG_BIT_HEIGHT_START_DIST   BIT(6)
+#define Q2PRO_FOG_BIT_HEIGHT_END_DIST     BIT(7)
 
 q2proto_error_t q2proto_q2pro_parse_connect(q2proto_string_t *connect_str, q2proto_connect_t *parsed_connect)
 {
@@ -146,7 +146,7 @@ static q2proto_error_t q2pro_client_read_begin_gamestate(q2proto_clientcontext_t
 static q2proto_error_t q2pro_client_read_begin_configstream(q2proto_clientcontext_t *context, uintptr_t raw_io_arg, q2proto_svc_message_t *svc_message);
 static q2proto_error_t q2pro_client_read_begin_baselinestream(q2proto_clientcontext_t *context, uintptr_t raw_io_arg, q2proto_svc_message_t *svc_message);
 
-static MAYBE_UNUSED const char* server_cmd_string(int command)
+static MAYBE_UNUSED const char* q2pro_server_cmd_string(int command)
 {
 #define S(X) \
     case X:  \
@@ -212,7 +212,7 @@ static q2proto_error_t q2pro_client_read(q2proto_clientcontext_t *context, uintp
     uint8_t command = *(const uint8_t*)command_ptr;
     uint8_t extrabits = command & 0xE0;
     command &= 0x1F;
-    SHOWNET(io_arg, 1, -1, "%s", server_cmd_string(command));
+    SHOWNET(io_arg, 1, -1, "%s", q2pro_server_cmd_string(command));
 
     switch (command)
     {
@@ -599,7 +599,7 @@ q2proto_error_t q2proto_q2pro_client_read_playerfog(q2proto_clientcontext_t *con
     uint8_t fog_bits;
     READ_CHECKED(client_read, io_arg, fog_bits, u8);
 
-    if (fog_bits & FOG_BIT_COLOR)
+    if (fog_bits & Q2PRO_FOG_BIT_COLOR)
     {
         READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &fog->global.color.values, 0);
         READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &fog->global.color.values, 1);
@@ -607,7 +607,7 @@ q2proto_error_t q2proto_q2pro_client_read_playerfog(q2proto_clientcontext_t *con
         fog->global.color.delta_bits |= BIT(0) | BIT(1) | BIT(2);
     }
 
-    if (fog_bits & FOG_BIT_DENSITY)
+    if (fog_bits & Q2PRO_FOG_BIT_DENSITY)
     {
         uint32_t combined_density_sky_factor;
         READ_CHECKED(client_read, io_arg, combined_density_sky_factor, u32);
@@ -616,7 +616,7 @@ q2proto_error_t q2proto_q2pro_client_read_playerfog(q2proto_clientcontext_t *con
         fog->flags |= Q2P_FOG_DENSITY_SKYFACTOR;
     }
 
-    if (fog_bits & FOG_BIT_HEIGHT_DENSITY)
+    if (fog_bits & Q2PRO_FOG_BIT_HEIGHT_DENSITY)
     {
         uint16_t density;
         READ_CHECKED(client_read, io_arg, density, u16);
@@ -624,7 +624,7 @@ q2proto_error_t q2proto_q2pro_client_read_playerfog(q2proto_clientcontext_t *con
         fog->flags |= Q2P_HEIGHTFOG_DENSITY;
     }
 
-    if (fog_bits & FOG_BIT_HEIGHT_FALLOFF)
+    if (fog_bits & Q2PRO_FOG_BIT_HEIGHT_FALLOFF)
     {
         uint16_t falloff;
         READ_CHECKED(client_read, io_arg, falloff, u16);
@@ -632,14 +632,14 @@ q2proto_error_t q2proto_q2pro_client_read_playerfog(q2proto_clientcontext_t *con
         fog->flags |= Q2P_HEIGHTFOG_FALLOFF;
     }
 
-    if (fog_bits & FOG_BIT_HEIGHT_START_COLOR)
+    if (fog_bits & Q2PRO_FOG_BIT_HEIGHT_START_COLOR)
     {
         READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &fog->height.start_color.values, 0);
         READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &fog->height.start_color.values, 1);
         READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &fog->height.start_color.values, 2);
         fog->height.start_color.delta_bits |= BIT(0) | BIT(1) | BIT(2);
     }
-    if (fog_bits & FOG_BIT_HEIGHT_END_COLOR)
+    if (fog_bits & Q2PRO_FOG_BIT_HEIGHT_END_COLOR)
     {
         READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &fog->height.end_color.values, 0);
         READ_CHECKED_VAR_COLOR_COMP(client_read, io_arg, &fog->height.end_color.values, 1);
@@ -647,7 +647,7 @@ q2proto_error_t q2proto_q2pro_client_read_playerfog(q2proto_clientcontext_t *con
         fog->height.end_color.delta_bits |= BIT(0) | BIT(1) | BIT(2);
     }
 
-    if (fog_bits & FOG_BIT_HEIGHT_START_DIST)
+    if (fog_bits & Q2PRO_FOG_BIT_HEIGHT_START_DIST)
     {
         int dist;
         READ_CHECKED(client_read, io_arg, dist, q2pro_i23, NULL);
@@ -655,7 +655,7 @@ q2proto_error_t q2proto_q2pro_client_read_playerfog(q2proto_clientcontext_t *con
         fog->flags |= Q2P_HEIGHTFOG_START_DIST;
     }
 
-    if (fog_bits & FOG_BIT_HEIGHT_END_DIST)
+    if (fog_bits & Q2PRO_FOG_BIT_HEIGHT_END_DIST)
     {
         int dist;
         READ_CHECKED(client_read, io_arg, dist, q2pro_i23, NULL);
@@ -1737,55 +1737,55 @@ q2proto_error_t q2proto_q2pro_server_write_playerfog(q2proto_servercontext_t *co
 {
     uint8_t fog_bits = 0;
     if (fog->global.color.delta_bits != 0)
-        fog_bits |= FOG_BIT_COLOR;
+        fog_bits |= Q2PRO_FOG_BIT_COLOR;
     if (fog->flags & Q2P_FOG_DENSITY_SKYFACTOR)
-        fog_bits |= FOG_BIT_DENSITY;
+        fog_bits |= Q2PRO_FOG_BIT_DENSITY;
     if (fog->flags & Q2P_HEIGHTFOG_DENSITY)
-        fog_bits |= FOG_BIT_HEIGHT_DENSITY;
+        fog_bits |= Q2PRO_FOG_BIT_HEIGHT_DENSITY;
     if (fog->flags & Q2P_HEIGHTFOG_FALLOFF)
-        fog_bits |= FOG_BIT_HEIGHT_FALLOFF;
+        fog_bits |= Q2PRO_FOG_BIT_HEIGHT_FALLOFF;
     if (fog->height.start_color.delta_bits != 0)
-        fog_bits |= FOG_BIT_HEIGHT_START_COLOR;
+        fog_bits |= Q2PRO_FOG_BIT_HEIGHT_START_COLOR;
     if (fog->height.end_color.delta_bits != 0)
-        fog_bits |= FOG_BIT_HEIGHT_END_COLOR;
+        fog_bits |= Q2PRO_FOG_BIT_HEIGHT_END_COLOR;
     if (fog->flags & Q2P_HEIGHTFOG_START_DIST)
-        fog_bits |= FOG_BIT_HEIGHT_START_DIST;
+        fog_bits |= Q2PRO_FOG_BIT_HEIGHT_START_DIST;
     if (fog->flags & Q2P_HEIGHTFOG_END_DIST)
-        fog_bits |= FOG_BIT_HEIGHT_END_DIST;
+        fog_bits |= Q2PRO_FOG_BIT_HEIGHT_END_DIST;
 
     WRITE_CHECKED(server_write, io_arg, u8, fog_bits);
-    if (fog_bits & FOG_BIT_COLOR)
+    if (fog_bits & Q2PRO_FOG_BIT_COLOR)
     {
         WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->global.color.values, 0));
         WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->global.color.values, 1));
         WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->global.color.values, 2));
     }
-    if (fog_bits & FOG_BIT_DENSITY)
+    if (fog_bits & Q2PRO_FOG_BIT_DENSITY)
     {
         uint16_t density = q2proto_var_fraction_get_word(&fog->global.density);
         uint16_t skyfactor = q2proto_var_fraction_get_word(&fog->global.skyfactor);
         uint32_t density_and_skyfactor = density | skyfactor << 16;
         WRITE_CHECKED(server_write, io_arg, u32, density_and_skyfactor);
     }
-    if (fog_bits & FOG_BIT_HEIGHT_DENSITY)
+    if (fog_bits & Q2PRO_FOG_BIT_HEIGHT_DENSITY)
         WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_fraction_get_word(&fog->height.density));
-    if (fog_bits & FOG_BIT_HEIGHT_FALLOFF)
+    if (fog_bits & Q2PRO_FOG_BIT_HEIGHT_FALLOFF)
         WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_fraction_get_word(&fog->height.falloff));
-    if (fog_bits & FOG_BIT_HEIGHT_START_COLOR)
+    if (fog_bits & Q2PRO_FOG_BIT_HEIGHT_START_COLOR)
     {
         WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->height.start_color.values, 0));
         WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->height.start_color.values, 1));
         WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->height.start_color.values, 2));
     }
-    if (fog_bits & FOG_BIT_HEIGHT_END_COLOR)
+    if (fog_bits & Q2PRO_FOG_BIT_HEIGHT_END_COLOR)
     {
         WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->height.end_color.values, 0));
         WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->height.end_color.values, 1));
         WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->height.end_color.values, 2));
     }
-    if (fog_bits & FOG_BIT_HEIGHT_START_DIST)
+    if (fog_bits & Q2PRO_FOG_BIT_HEIGHT_START_DIST)
         WRITE_CHECKED(server_write, io_arg, q2pro_i23, q2proto_var_coord_get_int(&fog->height.start_dist), 0);
-    if (fog_bits & FOG_BIT_HEIGHT_END_DIST)
+    if (fog_bits & Q2PRO_FOG_BIT_HEIGHT_END_DIST)
         WRITE_CHECKED(server_write, io_arg, q2pro_i23, q2proto_var_coord_get_int(&fog->height.end_dist), 0);
 
     return Q2P_ERR_SUCCESS;
@@ -2181,6 +2181,8 @@ not_enough_packet_space:
     return Q2P_ERR_NOT_ENOUGH_PACKET_SPACE;
 }
 
+#undef WRITE_GAMESTATE_BASELINE_SIZE
+
 static q2proto_error_t q2pro_server_write_gamestate_mono(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate)
 {
     bool has_q2pro_extensions = context->server_info->game_type != Q2PROTO_GAME_VANILLA;
@@ -2519,3 +2521,5 @@ static q2proto_error_t q2pro_download_data(q2proto_server_download_state_t *stat
 
     return q2proto_download_common_data(state, data, remaining, packet_remaining, svc_download);
 }
+
+#undef SVC_ZDOWNLOAD_SIZE

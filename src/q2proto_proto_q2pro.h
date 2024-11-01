@@ -27,27 +27,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /**\name Q2PRO protocol
  * @{ */
 /// "connect" token parsing
-q2proto_error_t q2proto_q2pro_parse_connect(q2proto_string_t *connect_str, q2proto_connect_t *parsed_connect);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_parse_connect(q2proto_string_t *connect_str, q2proto_connect_t *parsed_connect);
 /// connect struct completion
-q2proto_error_t q2proto_q2pro_complete_connect(q2proto_connect_t *connect);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_complete_connect(q2proto_connect_t *connect);
 /// Get "connect" string tail
-const char *q2proto_q2pro_connect_tail(const q2proto_connect_t *connect);
+Q2PROTO_PRIVATE_API const char *q2proto_q2pro_connect_tail(const q2proto_connect_t *connect);
 
 /// Client context setup
-q2proto_error_t q2proto_q2pro_continue_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_continue_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata);
 
 /// Server context setup
-q2proto_error_t q2proto_q2pro_init_servercontext(q2proto_servercontext_t *context, const q2proto_connect_t* connect_info);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_init_servercontext(q2proto_servercontext_t *context, const q2proto_connect_t* connect_info);
 
 // Functions reused by q2pro_extdemo
-void q2proto_q2pro_debug_player_delta_bits_to_str(char *buf, size_t size, uint32_t bits);
-q2proto_error_t q2proto_q2pro_client_read_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, uint64_t bits, q2proto_entity_state_delta_t *entity_state);
-q2proto_error_t q2proto_q2pro_client_read_playerfog(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_fog_t *fog);
-q2proto_error_t q2proto_q2pro_server_write_entity_state_delta(q2proto_servercontext_t *context, uintptr_t io_arg, uint16_t entnum, const q2proto_entity_state_delta_t *entity_state_delta);
-q2proto_error_t q2proto_q2pro_server_write_playerfog(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_fog_t *fog);
+Q2PROTO_PRIVATE_API void q2proto_q2pro_debug_player_delta_bits_to_str(char *buf, size_t size, uint32_t bits);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_client_read_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, uint64_t bits, q2proto_entity_state_delta_t *entity_state);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_client_read_playerfog(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_fog_t *fog);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_server_write_entity_state_delta(q2proto_servercontext_t *context, uintptr_t io_arg, uint16_t entnum, const q2proto_entity_state_delta_t *entity_state_delta);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_server_write_playerfog(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_fog_t *fog);
 
 // Functions reused by q2repro
-q2proto_error_t q2proto_q2pro_client_read_muzzleflash2(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_muzzleflash_t *muzzleflash);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_client_read_muzzleflash2(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_muzzleflash_t *muzzleflash);
 /** @} */
 
 #endif // Q2PROTO_PROTO_Q2PRO_H_

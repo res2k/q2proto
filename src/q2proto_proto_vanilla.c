@@ -59,7 +59,7 @@ static q2proto_error_t vanilla_client_read_entity_delta(uintptr_t io_arg, uint64
 static q2proto_error_t vanilla_client_read_baseline(uintptr_t io_arg, q2proto_svc_spawnbaseline_t *spawnbaseline);
 static q2proto_error_t vanilla_client_read_frame(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_frame_t *frame);
 
-static MAYBE_UNUSED const char* server_cmd_string(int command)
+static MAYBE_UNUSED const char* vanilla_server_cmd_string(int command)
 {
     const char *str = q2proto_debug_common_svc_string(command);
     return str ? str : q2proto_va("%d", command);
@@ -76,7 +76,7 @@ static q2proto_error_t vanilla_client_read(q2proto_clientcontext_t *context, uin
         return Q2P_ERR_NO_MORE_INPUT;
 
     uint8_t command = *(const uint8_t*)command_ptr;
-    SHOWNET(io_arg, 1, -1, "%s", server_cmd_string(command));
+    SHOWNET(io_arg, 1, -1, "%s", vanilla_server_cmd_string(command));
 
     switch (command)
     {

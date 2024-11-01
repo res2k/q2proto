@@ -51,7 +51,7 @@ extern "C" {
  * \param num_accepted_protocols Size of \a accepted_protocols
  * \returns Error code
  */
-q2proto_error_t q2proto_get_challenge_extras(char *buf, size_t buf_size, const q2proto_protocol_t *accepted_protocols, size_t num_accepted_protocols);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_get_challenge_extras(char *buf, size_t buf_size, const q2proto_protocol_t *accepted_protocols, size_t num_accepted_protocols);
 
 /// Server information
 typedef struct q2proto_server_info_s
@@ -71,7 +71,7 @@ typedef struct q2proto_server_info_s
  * \param parsed_connect Parsed connect info.
  * \returns Error code.
  */
-q2proto_error_t q2proto_parse_connect(const char *connect_args, const q2proto_protocol_t *accepted_protocols, size_t num_accepted_protocols, const q2proto_server_info_t *server_info, q2proto_connect_t *parsed_connect);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_parse_connect(const char *connect_args, const q2proto_protocol_t *accepted_protocols, size_t num_accepted_protocols, const q2proto_server_info_t *server_info, q2proto_connect_t *parsed_connect);
 
 typedef struct q2proto_servercontext_s q2proto_servercontext_t;
 typedef struct q2proto_gamestate_s q2proto_gamestate_t;
@@ -95,34 +95,34 @@ struct q2proto_servercontext_s {
     } features;
 
     /// Server information
-    const q2proto_server_info_t *Q2PROTO_PRIVATE_MEMBER(server_info);
+    const q2proto_server_info_t *Q2PROTO_PRIVATE_API_MEMBER(server_info);
     /// Actual protocol version
-    q2proto_protocol_t Q2PROTO_PRIVATE_MEMBER(protocol);
+    q2proto_protocol_t Q2PROTO_PRIVATE_API_MEMBER(protocol);
     /// Protocol version (for R1Q2/Q2PRO)
-    int Q2PROTO_PRIVATE_MEMBER(protocol_version);
+    int Q2PROTO_PRIVATE_API_MEMBER(protocol_version);
     /// zpacket command (differs between R1Q2/Q2PRO and Q2rePRO protocol)
-    uint8_t Q2PROTO_PRIVATE_MEMBER(zpacket_cmd);
+    uint8_t Q2PROTO_PRIVATE_API_MEMBER(zpacket_cmd);
 
     /// serverdata filling
-    Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, fill_serverdata, q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata);
+    Q2PROTO_PRIVATE_API_FUNC_PTR(q2proto_error_t, fill_serverdata, q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata);
 
     /// Protocol-specific entity state delta message creation
-    Q2PROTO_PRIVATE_FUNC_PTR(void, make_entity_state_delta, q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, q2proto_entity_state_delta_t *delta);
+    Q2PROTO_PRIVATE_API_FUNC_PTR(void, make_entity_state_delta, q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, q2proto_entity_state_delta_t *delta);
     /// Protocol-specific player state delta message creation
-    Q2PROTO_PRIVATE_FUNC_PTR(void, make_player_state_delta, q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta);
+    Q2PROTO_PRIVATE_API_FUNC_PTR(void, make_player_state_delta, q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta);
 
     /// write message
-    Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, server_write, q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
+    Q2PROTO_PRIVATE_API_FUNC_PTR(q2proto_error_t, server_write, q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
     /// write gamestate
-    Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, server_write_gamestate, q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
+    Q2PROTO_PRIVATE_API_FUNC_PTR(q2proto_error_t, server_write_gamestate, q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
     /// read message
-    Q2PROTO_PRIVATE_FUNC_PTR(q2proto_error_t, server_read, q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_message_t *clc_message);
+    Q2PROTO_PRIVATE_API_FUNC_PTR(q2proto_error_t, server_read, q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_message_t *clc_message);
 
     /// Pointer to download function implementations
-    const struct q2proto_download_funcs_s *Q2PROTO_PRIVATE_MEMBER(download_funcs);
+    const struct q2proto_download_funcs_s *Q2PROTO_PRIVATE_API_MEMBER(download_funcs);
 
     /// Current element when writing gamestate
-    size_t Q2PROTO_PRIVATE_MEMBER(gamestate_pos);
+    size_t Q2PROTO_PRIVATE_API_MEMBER(gamestate_pos);
 };
 
 /**
@@ -132,7 +132,7 @@ struct q2proto_servercontext_s {
  * \param connect_info Connection info. Usually produced by q2proto_parse_connect().
  * \returns Error code
  */
-q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t* context, const q2proto_server_info_t *server_info, const q2proto_connect_t* connect_info);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t* context, const q2proto_server_info_t *server_info, const q2proto_connect_t* connect_info);
 
 /**
  * Set up a context for writing messages for a demo.
@@ -145,7 +145,7 @@ q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t* context, con
  *   reasons.
  * \returns Error code
  */
-q2proto_error_t q2proto_init_servercontext_demo(q2proto_servercontext_t* context, const q2proto_server_info_t *server_info, size_t* max_msg_len);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_init_servercontext_demo(q2proto_servercontext_t* context, const q2proto_server_info_t *server_info, size_t* max_msg_len);
 
 /**
  * Fill a serverdata structure with protocol-dependent values.
@@ -154,7 +154,7 @@ q2proto_error_t q2proto_init_servercontext_demo(q2proto_servercontext_t* context
  * \param serverdata Serverdata structure to fill.
  * \returns Error code
  */
-q2proto_error_t q2proto_server_fill_serverdata(q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_server_fill_serverdata(q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata);
 
 /**
  * Fill an "entity state delta" message based on difference between packed entities.
@@ -165,7 +165,7 @@ q2proto_error_t q2proto_server_fill_serverdata(q2proto_servercontext_t *context,
  * \param write_old_origin Whether the "old origin" field should be included in the delta. Due to complicated rules this isn't determined automatically.
  * \param delta Structure receiving delta between packed entity states.
  */
-void q2proto_server_make_entity_state_delta(q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, q2proto_entity_state_delta_t *delta);
+Q2PROTO_PUBLIC_API void q2proto_server_make_entity_state_delta(q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, q2proto_entity_state_delta_t *delta);
 /**
  * Fill a "player state delta" message based on difference between packed player states.
  * The "from", or "old" player state plus the "delta" allow to recreate the "to", or "new", player state.
@@ -174,7 +174,7 @@ void q2proto_server_make_entity_state_delta(q2proto_servercontext_t *context, co
  * \param to The "to", or "new", player entity state.
  * \param delta Structure receiving delta between packed player states.
  */
-void q2proto_server_make_player_state_delta(q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta);
+Q2PROTO_PUBLIC_API void q2proto_server_make_player_state_delta(q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta);
 
 /**
  * Write a message for "multicast" server communications, ie send the same binary message to multiple clients.
@@ -184,7 +184,7 @@ void q2proto_server_make_player_state_delta(q2proto_servercontext_t *context, co
  * \param svc_message Message data.
  * \returns Error code
  */
-q2proto_error_t q2proto_server_multicast_write(const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_server_multicast_write(const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
 
 /**
  * Write a position appropriate for the server info's game type.
@@ -193,7 +193,7 @@ q2proto_error_t q2proto_server_multicast_write(const q2proto_server_info_t *serv
  * \param pos Position to write.
  * \returns Error code
  */
-q2proto_error_t q2proto_server_write_pos(const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_vec3_t pos);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_server_write_pos(const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_vec3_t pos);
 
 /**
  * Write a message for sending from the server to a client.
@@ -202,7 +202,7 @@ q2proto_error_t q2proto_server_write_pos(const q2proto_server_info_t *server_inf
  * \param svc_message Message data.
  * \returns Error code
  */
-q2proto_error_t q2proto_server_write(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_server_write(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
 
 /// Gamestate to write
 struct q2proto_gamestate_s {
@@ -227,7 +227,7 @@ struct q2proto_gamestate_s {
  * q2proto_server_write_gamestate() called again with the same gamestate to continue writing.
  * Error code otherwise.
  */
-q2proto_error_t q2proto_server_write_gamestate(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_server_write_gamestate(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
 
 /**
  * Compress packet data into a "zpacket".
@@ -240,24 +240,24 @@ q2proto_error_t q2proto_server_write_gamestate(q2proto_servercontext_t *context,
  * or the data didn't compress very well. Either way, the original data should be sent.
  * Error code in case of error.
  */
-q2proto_error_t q2proto_server_write_zpacket(q2proto_servercontext_t *context, q2protoio_deflate_args_t *deflate_args, uintptr_t io_arg, const void *packet_data, size_t packet_len);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_server_write_zpacket(q2proto_servercontext_t *context, q2protoio_deflate_args_t *deflate_args, uintptr_t io_arg, const void *packet_data, size_t packet_len);
 
 /// State for download handling
 typedef struct q2proto_server_download_state_s {
     // Server communications context.
-    q2proto_servercontext_t *Q2PROTO_PRIVATE_MEMBER(context);
+    q2proto_servercontext_t *Q2PROTO_PRIVATE_API_MEMBER(context);
     // Amount transferred
-    size_t Q2PROTO_PRIVATE_MEMBER(transferred);
+    size_t Q2PROTO_PRIVATE_API_MEMBER(transferred);
     // Total size
-    size_t Q2PROTO_PRIVATE_MEMBER(total_size);
+    size_t Q2PROTO_PRIVATE_API_MEMBER(total_size);
     // Whether download data should be compressed (deflated)
-    int Q2PROTO_PRIVATE_MEMBER(compress);
+    int Q2PROTO_PRIVATE_API_MEMBER(compress);
     // Deflate arguments, passed through to q2protoio_deflate_begin
-    q2protoio_deflate_args_t *Q2PROTO_PRIVATE_MEMBER(deflate_args);
+    q2protoio_deflate_args_t *Q2PROTO_PRIVATE_API_MEMBER(deflate_args);
     // Currently/last used deflate I/O arg
-    uintptr_t Q2PROTO_PRIVATE_MEMBER(deflate_io);
+    uintptr_t Q2PROTO_PRIVATE_API_MEMBER(deflate_io);
     // Whether deflate I/O arg is valid
-    bool Q2PROTO_PRIVATE_MEMBER(deflate_io_valid);
+    bool Q2PROTO_PRIVATE_API_MEMBER(deflate_io_valid);
 } q2proto_server_download_state_t;
 
 /// Stateful download compression mode
@@ -280,12 +280,12 @@ typedef enum
  * \param state Download state object.
  * \returns Error code
  */
-q2proto_error_t q2proto_server_download_begin(q2proto_servercontext_t *context, size_t total_size, q2proto_download_compress_t compress, q2protoio_deflate_args_t* deflate_args, q2proto_server_download_state_t* state);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_server_download_begin(q2proto_servercontext_t *context, size_t total_size, q2proto_download_compress_t compress, q2protoio_deflate_args_t* deflate_args, q2proto_server_download_state_t* state);
 /**
  * Finalize stateful download.
  * \param state Download state object.
  */
-void q2proto_server_download_end(q2proto_server_download_state_t* state);
+Q2PROTO_PUBLIC_API void q2proto_server_download_end(q2proto_server_download_state_t* state);
 /**
  * Fill an q2proto_svc_download_t structure with a chunk of data.
  * \param state Download state object.
@@ -299,28 +299,28 @@ void q2proto_server_download_end(q2proto_server_download_state_t* state);
  * For Q2P_ERR_SUCCESS and Q2P_ERR_DOWNLOAD_COMPLETE download message \em must be written.
  * Error code otherwise.
  */
-q2proto_error_t q2proto_server_download_data(q2proto_server_download_state_t *state, const uint8_t **data, size_t *remaining, size_t packet_remaining, q2proto_svc_download_t *svc_download);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_server_download_data(q2proto_server_download_state_t *state, const uint8_t **data, size_t *remaining, size_t packet_remaining, q2proto_svc_download_t *svc_download);
 /**
  * Fill an q2proto_svc_download_t indicating the download was finished (typically if nothing needs to be transferred).
  * \param context Server communications context.
  * \param svc_download Output q2proto_svc_download_t structure.
  * \returns Error code
  */
-q2proto_error_t q2proto_server_download_finish(q2proto_server_download_state_t *state, q2proto_svc_download_t *svc_download);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_server_download_finish(q2proto_server_download_state_t *state, q2proto_svc_download_t *svc_download);
 /**
  * Fill an q2proto_svc_download_t indicating the download was aborted.
  * \param context Server communications context.
  * \param svc_download Output q2proto_svc_download_t structure.
  * \returns Error code
  */
-q2proto_error_t q2proto_server_download_abort(q2proto_server_download_state_t *state, q2proto_svc_download_t *svc_download);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_server_download_abort(q2proto_server_download_state_t *state, q2proto_svc_download_t *svc_download);
 /**
  * Request progress from a stateful download.
  * \param state Download state
  * \param completed Receives number of bytes transferred
  * \param total Receives total number of bytes to transfer
  */
-void q2proto_server_download_get_progress(const q2proto_server_download_state_t *state, size_t *completed, size_t *total);
+Q2PROTO_PUBLIC_API void q2proto_server_download_get_progress(const q2proto_server_download_state_t *state, size_t *completed, size_t *total);
 
 /**
  * Read a message sent from the client to the server.
@@ -329,7 +329,7 @@ void q2proto_server_download_get_progress(const q2proto_server_download_state_t 
  * \param clc_message Will be filled with message data.
  * \returns Error code
  */
-q2proto_error_t q2proto_server_read(q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_message_t *clc_message);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_server_read(q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_message_t *clc_message);
 /** @} */
 
 #if defined(__cplusplus)

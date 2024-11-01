@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef Q2PROTO_PROTOCOL_H_
 #define Q2PROTO_PROTOCOL_H_
 
+#include "q2proto_defs.h"
+
 #include <stddef.h>
 
 #if defined(__cplusplus)
@@ -51,14 +53,14 @@ typedef enum q2proto_protocol_e {
 } q2proto_protocol_t;
 
 /// Map from q2proto_protocol_t value to protocol version number communicated over network
-int q2proto_get_protocol_netver(q2proto_protocol_t protocol);
+Q2PROTO_PUBLIC_API int q2proto_get_protocol_netver(q2proto_protocol_t protocol);
 /// Map from protocol version number communicated over network to q2proto_protocol_t value
-q2proto_protocol_t q2proto_protocol_from_netver(int version);
+Q2PROTO_PUBLIC_API q2proto_protocol_t q2proto_protocol_from_netver(int version);
 
 /// Get array with protocols, suitable for vanilla games
-const q2proto_protocol_t *q2proto_get_vanilla_protocols(void);
+Q2PROTO_PUBLIC_API const q2proto_protocol_t *q2proto_get_vanilla_protocols(void);
 /// Get number of items in array returned by q2proto_get_vanilla_protocols
-const size_t q2proto_get_num_vanilla_protocols(void);
+Q2PROTO_PUBLIC_API const size_t q2proto_get_num_vanilla_protocols(void);
 
 #if defined(__cplusplus)
 } // extern "C"
