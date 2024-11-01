@@ -42,6 +42,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #error Please define Q2P_PACK_ENTITY_TYPE.
 #endif
 
+// Prototype to avoid "no previous prototype" warnings
+void Q2P_PACK_ENTITY_FUNCTION_NAME(q2proto_servercontext_t *context, const Q2P_PACK_ENTITY_TYPE entity_state, q2proto_packed_entity_state_t *entity_packed);
+
 /**\def Q2P_PACK_GET_ENTITY_VALUE
  * Extract a member from entity packing input data.
  */
