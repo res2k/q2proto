@@ -324,7 +324,7 @@ static q2proto_error_t q2repro_client_read(q2proto_clientcontext_t *context, uin
 
     case svc_sound:
         svc_message->type = Q2P_SVC_SOUND;
-        return q2proto_common_client_read_sound(io_arg, context->features.server_game_type, &svc_message->sound);
+        return q2proto_common_client_read_sound_float(io_arg, &svc_message->sound);
 
     case svc_spawnbaseline:
         svc_message->type = Q2P_SVC_SPAWNBASELINE;
@@ -332,7 +332,7 @@ static q2proto_error_t q2repro_client_read(q2proto_clientcontext_t *context, uin
 
     case svc_temp_entity:
         svc_message->type = Q2P_SVC_TEMP_ENTITY;
-        return q2proto_common_client_read_temp_entity(io_arg, context->features.server_game_type, &svc_message->temp_entity);
+        return q2proto_common_client_read_temp_entity_float(io_arg, context->features.server_game_type, &svc_message->temp_entity);
 
     case svc_muzzleflash:
         svc_message->type = Q2P_SVC_MUZZLEFLASH;
@@ -1740,7 +1740,7 @@ static q2proto_error_t q2repro_server_write(q2proto_servercontext_t *context, ui
         return q2proto_common_server_write_reconnect(io_arg);
 
     case Q2P_SVC_SOUND:
-        return q2proto_common_server_write_sound(io_arg, context->server_info->game_type, &svc_message->sound);
+        return q2proto_common_server_write_sound(context->protocol, context->server_info, io_arg, &svc_message->sound);
 
     case Q2P_SVC_PRINT:
         return q2proto_common_server_write_print(io_arg, &svc_message->print);

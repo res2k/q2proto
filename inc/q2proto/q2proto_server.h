@@ -179,21 +179,23 @@ Q2PROTO_PUBLIC_API void q2proto_server_make_player_state_delta(q2proto_servercon
 /**
  * Write a message for "multicast" server communications, ie send the same binary message to multiple clients.
  * Doesn't need a context, but supports only a restricted set of messages.
+ * \param protocol Server protocol.
  * \param server_info Server information.
  * \param io_arg "I/O argument", passed to externally provided I/O functions.
  * \param svc_message Message data.
  * \returns Error code
  */
-Q2PROTO_PUBLIC_API q2proto_error_t q2proto_server_multicast_write(const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_server_multicast_write(q2proto_protocol_t protocol, const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
 
 /**
- * Write a position appropriate for the server info's game type.
+ * Write a position appropriate for the server protocol and server info's game type.
+ * \param protocol Server protocol.
  * \param server_info Server information.
  * \param io_arg "I/O argument", passed to externally provided I/O functions, used to write compressed data.
  * \param pos Position to write.
  * \returns Error code
  */
-Q2PROTO_PUBLIC_API q2proto_error_t q2proto_server_write_pos(const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_vec3_t pos);
+Q2PROTO_PUBLIC_API q2proto_error_t q2proto_server_write_pos(q2proto_protocol_t protocol, const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_vec3_t pos);
 
 /**
  * Write a message for sending from the server to a client.

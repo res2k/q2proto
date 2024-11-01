@@ -26,18 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_internal_io.h"
 #include "q2proto_internal_protocol.h"
 
-static bool q2pro_extv2_handle_unknown_temp_ent(uintptr_t io_arg, q2proto_svc_temp_entity_t *temp_entity, q2proto_error_t *result)
-{
-    if (temp_entity->type != TE_Q2PRO_DAMAGE_DEALT)
-        return false;
-    READ_CHECKED(client_read, io_arg, temp_entity->count, i16);
-    *result = Q2P_ERR_SUCCESS;
-    return true;
-}
-
 #define READ_GAME_POSITION      read_short_coord
-#define READ_SOUND_NAME         vanilla_client_read_sound
-#define READ_TEMP_ENTITY_NAME   vanilla_client_read_temp_entity
+#define READ_SOUND_NAME         q2proto_common_client_read_sound_short
+#define READ_TEMP_ENTITY_NAME   q2proto_common_client_read_temp_entity_short
 
 #include "q2proto_read_gamemsg.inc"
 
@@ -45,21 +36,13 @@ static bool q2pro_extv2_handle_unknown_temp_ent(uintptr_t io_arg, q2proto_svc_te
 #undef READ_SOUND_NAME
 #undef READ_GAME_POSITION
 
-#define READ_GAME_POSITION          read_int23_coord
-#define READ_SOUND_NAME             q2pro_extv2_read_sound
-#define READ_TEMP_ENTITY_NAME       q2pro_extv2_read_temp_entity
-#define HANDLE_UNKNOWN_TEMP_ENTITY  q2pro_extv2_handle_unknown_temp_ent
-
-#include "q2proto_read_gamemsg.inc"
-
-#undef HANDLE_UNKNOWN_TEMP_ENTITY
 #undef READ_TEMP_ENTITY_NAME
 #undef READ_SOUND_NAME
 #undef READ_GAME_POSITION
 
 #define READ_GAME_POSITION          read_float_coord
-#define READ_TEMP_ENTITY_NAME       rerelease_read_temp_entity
-#define READ_SOUND_NAME             rerelease_read_sound
+#define READ_SOUND_NAME             q2proto_common_client_read_sound_float
+#define READ_TEMP_ENTITY_NAME       q2proto_common_client_read_temp_entity_float
 
 #include "q2proto_read_gamemsg.inc"
 
@@ -154,23 +137,6 @@ q2proto_error_t q2proto_common_client_read_muzzleflash(uintptr_t io_arg, q2proto
     return Q2P_ERR_SUCCESS;
 }
 
-q2proto_error_t q2proto_common_client_read_temp_entity(uintptr_t io_arg, q2proto_game_type_t game_type, q2proto_svc_temp_entity_t *temp_entity)
-{
-    switch(game_type)
-    {
-    case Q2PROTO_GAME_VANILLA:
-    case Q2PROTO_GAME_Q2PRO_EXTENDED:
-        return vanilla_client_read_temp_entity(io_arg, temp_entity);
-    case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
-        return q2pro_extv2_read_temp_entity(io_arg, temp_entity);
-    case Q2PROTO_GAME_RERELEASE:
-        return rerelease_read_temp_entity(io_arg, temp_entity);
-    }
-
-    // huh
-    return Q2P_ERR_GAMETYPE_UNSUPPORTED;
-}
-
 q2proto_error_t q2proto_common_client_read_layout(uintptr_t io_arg, q2proto_svc_layout_t *layout)
 {
     READ_CHECKED(client_read, io_arg, layout->layout_str, string);
@@ -186,23 +152,6 @@ q2proto_error_t q2proto_common_client_read_inventory(uintptr_t io_arg, q2proto_s
     }
 
     return Q2P_ERR_SUCCESS;
-}
-
-q2proto_error_t q2proto_common_client_read_sound(uintptr_t io_arg, q2proto_game_type_t game_type, q2proto_svc_sound_t *sound)
-{
-    switch(game_type)
-    {
-    case Q2PROTO_GAME_VANILLA:
-    case Q2PROTO_GAME_Q2PRO_EXTENDED:
-        return vanilla_client_read_sound(io_arg, sound);
-    case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
-        return q2pro_extv2_read_sound(io_arg, sound);
-    case Q2PROTO_GAME_RERELEASE:
-        return rerelease_read_sound(io_arg, sound);
-    }
-
-    // huh
-    return Q2P_ERR_GAMETYPE_UNSUPPORTED;
 }
 
 q2proto_error_t q2proto_common_client_read_print(uintptr_t io_arg, q2proto_svc_print_t *print)
@@ -285,7 +234,7 @@ q2proto_error_t q2proto_common_server_write_reconnect(uintptr_t io_arg)
     return Q2P_ERR_SUCCESS;
 }
 
-q2proto_error_t q2proto_common_server_write_sound(uintptr_t io_arg, q2proto_game_type_t game_type, const q2proto_svc_sound_t *sound)
+q2proto_error_t q2proto_common_server_write_sound(q2proto_protocol_t protocol, const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_svc_sound_t *sound)
 {
     WRITE_CHECKED(server_write, io_arg, u8, svc_sound);
     WRITE_CHECKED(server_write, io_arg, u8, sound->flags);
@@ -306,19 +255,9 @@ q2proto_error_t q2proto_common_server_write_sound(uintptr_t io_arg, q2proto_game
 
     if (sound->flags & SND_POS)
     {
-        switch(game_type)
-        {
-        case Q2PROTO_GAME_VANILLA:
-        case Q2PROTO_GAME_Q2PRO_EXTENDED:
-            WRITE_CHECKED(server_write, io_arg, var_coords_short, &sound->pos);
-            break;
-        case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
-            WRITE_CHECKED(server_write, io_arg, var_coords_q2pro_i23, &sound->pos);
-            break;
-        case Q2PROTO_GAME_RERELEASE:
-            WRITE_CHECKED(server_write, io_arg, var_coords_float, &sound->pos);
-            break;
-        }
+        float pos[3];
+        q2proto_var_coords_get_float(&sound->pos, pos);
+        q2proto_server_write_pos(protocol, server_info, io_arg, pos);
     }
 
     return Q2P_ERR_SUCCESS;

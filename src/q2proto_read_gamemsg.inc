@@ -28,12 +28,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define READ_GAME_DIRECTION     q2proto_common_client_read_packed_direction
 #endif
 
+#if !defined(READ_TEMP_ENTITY_DECL)
+#define READ_TEMP_ENTITY_DECL
+#define _READ_TEMP_ENTITY_DECL_DEFAULTED
+#endif
+
 #if !defined(HANDLE_UNKNOWN_TEMP_ENTITY)
 #define HANDLE_UNKNOWN_TEMP_ENTITY(IO_ARG, TEMP_ENTITY, RESULT)     false
 #define _HANDLE_UNKNOWN_TEMP_ENTITY_DEFAULTED
 #endif
 
-static q2proto_error_t READ_TEMP_ENTITY_NAME(uintptr_t io_arg, q2proto_svc_temp_entity_t *temp_entity)
+#define HANDLE_SPECIAL_TEMP_ENT_Q2PRO_EXT   _Q2PROTO_CONCAT(READ_TEMP_ENTITY_NAME, _q2pro_ext)
+
+static q2proto_error_t HANDLE_SPECIAL_TEMP_ENT_Q2PRO_EXT(uintptr_t io_arg, q2proto_svc_temp_entity_t *temp_entity, q2proto_error_t *result)
+{
+    if (temp_entity->type != TE_Q2PRO_DAMAGE_DEALT)
+        return false;
+    READ_CHECKED(client_read, io_arg, temp_entity->count, i16);
+    *result = Q2P_ERR_SUCCESS;
+    return true;
+}
+
+READ_TEMP_ENTITY_DECL q2proto_error_t READ_TEMP_ENTITY_NAME(uintptr_t io_arg, q2proto_game_type_t game_type, q2proto_svc_temp_entity_t *temp_entity)
 {
     READ_CHECKED(client_read, io_arg, temp_entity->type, u8);
 
@@ -167,7 +183,10 @@ static q2proto_error_t READ_TEMP_ENTITY_NAME(uintptr_t io_arg, q2proto_svc_temp_
     default:
         {
             q2proto_error_t handle_res = Q2P_ERR_BAD_DATA;
-            if (HANDLE_UNKNOWN_TEMP_ENTITY(io_arg, temp_entity, &handle_res))
+            bool tent_handled = false;
+            if (game_type == Q2PROTO_GAME_Q2PRO_EXTENDED || game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
+                tent_handled = HANDLE_SPECIAL_TEMP_ENT_Q2PRO_EXT(io_arg, temp_entity, &handle_res);
+            if (tent_handled)
                 return handle_res;
             else
                 return HANDLE_ERROR(client_read, io_arg, Q2P_ERR_BAD_DATA, "%s: invalid tent %d", __func__, temp_entity->type);
@@ -177,7 +196,24 @@ static q2proto_error_t READ_TEMP_ENTITY_NAME(uintptr_t io_arg, q2proto_svc_temp_
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t READ_SOUND_NAME(uintptr_t io_arg, q2proto_svc_sound_t *sound)
+#if defined(_HANDLE_UNKNOWN_TEMP_ENTITY_DEFAULTED)
+#undef _HANDLE_UNKNOWN_TEMP_ENTITY_DEFAULTED
+#undef HANDLE_UNKNOWN_TEMP_ENTITY
+#endif // _HANDLE_UNKNOWN_TEMP_ENTITY_DEFAULTED
+
+#if defined(_READ_TEMP_ENTITY_DECL_DEFAULTED)
+#undef _READ_TEMP_ENTITY_DECL_DEFAULTED
+#undef READ_TEMP_ENTITY_DECL
+#endif // _READ_TEMP_ENTITY_DECL_DEFAULTED
+
+#undef HANDLE_SPECIAL_TEMP_ENT_Q2PRO_EXT
+
+#if !defined(READ_SOUND_DECL)
+#define READ_SOUND_DECL
+#define _READ_SOUND_DECL_DEFAULTED
+#endif
+
+READ_SOUND_DECL q2proto_error_t READ_SOUND_NAME(uintptr_t io_arg, q2proto_svc_sound_t *sound)
 {
     READ_CHECKED(client_read, io_arg, sound->flags, u8);
     if (sound->flags & SND_INDEX16)
@@ -218,7 +254,7 @@ static q2proto_error_t READ_SOUND_NAME(uintptr_t io_arg, q2proto_svc_sound_t *so
     return Q2P_ERR_SUCCESS;
 }
 
-#if defined(_HANDLE_UNKNOWN_TEMP_ENTITY_DEFAULTED)
-#undef _HANDLE_UNKNOWN_TEMP_ENTITY_DEFAULTED
-#undef HANDLE_UNKNOWN_TEMP_ENTITY
-#endif // _HANDLE_UNKNOWN_TEMP_ENTITY_DEFAULTED
+#if defined(_READ_SOUND_DECL_DEFAULTED)
+#undef _READ_TEMP_ENTITY_DECL_DEFAULTED
+#undef READ_SOUND_DECL
+#endif // _READ_SOUND_DECL_DEFAULTED

@@ -55,4 +55,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SOUND_DEFAULT_VOLUME        255
 #define SOUND_DEFAULT_ATTENUATION   64
 
+#define _Q2PROTO_CONCAT2(X, Y)       X ## Y
+#define _Q2PROTO_CONCAT(X, Y)        _Q2PROTO_CONCAT2(X, Y)
+
 #endif // Q2PROTO_INTERNAL_DEFS_H_
