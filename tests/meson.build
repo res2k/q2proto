@@ -92,3 +92,15 @@ foreach flavor : test_flavors
     c_args:                ['-DQ2PROTO_COMPRESSION_DEFLATE=1'],
   )
 endforeach
+
+build_single_source_src = [
+  'build_single_source/main.c',
+  'build_single_source/repro.c',
+  'build_single_source/vanilla.c'
+  ]
+executable(f'build_single_source', dummy_src, build_single_source_src,
+  include_directories:   tests_inc + ['build_single_source', '../src'],
+  gnu_symbol_visibility: 'hidden',
+  win_subsystem:         'console,6.0',
+  c_args:                [],
+)
