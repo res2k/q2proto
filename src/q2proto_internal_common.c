@@ -36,15 +36,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #undef READ_SOUND_NAME
 #undef READ_GAME_POSITION
 
-#undef READ_TEMP_ENTITY_NAME
-#undef READ_SOUND_NAME
-#undef READ_GAME_POSITION
-
 #define READ_GAME_POSITION          read_float_coord
 #define READ_SOUND_NAME             q2proto_common_client_read_sound_float
 #define READ_TEMP_ENTITY_NAME       q2proto_common_client_read_temp_entity_float
 
 #include "q2proto_read_gamemsg.inc"
+
+#undef READ_TEMP_ENTITY_NAME
+#undef READ_SOUND_NAME
+#undef READ_GAME_POSITION
 
 q2proto_error_t q2proto_common_client_read_entity_bits(uintptr_t io_arg, uint64_t *bits, uint16_t *entnum)
 {

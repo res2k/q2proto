@@ -383,6 +383,12 @@ static q2proto_error_t q2pro_client_read_serverdata(q2proto_clientcontext_t *con
 
 #include "q2proto_read_gamemsg.inc"
 
+#undef READ_GAME_POSITION
+#undef READ_SOUND_DECL
+#undef READ_SOUND_NAME
+#undef READ_TEMP_ENTITY_DECL
+#undef READ_TEMP_ENTITY_NAME
+
 q2proto_error_t q2proto_q2pro_client_read_temp_entity(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_temp_entity_t *temp_entity)
 {
     // For q2pro protocol, position encoding depends on game type
