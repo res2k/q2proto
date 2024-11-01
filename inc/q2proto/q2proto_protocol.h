@@ -55,10 +55,10 @@ int q2proto_get_protocol_netver(q2proto_protocol_t protocol);
 /// Map from protocol version number communicated over network to q2proto_protocol_t value
 q2proto_protocol_t q2proto_protocol_from_netver(int version);
 
-/// Protocols, suitable for vanilla games
-extern const q2proto_protocol_t q2proto_vanilla_protocols[];
-/// Number of items in q2proto_vanilla_protocols
-extern const size_t q2proto_num_vanilla_protocols;
+/// Get array with protocols, suitable for vanilla games
+const q2proto_protocol_t *q2proto_get_vanilla_protocols(void);
+/// Get number of items in array returned by q2proto_get_vanilla_protocols
+const size_t q2proto_get_num_vanilla_protocols(void);
 
 #if defined(__cplusplus)
 } // extern "C"
