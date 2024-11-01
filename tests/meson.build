@@ -70,6 +70,8 @@ if cc.get_argument_syntax() == 'gcc'
 
 endif
 
+tests_inc = [q2proto_inc, 'inc']
+
 add_project_arguments(common_args, language: 'c')
 test_flavors = ['vanilla', 'q2pro_ext', 'q2pro_ext_v2', 'q2repro']
 foreach flavor : test_flavors
@@ -77,14 +79,14 @@ foreach flavor : test_flavors
   flavor_inc = f'build_@flavor@'
 
   executable(f'build_@flavor@', q2proto_src, dummy_src, flavor_src,
-    include_directories:   [q2proto_inc, flavor_inc],
+    include_directories:   tests_inc + [flavor_inc],
     gnu_symbol_visibility: 'hidden',
     win_subsystem:         'console,6.0',
     c_args:                [],
   )
 
   executable(f'build_@flavor@_deflate', q2proto_src, dummy_src, dummy_deflate_src, flavor_src,
-    include_directories:   [q2proto_inc, flavor_inc],
+    include_directories:   tests_inc + [flavor_inc],
     gnu_symbol_visibility: 'hidden',
     win_subsystem:         'console,6.0',
     c_args:                ['-DQ2PROTO_COMPRESSION_DEFLATE=1'],
