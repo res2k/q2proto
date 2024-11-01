@@ -22,13 +22,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
-#include <threads.h>
 
 #define VA_STR_SIZE 256
 #define NUM_VA_STR  8
 
-static thread_local int va_index;
-static thread_local char va_str[NUM_VA_STR][VA_STR_SIZE];
+static _Thread_local int va_index;
+static _Thread_local char va_str[NUM_VA_STR][VA_STR_SIZE];
 
 const char *q2proto_va(const char *fmt, ...)
 {
