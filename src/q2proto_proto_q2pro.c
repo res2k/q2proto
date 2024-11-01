@@ -545,7 +545,7 @@ q2proto_error_t q2proto_q2pro_client_read_entity_delta(q2proto_clientcontext_t *
 
     if (delta_bits_check(bits, U_MOREFX32, &entity_state->delta_bits, Q2P_ESD_EFFECTS_MORE))
     {
-        MAYBE_UNUSED uint32_t effects_more;
+        MAYBE_UNUSED uint32_t effects_more = 0;
         if ((bits & U_MOREFX32) == U_MOREFX32)
             READ_CHECKED(client_read, io_arg, effects_more, u32);
         else if (bits & U_MOREFX16)
@@ -2310,18 +2310,18 @@ static q2proto_error_t q2pro_server_read_move(uintptr_t io_arg, q2proto_clc_move
 
 static q2proto_error_t q2pro_server_read_batch_move_delta_angle(bitreader_t *bitreader, const q2proto_clc_move_delta_t *prev_move_delta, q2proto_clc_move_delta_t *move_delta, int angle_idx)
 {
-    int delta_flag;
+    int delta_flag = 0;
     CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, 1, &delta_flag));
     if (delta_flag)
     {
-        int angles_delta;
+        int angles_delta = 0;
         CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, -8, &angles_delta));
         int prev_angle = prev_move_delta ? q2proto_var_angles_get_short_comp(&prev_move_delta->angles, angle_idx) : 0;
         q2proto_var_angles_set_short_comp(&move_delta->angles, angle_idx, prev_angle + angles_delta);
     }
     else
     {
-        int angle_value;
+        int angle_value = 0;
         CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, -16, &angle_value));
         q2proto_var_angles_set_short_comp(&move_delta->angles, angle_idx, angle_value);
     }
@@ -2338,12 +2338,12 @@ static q2proto_error_t q2pro_server_read_batch_move_delta(bitreader_t *bitreader
         memset(&move_delta->angles, 0, sizeof(move_delta->angles));
     move_delta->msec = prev_move_delta ? prev_move_delta->msec : 0; // there's no delta bit for msec
 
-    int has_contents;
+    int has_contents = 0;
     CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, 1, &has_contents));
     if (!has_contents)
         return Q2P_ERR_SUCCESS;
 
-    int bits;
+    int bits = 0;
     CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, 8, &bits));
 
     if (delta_bits_check(bits, CM_ANGLE1, &move_delta->delta_bits, Q2P_CMD_ANGLE0))
@@ -2352,39 +2352,39 @@ static q2proto_error_t q2pro_server_read_batch_move_delta(bitreader_t *bitreader
         CHECKED(server_read, bitreader->io_arg, q2pro_server_read_batch_move_delta_angle(bitreader, prev_move_delta, move_delta, 1));
     if (delta_bits_check(bits, CM_ANGLE3, &move_delta->delta_bits, Q2P_CMD_ANGLE2))
     {
-        int angle_value;
+        int angle_value = 0;
         CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, -16, &angle_value));
         q2proto_var_angles_set_short_comp(&move_delta->angles, 2, angle_value);
     }
 
     if (delta_bits_check(bits, CM_FORWARD, &move_delta->delta_bits, Q2P_CMD_MOVE_FORWARD))
     {
-        int move_value;
+        int move_value = 0;
         CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, -10, &move_value));
         q2proto_var_coords_set_int_unscaled_comp(&move_delta->move, 0, move_value);
     }
     if (delta_bits_check(bits, CM_SIDE, &move_delta->delta_bits, Q2P_CMD_MOVE_SIDE))
     {
-        int move_value;
+        int move_value = 0;
         CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, -10, &move_value));
         q2proto_var_coords_set_int_unscaled_comp(&move_delta->move, 1, move_value);
     }
     if (delta_bits_check(bits, CM_UP, &move_delta->delta_bits, Q2P_CMD_MOVE_UP))
     {
-        int move_value;
+        int move_value = 0;
         CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, -10, &move_value));
         q2proto_var_coords_set_int_unscaled_comp(&move_delta->move, 2, move_value);
     }
 
     if (delta_bits_check(bits, CM_BUTTONS, &move_delta->delta_bits, Q2P_CMD_BUTTONS))
     {
-        int buttons_value;
+        int buttons_value = 0;
         CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, 3, &buttons_value));
         move_delta->buttons = (buttons_value & 3) | ((buttons_value & 4) << 5);
     }
     if (bits & CM_IMPULSE)
     {
-        int msec_value;
+        int msec_value = 0;
         CHECKED(server_read, bitreader->io_arg, bitreader_read(bitreader, 8, &msec_value));
         move_delta->msec = msec_value;
     }
@@ -2413,7 +2413,7 @@ static q2proto_error_t q2pro_server_read_batch_move(uintptr_t io_arg, uint8_t ex
     for (int i = 0; i <= move->num_dups; i++)
     {
         q2proto_clc_batch_move_frame_t *move_frame = &move->batch_frames[i];
-        int num_cmds_bits;
+        int num_cmds_bits = 0;
         CHECKED(server_read, io_arg, bitreader_read(&bitreader, 5, &num_cmds_bits));
         move_frame->num_cmds = num_cmds_bits;
         for (int j = 0; j < move_frame->num_cmds; j++)

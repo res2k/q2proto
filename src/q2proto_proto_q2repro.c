@@ -629,7 +629,7 @@ static q2proto_error_t q2repro_client_read_entity_delta(q2proto_clientcontext_t 
 
     if (delta_bits_check(bits, U_MOREFX32, &entity_state->delta_bits, Q2P_ESD_EFFECTS_MORE))
     {
-        MAYBE_UNUSED uint32_t effects_more;
+        MAYBE_UNUSED uint32_t effects_more = 0;
         if ((bits & U_MOREFX32) == U_MOREFX32)
             READ_CHECKED(client_read, io_arg, effects_more, u32);
         else if (bits & U_MOREFX16)
