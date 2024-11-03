@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define Q2PROTO_PROTOCOL_H_
 
 #include "q2proto_defs.h"
+#include "q2proto_gametype.h"
 
 #include <stddef.h>
 
@@ -60,10 +61,8 @@ Q2PROTO_PUBLIC_API int q2proto_get_protocol_netver(q2proto_protocol_t protocol);
 /// Map from protocol version number communicated over network to q2proto_protocol_t value
 Q2PROTO_PUBLIC_API q2proto_protocol_t q2proto_protocol_from_netver(int version);
 
-/// Get array with protocols, suitable for vanilla games
-Q2PROTO_PUBLIC_API const q2proto_protocol_t *q2proto_get_vanilla_protocols(void);
-/// Get number of items in array returned by q2proto_get_vanilla_protocols
-Q2PROTO_PUBLIC_API const size_t q2proto_get_num_vanilla_protocols(void);
+/// Get array with protocols, suitable for given game types
+Q2PROTO_PUBLIC_API size_t q2proto_get_protocols_for_gametypes(q2proto_protocol_t *protocols, size_t num_protocols, const q2proto_game_type_t *games, size_t num_games);
 
 #if defined(__cplusplus)
 } // extern "C"

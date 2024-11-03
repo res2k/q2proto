@@ -77,14 +77,34 @@ q2proto_protocol_t q2proto_protocol_from_netver(int version)
     return Q2P_PROTOCOL_INVALID;
 }
 
-static const q2proto_protocol_t q2proto_vanilla_protocols_array[] = {Q2P_PROTOCOL_Q2PRO, Q2P_PROTOCOL_R1Q2, Q2P_PROTOCOL_VANILLA};
-
-const q2proto_protocol_t *q2proto_get_vanilla_protocols(void)
+size_t q2proto_get_protocols_for_gametypes(q2proto_protocol_t *protocols, size_t num_protocols, const q2proto_game_type_t *games, size_t num_games)
 {
-    return q2proto_vanilla_protocols_array;
-}
+    unsigned int game_mask = 0;
+    for (size_t i = 0; i < num_games; i++)
+    {
+        game_mask |= BIT(games[i]);
+    }
 
-const size_t q2proto_get_num_vanilla_protocols(void)
-{
-    return sizeof(q2proto_vanilla_protocols_array) / sizeof(q2proto_vanilla_protocols_array[0]);
+    unsigned int proto_mask = 0;
+    if (game_mask & BIT(Q2PROTO_GAME_VANILLA))
+        proto_mask |= BIT(Q2P_PROTOCOL_VANILLA) | BIT(Q2P_PROTOCOL_R1Q2) | BIT(Q2P_PROTOCOL_Q2PRO);
+    if (game_mask & BIT(Q2PROTO_GAME_Q2PRO_EXTENDED))
+        proto_mask |= BIT(Q2P_PROTOCOL_Q2PRO);
+    if (game_mask & BIT(Q2PROTO_GAME_Q2PRO_EXTENDED_V2))
+        proto_mask |= BIT(Q2P_PROTOCOL_Q2PRO);
+    if (game_mask & BIT(Q2PROTO_GAME_RERELEASE))
+        proto_mask |= BIT(Q2P_PROTOCOL_Q2REPRO);
+
+    size_t n = 0;
+    for (int i = Q2P_NUM_PROTOCOLS; i-- > 0;)
+    {
+        if ((proto_mask & BIT(i)) == 0) continue;
+        if (num_protocols > 0)
+        {
+            *protocols++ = (q2proto_protocol_t)i;
+            --num_protocols;
+            n++;
+        }
+    }
+    return n;
 }
