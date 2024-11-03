@@ -50,6 +50,9 @@ typedef enum q2proto_protocol_e {
     Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG,
     /// Q2rePRO (Q2PRO fork w/ rerelease game support) protocol
     Q2P_PROTOCOL_Q2REPRO,
+
+    /// Number of supported protocols
+    Q2P_NUM_PROTOCOLS
 } q2proto_protocol_t;
 
 /// Map from q2proto_protocol_t value to protocol version number communicated over network

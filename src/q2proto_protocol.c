@@ -29,6 +29,7 @@ int q2proto_get_protocol_netver(q2proto_protocol_t protocol)
     switch(protocol)
     {
     case Q2P_PROTOCOL_INVALID:
+    case Q2P_NUM_PROTOCOLS:
         break;
     case Q2P_PROTOCOL_OLD_DEMO:
         return PROTOCOL_OLD_DEMO;

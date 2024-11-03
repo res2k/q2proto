@@ -108,6 +108,7 @@ q2proto_error_t q2proto_complete_connect(q2proto_connect_t *connect)
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG:
+    case Q2P_NUM_PROTOCOLS:
         // none of these should be used for actual connections
         break;
     case Q2P_PROTOCOL_VANILLA:
@@ -185,6 +186,7 @@ q2proto_error_t q2proto_get_connect_arguments(char *args_str, size_t size, size_
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG:
+    case Q2P_NUM_PROTOCOLS:
         // shouldn't be used for "connect"
         SET_ERROR(Q2P_ERR_PROTOCOL_NOT_SUPPORTED);
         break;
