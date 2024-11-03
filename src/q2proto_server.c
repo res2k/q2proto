@@ -254,40 +254,30 @@ void q2proto_server_make_player_state_delta(q2proto_servercontext_t *context, co
     context->make_player_state_delta(context, from, to, delta);
 }
 
-q2proto_error_t q2proto_server_write_pos(q2proto_protocol_t protocol, const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_vec3_t pos)
+q2proto_error_t q2proto_server_write_pos(q2proto_multicast_protocol_t multicast_proto, uintptr_t io_arg, const q2proto_vec3_t pos)
 {
-    switch(protocol)
+    switch(multicast_proto)
     {
-    case Q2P_PROTOCOL_INVALID:
-    case Q2P_NUM_PROTOCOLS:
-        return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
-    case Q2P_PROTOCOL_Q2PRO:
-    case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
-    case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
-    case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG:
-        if (server_info->game_type >= Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
-        {
-            WRITE_CHECKED(server_write, io_arg, q2pro_i23, _q2proto_valenc_coord2int(pos[0]), 0);
-            WRITE_CHECKED(server_write, io_arg, q2pro_i23, _q2proto_valenc_coord2int(pos[1]), 0);
-            WRITE_CHECKED(server_write, io_arg, q2pro_i23, _q2proto_valenc_coord2int(pos[2]), 0);
-            break;
-        }
-        // else: fall through to short coords
-    case Q2P_PROTOCOL_VANILLA:
-    case Q2P_PROTOCOL_R1Q2:
-    case Q2P_PROTOCOL_OLD_DEMO:
+    case Q2P_PROTOCOL_MULTICAST_INVALID:
+        break;
+    case Q2P_PROTOCOL_MULTICAST_SHORT:
         WRITE_CHECKED(server_write, io_arg, u16, _q2proto_valenc_coord2int(pos[0]));
         WRITE_CHECKED(server_write, io_arg, u16, _q2proto_valenc_coord2int(pos[1]));
         WRITE_CHECKED(server_write, io_arg, u16, _q2proto_valenc_coord2int(pos[2]));
-        break;
-    case Q2P_PROTOCOL_Q2REPRO:
+        return Q2P_ERR_SUCCESS;
+    case Q2P_PROTOCOL_MULTICAST_Q2PRO_EXT:
+        WRITE_CHECKED(server_write, io_arg, q2pro_i23, _q2proto_valenc_coord2int(pos[0]), 0);
+        WRITE_CHECKED(server_write, io_arg, q2pro_i23, _q2proto_valenc_coord2int(pos[1]), 0);
+        WRITE_CHECKED(server_write, io_arg, q2pro_i23, _q2proto_valenc_coord2int(pos[2]), 0);
+        return Q2P_ERR_SUCCESS;
+    case Q2P_PROTOCOL_MULTICAST_FLOAT:
         WRITE_CHECKED(server_write, io_arg, float, pos[0]);
         WRITE_CHECKED(server_write, io_arg, float, pos[1]);
         WRITE_CHECKED(server_write, io_arg, float, pos[2]);
-        break;
+        return Q2P_ERR_SUCCESS;
     }
 
-    return Q2P_ERR_SUCCESS;
+    return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
 }
 
 q2proto_error_t q2proto_server_write(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message)

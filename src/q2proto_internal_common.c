@@ -234,7 +234,7 @@ q2proto_error_t q2proto_common_server_write_reconnect(uintptr_t io_arg)
     return Q2P_ERR_SUCCESS;
 }
 
-q2proto_error_t q2proto_common_server_write_sound(q2proto_protocol_t protocol, const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_svc_sound_t *sound)
+q2proto_error_t q2proto_common_server_write_sound(q2proto_multicast_protocol_t multicast_proto, uintptr_t io_arg, const q2proto_svc_sound_t *sound)
 {
     WRITE_CHECKED(server_write, io_arg, u8, svc_sound);
     WRITE_CHECKED(server_write, io_arg, u8, sound->flags);
@@ -257,7 +257,7 @@ q2proto_error_t q2proto_common_server_write_sound(q2proto_protocol_t protocol, c
     {
         float pos[3];
         q2proto_var_coords_get_float(&sound->pos, pos);
-        q2proto_server_write_pos(protocol, server_info, io_arg, pos);
+        q2proto_server_write_pos(multicast_proto, io_arg, pos);
     }
 
     return Q2P_ERR_SUCCESS;

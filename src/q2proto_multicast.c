@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define Q2PROTO_BUILD
 #include "q2proto_internal.h"
 
-q2proto_error_t q2proto_server_multicast_write(q2proto_protocol_t protocol, const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_svc_message_t *svc_message)
+q2proto_error_t q2proto_server_multicast_write(q2proto_multicast_protocol_t multicast_proto, uintptr_t io_arg, const q2proto_svc_message_t *svc_message)
 {
     switch(svc_message->type)
     {
@@ -36,7 +36,7 @@ q2proto_error_t q2proto_server_multicast_write(q2proto_protocol_t protocol, cons
         return q2proto_common_server_write_reconnect(io_arg);
 
     case Q2P_SVC_SOUND:
-        return q2proto_common_server_write_sound(protocol, server_info, io_arg, &svc_message->sound);
+        return q2proto_common_server_write_sound(multicast_proto, io_arg, &svc_message->sound);
 
     case Q2P_SVC_PRINT:
         return q2proto_common_server_write_print(io_arg, &svc_message->print);

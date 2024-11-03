@@ -45,6 +45,7 @@ Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_client_read_temp_entity(q2prot
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_client_read_sound(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_sound_t *sound);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_client_read_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, uint64_t bits, q2proto_entity_state_delta_t *entity_state);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_client_read_playerfog(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_fog_t *fog);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_server_write_sound(q2proto_protocol_t protocol, const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_svc_sound_t *sound);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_server_write_entity_state_delta(q2proto_servercontext_t *context, uintptr_t io_arg, uint16_t entnum, const q2proto_entity_state_delta_t *entity_state_delta);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_server_write_playerfog(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_fog_t *fog);
 

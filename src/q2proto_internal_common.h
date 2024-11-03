@@ -69,7 +69,7 @@ Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_layout(uintptr_t
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_nop(uintptr_t io_arg);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_disconnect(uintptr_t io_arg);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_reconnect(uintptr_t io_arg);
-Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_sound(q2proto_protocol_t protocol, const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_svc_sound_t *sound);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_sound(q2proto_multicast_protocol_t multicast_proto, uintptr_t io_arg, const q2proto_svc_sound_t *sound);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_print(uintptr_t io_arg, const q2proto_svc_print_t *print);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_stufftext(uintptr_t io_arg, const q2proto_svc_stufftext_t *stufftext);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_configstring(uintptr_t io_arg, const q2proto_svc_configstring_t *configstring);

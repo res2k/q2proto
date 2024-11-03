@@ -64,6 +64,29 @@ Q2PROTO_PUBLIC_API q2proto_protocol_t q2proto_protocol_from_netver(int version);
 /// Get array with protocols, suitable for given game types
 Q2PROTO_PUBLIC_API size_t q2proto_get_protocols_for_gametypes(q2proto_protocol_t *protocols, size_t num_protocols, const q2proto_game_type_t *games, size_t num_games);
 
+/**
+ * Multicast protocol.
+ * Multiple protocols actually produce the same multicast-supported messages, thus
+ * it's possible to send the same multicast message to clients using different protocols.
+ *
+ * A "multicast protocol" shouldn't be picked manually, instead use q2proto_get_multicast_protocol()
+ * to get a suitable value for the protocol(s) you offer.
+ */
+typedef enum q2proto_multicast_protocol_e
+{
+    /// Invalid protocol
+    Q2P_PROTOCOL_MULTICAST_INVALID = 0,
+    /// Multicast uses "short" positions
+    Q2P_PROTOCOL_MULTICAST_SHORT,
+    /// Multicast uses Q2PRO "int23" positions
+    Q2P_PROTOCOL_MULTICAST_Q2PRO_EXT,
+    /// Multicast uses "float" positions
+    Q2P_PROTOCOL_MULTICAST_FLOAT,
+} q2proto_multicast_protocol_t;
+
+/// Get suitable multicast protocol for accepted protocol(s) and game type.
+Q2PROTO_PUBLIC_API q2proto_multicast_protocol_t q2proto_get_multicast_protocol(q2proto_protocol_t *protocols, size_t num_protocols, q2proto_game_type_t game_type);
+
 #if defined(__cplusplus)
 } // extern "C"
 #endif

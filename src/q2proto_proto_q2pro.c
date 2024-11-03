@@ -1437,7 +1437,7 @@ static q2proto_error_t q2pro_server_write(q2proto_servercontext_t *context, uint
         return q2proto_common_server_write_reconnect(io_arg);
 
     case Q2P_SVC_SOUND:
-        return q2proto_common_server_write_sound(context->protocol, context->server_info, io_arg, &svc_message->sound);
+        return q2proto_q2pro_server_write_sound(context->protocol, context->server_info, io_arg, &svc_message->sound);
 
     case Q2P_SVC_PRINT:
         return q2proto_common_server_write_print(io_arg, &svc_message->print);
@@ -1512,6 +1512,31 @@ static q2proto_error_t q2pro_server_write_serverdata(uintptr_t io_arg, const q2p
         WRITE_CHECKED(client_read, io_arg, u8, serverdata->q2pro.qw_mode);
         WRITE_CHECKED(client_read, io_arg, u8, serverdata->q2pro.waterjump_hack);
     }
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_q2pro_server_write_sound(q2proto_protocol_t protocol, const q2proto_server_info_t *server_info, uintptr_t io_arg, const q2proto_svc_sound_t *sound)
+{
+    switch(protocol)
+    {
+    case Q2P_PROTOCOL_INVALID:
+    case Q2P_NUM_PROTOCOLS:
+        return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
+    case Q2P_PROTOCOL_Q2PRO:
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG:
+        if (server_info->game_type >= Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
+        {
+            q2proto_common_server_write_sound(Q2P_PROTOCOL_MULTICAST_Q2PRO_EXT, io_arg, sound);
+            break;
+        }
+        // else: fall through to short coords
+    default:
+        q2proto_common_server_write_sound(Q2P_PROTOCOL_MULTICAST_SHORT, io_arg, sound);
+         break;
+    }
+
     return Q2P_ERR_SUCCESS;
 }
 

@@ -77,6 +77,23 @@ q2proto_protocol_t q2proto_protocol_from_netver(int version)
     return Q2P_PROTOCOL_INVALID;
 }
 
+static inline unsigned int get_proto_mask_for_game(q2proto_game_type_t game)
+{
+    switch(game)
+    {
+    case Q2PROTO_GAME_VANILLA:
+        return BIT(Q2P_PROTOCOL_VANILLA) | BIT(Q2P_PROTOCOL_R1Q2) | BIT(Q2P_PROTOCOL_Q2PRO);
+    case Q2PROTO_GAME_Q2PRO_EXTENDED:
+        return BIT(Q2P_PROTOCOL_Q2PRO);
+    case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
+        return BIT(Q2P_PROTOCOL_Q2PRO);
+    case Q2PROTO_GAME_RERELEASE:
+        return BIT(Q2P_PROTOCOL_Q2REPRO);
+    }
+
+    return 0;
+}
+
 size_t q2proto_get_protocols_for_gametypes(q2proto_protocol_t *protocols, size_t num_protocols, const q2proto_game_type_t *games, size_t num_games)
 {
     unsigned int game_mask = 0;
@@ -87,13 +104,13 @@ size_t q2proto_get_protocols_for_gametypes(q2proto_protocol_t *protocols, size_t
 
     unsigned int proto_mask = 0;
     if (game_mask & BIT(Q2PROTO_GAME_VANILLA))
-        proto_mask |= BIT(Q2P_PROTOCOL_VANILLA) | BIT(Q2P_PROTOCOL_R1Q2) | BIT(Q2P_PROTOCOL_Q2PRO);
+        proto_mask |= get_proto_mask_for_game(Q2PROTO_GAME_VANILLA);
     if (game_mask & BIT(Q2PROTO_GAME_Q2PRO_EXTENDED))
-        proto_mask |= BIT(Q2P_PROTOCOL_Q2PRO);
+        proto_mask |= get_proto_mask_for_game(Q2PROTO_GAME_Q2PRO_EXTENDED);
     if (game_mask & BIT(Q2PROTO_GAME_Q2PRO_EXTENDED_V2))
-        proto_mask |= BIT(Q2P_PROTOCOL_Q2PRO);
+        proto_mask |= get_proto_mask_for_game(Q2PROTO_GAME_Q2PRO_EXTENDED_V2);
     if (game_mask & BIT(Q2PROTO_GAME_RERELEASE))
-        proto_mask |= BIT(Q2P_PROTOCOL_Q2REPRO);
+        proto_mask |= get_proto_mask_for_game(Q2PROTO_GAME_RERELEASE);
 
     size_t n = 0;
     for (int i = Q2P_NUM_PROTOCOLS; i-- > 0;)
@@ -107,4 +124,33 @@ size_t q2proto_get_protocols_for_gametypes(q2proto_protocol_t *protocols, size_t
         }
     }
     return n;
+}
+
+q2proto_multicast_protocol_t q2proto_get_multicast_protocol(q2proto_protocol_t *protocols, size_t num_protocols, q2proto_game_type_t game_type)
+{
+    unsigned int proto_bits = 0;
+    for (size_t i = 0; i < num_protocols; i++)
+    {
+        proto_bits |= BIT(protocols[i]);
+    }
+
+    unsigned protocols_supported = get_proto_mask_for_game(game_type);
+    unsigned protocols_unsupported = ~protocols_supported;
+
+    if ((proto_bits & protocols_supported) == 0 || (proto_bits & protocols_unsupported) != 0)
+        goto fail;
+
+    switch(game_type)
+    {
+    case Q2PROTO_GAME_VANILLA:
+    case Q2PROTO_GAME_Q2PRO_EXTENDED:
+        return Q2P_PROTOCOL_MULTICAST_SHORT;
+    case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
+        return Q2P_PROTOCOL_MULTICAST_Q2PRO_EXT;
+    case Q2PROTO_GAME_RERELEASE:
+        return Q2P_PROTOCOL_MULTICAST_FLOAT;
+    }
+
+fail:
+    return Q2P_PROTOCOL_MULTICAST_INVALID;
 }

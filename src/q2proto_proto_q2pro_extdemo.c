@@ -514,7 +514,7 @@ static q2proto_error_t q2pro_extdemo_server_write(q2proto_servercontext_t *conte
         return q2proto_common_server_write_reconnect(io_arg);
 
     case Q2P_SVC_SOUND:
-        return q2proto_common_server_write_sound(context->protocol, context->server_info, io_arg, &svc_message->sound);
+        return q2proto_q2pro_server_write_sound(context->protocol, context->server_info, io_arg, &svc_message->sound);
 
     case Q2P_SVC_PRINT:
         return q2proto_common_server_write_print(io_arg, &svc_message->print);
