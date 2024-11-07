@@ -181,13 +181,7 @@ static q2proto_error_t vanilla_client_next_frame_entity_delta(q2proto_clientcont
     if (bits & U_MOREBITS4)
         return Q2P_ERR_BAD_DATA;
 
-#if Q2PROTO_SHOWNET
-    if (q2protodbg_shownet_check(io_arg, 2) && bits) {
-        char buf[1024];
-        q2proto_debug_common_entity_delta_bits_to_str(buf, sizeof(buf), bits);
-        SHOWNET(io_arg, 2, -q2proto_common_entity_bits_size(bits), "%s", buf);
-    }
-#endif
+    q2proto_debug_shownet_entity_delta_bits(io_arg, "   delta:", frame_entity_delta->newnum, bits);
 
     if (frame_entity_delta->newnum == 0)
     {
@@ -316,13 +310,7 @@ static q2proto_error_t vanilla_client_read_baseline(uintptr_t io_arg, q2proto_sv
     uint64_t bits;
     CHECKED(client_read, io_arg, q2proto_common_client_read_entity_bits(io_arg, &bits, &spawnbaseline->entnum));
 
-#if Q2PROTO_SHOWNET
-    if (q2protodbg_shownet_check(io_arg, 2) && bits) {
-        char buf[1024];
-        q2proto_debug_common_entity_delta_bits_to_str(buf, sizeof(buf), bits);
-        SHOWNET(io_arg, 2, -q2proto_common_entity_bits_size(bits), "   baseline: %i %s", spawnbaseline->entnum, buf);
-    }
-#endif
+    q2proto_debug_shownet_entity_delta_bits(io_arg, "   baseline:", spawnbaseline->entnum, bits);
 
     return vanilla_client_read_entity_delta(io_arg, bits, &spawnbaseline->delta_state);
 }
