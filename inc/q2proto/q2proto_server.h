@@ -67,7 +67,7 @@ typedef struct q2proto_server_info_s
  * \param connect_args "connect" arguments string.
  * \param accepted_protocols Accepted protocols. Checks requested protocol against this list.
  * \param num_accepted_protocols Number of accepted protocols.
- * \param server_info Server info. Used for some default packet length and to restrict accepted protocols.
+ * \param server_info Server info. Currently used to get default packet length.
  * \param parsed_connect Parsed connect info.
  * \returns Error code.
  */

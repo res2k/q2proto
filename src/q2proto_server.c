@@ -75,37 +75,8 @@ static q2proto_error_t next_connect_int(q2proto_string_t *connect_str, long *res
     return Q2P_ERR_SUCCESS;
 }
 
-// Filter list of accepted protocols by restrictions from server info (mainly game type atm)
-static size_t filter_accepted_protocols(q2proto_protocol_t *new_accepted_protocols, const q2proto_protocol_t *accepted_protocols, size_t num_accepted_protocols, const q2proto_server_info_t *server_info)
-{
-    size_t out_num = 0;
-    for (size_t i = 0; i < num_accepted_protocols; i++)
-    {
-        q2proto_protocol_t protocol = accepted_protocols[i];
-        switch (server_info->game_type)
-        {
-        case Q2PROTO_GAME_VANILLA:
-            new_accepted_protocols[out_num++] = protocol;
-            break;
-        case Q2PROTO_GAME_Q2PRO_EXTENDED:
-        case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
-            if (protocol >= Q2P_PROTOCOL_Q2PRO)
-                new_accepted_protocols[out_num++] = protocol;
-            break;
-        case Q2PROTO_GAME_RERELEASE:
-            if (protocol == Q2P_PROTOCOL_Q2REPRO)
-                new_accepted_protocols[out_num++] = protocol;
-            break;
-        }
-    }
-    return out_num;
-}
-
 q2proto_error_t q2proto_parse_connect(const char *connect_args, const q2proto_protocol_t *accepted_protocols, size_t num_accepted_protocols, const q2proto_server_info_t *server_info, q2proto_connect_t *parsed_connect)
 {
-    q2proto_protocol_t *new_accepted_protocols = alloca(sizeof(q2proto_protocol_t) * num_accepted_protocols);
-    size_t num_new_accepted_protocols = filter_accepted_protocols(new_accepted_protocols, accepted_protocols, num_accepted_protocols, server_info);
-
     memset(parsed_connect, 0, sizeof(*parsed_connect));
 
     q2proto_string_t connect_str = q2proto_make_string(connect_args);
@@ -119,9 +90,9 @@ q2proto_error_t q2proto_parse_connect(const char *connect_args, const q2proto_pr
 
     parsed_connect->protocol = q2proto_protocol_from_netver(protocol_value);
     bool proto_found = false;
-    for (size_t i = 0; i < num_new_accepted_protocols; i++)
+    for (size_t i = 0; i < num_accepted_protocols; i++)
     {
-        if (new_accepted_protocols[i] == parsed_connect->protocol)
+        if (accepted_protocols[i] == parsed_connect->protocol)
         {
             proto_found = true;
             break;
