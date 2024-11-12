@@ -96,21 +96,11 @@ static inline unsigned int get_proto_mask_for_game(q2proto_game_type_t game)
 
 size_t q2proto_get_protocols_for_gametypes(q2proto_protocol_t *protocols, size_t num_protocols, const q2proto_game_type_t *games, size_t num_games)
 {
-    unsigned int game_mask = 0;
+    unsigned int proto_mask = 0;
     for (size_t i = 0; i < num_games; i++)
     {
-        game_mask |= BIT(games[i]);
+        proto_mask |= get_proto_mask_for_game(games[i]);
     }
-
-    unsigned int proto_mask = 0;
-    if (game_mask & BIT(Q2PROTO_GAME_VANILLA))
-        proto_mask |= get_proto_mask_for_game(Q2PROTO_GAME_VANILLA);
-    if (game_mask & BIT(Q2PROTO_GAME_Q2PRO_EXTENDED))
-        proto_mask |= get_proto_mask_for_game(Q2PROTO_GAME_Q2PRO_EXTENDED);
-    if (game_mask & BIT(Q2PROTO_GAME_Q2PRO_EXTENDED_V2))
-        proto_mask |= get_proto_mask_for_game(Q2PROTO_GAME_Q2PRO_EXTENDED_V2);
-    if (game_mask & BIT(Q2PROTO_GAME_RERELEASE))
-        proto_mask |= get_proto_mask_for_game(Q2PROTO_GAME_RERELEASE);
 
     size_t n = 0;
     for (int i = Q2P_NUM_PROTOCOLS; i-- > 0;)
