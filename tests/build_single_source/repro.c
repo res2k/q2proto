@@ -46,4 +46,12 @@ void do_repro_things(void)
     q2proto_connect_t connect_info = {0};
     q2proto_servercontext_t server_context;
     q2proto_init_servercontext(&server_context, &server_info, &connect_info);
+
+    q2repro_entity_state_t ent = {0};
+    q2proto_packed_entity_state_t packed_ent;
+    ReproPackEntity(&server_context, &ent, &packed_ent);
+
+    q2repro_player_state_t player = {0};
+    q2proto_packed_player_state_t packed_player;
+    ReproPackPlayer(&server_context, &player, &packed_player);
 }

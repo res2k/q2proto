@@ -46,4 +46,12 @@ void do_vanilla_things(void)
     q2proto_connect_t connect_info = {0};
     q2proto_servercontext_t server_context;
     q2proto_init_servercontext(&server_context, &server_info, &connect_info);
+
+    vanilla_entity_state_t ent = {0};
+    q2proto_packed_entity_state_t packed_ent;
+    VanillaPackEntity(&server_context, &ent, &packed_ent);
+
+    vanilla_player_state_t player = {0};
+    q2proto_packed_player_state_t packed_player;
+    VanillaPackPlayer(&server_context, &player, &packed_player);
 }

@@ -45,5 +45,13 @@ int main(int argc, char** argv)
     q2proto_servercontext_t server_context;
     q2proto_init_servercontext(&server_context, &server_info, &connect_info);
 
+    q2pro_ext_entity_state_t ent = {0};
+    q2proto_packed_entity_state_t packed_ent;
+    PackEntity(&server_context, &ent, &packed_ent);
+
+    q2pro_ext_player_state_t player = {0};
+    q2proto_packed_player_state_t packed_player;
+    PackPlayer(&server_context, &player, &packed_player);
+
     return 0;
 }
