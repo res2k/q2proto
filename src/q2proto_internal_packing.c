@@ -362,18 +362,12 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
 #endif
 }
 
-void _q2proto_pack_entity_state_dispatch(q2proto_servercontext_t *context, const _q2proto_packing_entity_dispatch_t *dispatch, const void *entity_state_p, q2proto_packed_entity_state_t *entity_packed)
+_q2proto_packing_flavor_t _q2proto_get_packing_flavor(q2proto_servercontext_t *context, q2proto_game_type_t* game_type)
 {
+    if (game_type)
+        *game_type = context->server_info->game_type;
     if (context->protocol == Q2P_PROTOCOL_Q2REPRO)
-        dispatch->q2repro(entity_state_p, entity_packed);
+        return _Q2P_PACKING_REPRO;
     else
-        dispatch->vanilla(entity_state_p, context->server_info->game_type, entity_packed);
-}
-
-void _q2proto_pack_player_state_dispatch(q2proto_servercontext_t *context, const _q2proto_packing_player_dispatch_t *dispatch, const void *player_state_p, q2proto_packed_player_state_t *player_packed)
-{
-    if (context->protocol == Q2P_PROTOCOL_Q2REPRO)
-        dispatch->q2repro(player_state_p, player_packed);
-    else
-        dispatch->vanilla(player_state_p, player_packed);
+        return _Q2P_PACKING_VANILLA;
 }

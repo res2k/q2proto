@@ -115,18 +115,23 @@ static void _Q2P_PACK_ENTITY_Q2REPRO_FUNCTION_NAME(const void * restrict entity_
 
 #undef _Q2PROTO_PACKING_CAST_ENTITYSTATE
 
-#define _Q2P_PACK_ENTITY_DISPATCH_NAME  _Q2PROTO_PACKING_NAME(Q2P_PACK_ENTITY_FUNCTION_NAME, _dispatch)
-
-static const _q2proto_packing_entity_dispatch_t _Q2P_PACK_ENTITY_DISPATCH_NAME = {.vanilla = &_Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME, .q2repro = &_Q2P_PACK_ENTITY_Q2REPRO_FUNCTION_NAME};
-
 void Q2P_PACK_ENTITY_FUNCTION_NAME(q2proto_servercontext_t *context, const Q2P_PACK_ENTITY_TYPE entity_state, q2proto_packed_entity_state_t *entity_packed)
 {
-    _q2proto_pack_entity_state_dispatch(context, &_Q2P_PACK_ENTITY_DISPATCH_NAME, &entity_state, entity_packed);
+    q2proto_game_type_t game_type;
+    switch(_q2proto_get_packing_flavor(context, &game_type))
+    {
+    case _Q2P_PACKING_VANILLA:
+        // Fall through to default case
+        break;
+    case _Q2P_PACKING_REPRO:
+        _Q2P_PACK_ENTITY_Q2REPRO_FUNCTION_NAME(entity_state, entity_packed);
+        return;
+    }
+    _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME(entity_state, game_type, entity_packed);
 }
 
 #undef _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME
 #undef _Q2P_PACK_ENTITY_Q2REPRO_FUNCTION_NAME
-#undef _Q2P_PACK_ENTITY_DISPATCH_NAME
 
 #if defined(_Q2P_PACK_GET_ENTITY_VALUE_DEFAULTED)
 #undef _Q2P_PACK_GET_ENTITY_VALUE_DEFAULTED

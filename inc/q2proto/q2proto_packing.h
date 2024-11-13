@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define Q2PROTO_STRUCT_PACKING_H_
 
 #include "q2proto_defs.h"
+#include "q2proto_gametype.h"
 #include "q2proto_limits.h" // for Q2PROTO_STATS
 
 /// Packed representation of entity state. Use with only server context used for packing!
@@ -133,29 +134,17 @@ typedef struct q2proto_packed_player_state_s
  * @{ */
 typedef struct q2proto_servercontext_s q2proto_servercontext_t;
 
-// Structure with actual entity packing functions, which one depends on server context
-typedef struct _q2proto_packing_entity_dispatch_s
+// Entity, player packing flavor to use, depending on server context
+typedef enum _q2proto_packing_flavor_e
 {
-    // Pack entity state for vanilla (and derived)
-    void (*vanilla)(const void * restrict, q2proto_game_type_t game_type, q2proto_packed_entity_state_t * restrict);
-    // Pack entity state for q2repro protocol
-    void (*q2repro)(const void * restrict, q2proto_packed_entity_state_t * restrict);
-} _q2proto_packing_entity_dispatch_t;
+    // Pack for vanilla (and derived)
+    _Q2P_PACKING_VANILLA = 0,
+    // Pack for q2repro protocol
+    _Q2P_PACKING_REPRO = 1,
+} _q2proto_packing_flavor_t;
 
 // Call actual entity packing function
-Q2PROTO_PUBLIC_API void _q2proto_pack_entity_state_dispatch(q2proto_servercontext_t *context, const _q2proto_packing_entity_dispatch_t *dispatch, const void *entity_state_p, q2proto_packed_entity_state_t *entity_packed);
-
-// Structure with actual player packing functions, which one depends on server context
-typedef struct _q2proto_packing_player_dispatch_s
-{
-    // Pack player state for vanilla (and derived)
-    void (*vanilla)(const void * restrict, q2proto_packed_player_state_t * restrict);
-    // Pack player state for q2repro protocol
-    void (*q2repro)(const void * restrict, q2proto_packed_player_state_t * restrict);
-} _q2proto_packing_player_dispatch_t;
-
-// Call actual player packing function
-Q2PROTO_PUBLIC_API void _q2proto_pack_player_state_dispatch(q2proto_servercontext_t *context, const _q2proto_packing_player_dispatch_t *dispatch, const void *player_state_p, q2proto_packed_player_state_t *player_packed);
+Q2PROTO_PUBLIC_API _q2proto_packing_flavor_t _q2proto_get_packing_flavor(q2proto_servercontext_t *context, q2proto_game_type_t* game_type);
 /** @} */
 
 #endif // Q2PROTO_STRUCT_PACKING_H_

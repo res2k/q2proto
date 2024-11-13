@@ -229,18 +229,23 @@ static void _Q2P_PACK_PLAYER_Q2REPRO_FUNCTION_NAME(const void * restrict player_
 
 #undef _Q2PROTO_PACKING_CAST_PLAYERSTATE
 
-#define _Q2P_PACK_PLAYER_DISPATCH_NAME  _Q2PROTO_PACKING_NAME(Q2P_PACK_PLAYER_FUNCTION_NAME, _dispatch)
-
-static const _q2proto_packing_player_dispatch_t _Q2P_PACK_PLAYER_DISPATCH_NAME = {.vanilla = &_Q2P_PACK_PLAYER_VANILLA_FUNCTION_NAME, .q2repro = &_Q2P_PACK_PLAYER_Q2REPRO_FUNCTION_NAME};
-
 void Q2P_PACK_PLAYER_FUNCTION_NAME(q2proto_servercontext_t *context, const Q2P_PACK_PLAYER_TYPE player_state, q2proto_packed_player_state_t *player_packed)
 {
-    _q2proto_pack_player_state_dispatch(context, &_Q2P_PACK_PLAYER_DISPATCH_NAME, &player_state, player_packed);
+    switch(_q2proto_get_packing_flavor(context, NULL))
+    {
+    case _Q2P_PACKING_VANILLA:
+        // Fall through to default case
+        break;
+    case _Q2P_PACKING_REPRO:
+        _Q2P_PACK_PLAYER_Q2REPRO_FUNCTION_NAME(player_state, player_packed);
+        return;
+    }
+    _Q2P_PACK_PLAYER_VANILLA_FUNCTION_NAME(player_state, player_packed);
 }
+
 
 #undef _Q2P_PACK_PLAYER_VANILLA_FUNCTION_NAME
 #undef _Q2P_PACK_PLAYER_Q2REPRO_FUNCTION_NAME
-#undef _Q2P_PACK_PLAYER_DISPATCH_NAME
 
 #if defined(_Q2P_PACK_GET_PLAYER_VALUE_DEFAULTED)
 #undef _Q2P_PACK_GET_PLAYER_VALUE_DEFAULTED
