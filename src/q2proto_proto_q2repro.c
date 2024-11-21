@@ -1715,6 +1715,7 @@ static q2proto_error_t q2repro_server_write_spawnbaseline(q2proto_servercontext_
 static q2proto_error_t q2repro_server_write_download(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_download_t *download);
 static q2proto_error_t q2repro_server_write_frame(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_frame_t *frame);
 static q2proto_error_t q2repro_server_write_frame_entity_delta(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_frame_entity_delta_t *frame_entity_delta);
+static q2proto_error_t q2repro_server_write_fog(uintptr_t io_arg, const q2proto_svc_fog_t *fog);
 
 static q2proto_error_t q2repro_server_write(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message)
 {
@@ -1760,7 +1761,12 @@ static q2proto_error_t q2repro_server_write(q2proto_servercontext_t *context, ui
         return q2repro_server_write_frame_entity_delta(context, io_arg, &svc_message->frame_entity_delta);
 
     case Q2P_SVC_LAYOUT:
+        // Although typically written by the game, this is useful when writing demos
         return q2proto_common_server_write_layout(io_arg, &svc_message->layout);
+
+    case Q2P_SVC_FOG:
+        // Although typically written by the game, this is useful when writing demos
+        return q2repro_server_write_fog(io_arg, &svc_message->fog);
 
     default:
         break;
@@ -1772,7 +1778,6 @@ static q2proto_error_t q2repro_server_write(q2proto_servercontext_t *context, ui
      *  muzzleflash2
      *  temp_entity
      *  inventory
-     * 'layout' is needed for demo writing, so handle it here as well.
      */
 
     return Q2P_ERR_NOT_IMPLEMENTED;
@@ -2267,6 +2272,93 @@ static q2proto_error_t q2repro_server_write_frame_entity_delta(q2proto_servercon
 
     return q2proto_q2repro_server_write_entity_state_delta(context, io_arg, frame_entity_delta->newnum, &frame_entity_delta->entity_delta);
 }
+
+static q2proto_error_t q2repro_server_write_fog(uintptr_t io_arg, const q2proto_svc_fog_t *fog)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_rr_fog);
+
+    unsigned int bits = 0;
+    if (fog->flags & Q2P_FOG_DENSITY_SKYFACTOR)
+        bits |= FOG_RR_BIT_DENSITY;
+    if (fog->global.color.delta_bits & BIT(0))
+        bits |= FOG_RR_BIT_R;
+    if (fog->global.color.delta_bits & BIT(1))
+        bits |= FOG_RR_BIT_G;
+    if (fog->global.color.delta_bits & BIT(2))
+        bits |= FOG_RR_BIT_B;
+    if (fog->flags & Q2P_FOG_TIME)
+        bits |= FOG_RR_BIT_TIME;
+
+    if (fog->flags & Q2P_HEIGHTFOG_FALLOFF)
+        bits |= FOG_RR_BIT_HEIGHTFOG_FALLOFF;
+    if (fog->flags & Q2P_HEIGHTFOG_DENSITY)
+        bits |= FOG_RR_BIT_HEIGHTFOG_DENSITY;
+
+    if (fog->height.start_color.delta_bits & BIT(0))
+        bits |= FOG_RR_BIT_HEIGHTFOG_START_R;
+    if (fog->height.start_color.delta_bits & BIT(1))
+        bits |= FOG_RR_BIT_HEIGHTFOG_START_G;
+    if (fog->height.start_color.delta_bits & BIT(2))
+        bits |= FOG_RR_BIT_HEIGHTFOG_START_B;
+    if (fog->flags & Q2P_HEIGHTFOG_START_DIST)
+        bits |= FOG_RR_BIT_HEIGHTFOG_START_DIST;
+
+    if (fog->height.end_color.delta_bits & BIT(0))
+        bits |= FOG_RR_BIT_HEIGHTFOG_END_R;
+    if (fog->height.end_color.delta_bits & BIT(1))
+        bits |= FOG_RR_BIT_HEIGHTFOG_END_G;
+    if (fog->height.end_color.delta_bits & BIT(2))
+        bits |= FOG_RR_BIT_HEIGHTFOG_END_B;
+    if (fog->flags & Q2P_HEIGHTFOG_END_DIST)
+        bits |= FOG_RR_BIT_HEIGHTFOG_END_DIST;
+
+    if ((bits >> 8) != 0)
+        bits |= FOG_RR_BIT_MORE_BITS;
+
+    WRITE_CHECKED(server_write, io_arg, u8, bits & 0xff);
+    if (bits & FOG_RR_BIT_MORE_BITS)
+        WRITE_CHECKED(server_write, io_arg, u8, bits >> 8);
+
+    if (bits & FOG_RR_BIT_DENSITY)
+    {
+        WRITE_CHECKED(server_write, io_arg, float, q2proto_var_fraction_get_float(&fog->global.density));
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_fraction_get_byte(&fog->global.skyfactor));
+    }
+    if (bits & FOG_RR_BIT_R)
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->global.color.values, 0));
+    if (bits & FOG_RR_BIT_G)
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->global.color.values, 1));
+    if (bits & FOG_RR_BIT_B)
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->global.color.values, 2));
+    if (bits & FOG_RR_BIT_TIME)
+        WRITE_CHECKED(server_write, io_arg, u16, fog->global.time);
+
+   if (bits & FOG_RR_BIT_HEIGHTFOG_FALLOFF)
+        WRITE_CHECKED(server_write, io_arg, float, q2proto_var_fraction_get_float(&fog->height.falloff));
+   if (bits & FOG_RR_BIT_HEIGHTFOG_DENSITY)
+        WRITE_CHECKED(server_write, io_arg, float, q2proto_var_fraction_get_float(&fog->height.density));
+
+    if (bits & FOG_RR_BIT_HEIGHTFOG_START_R)
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->height.start_color.values, 0));
+    if (bits & FOG_RR_BIT_HEIGHTFOG_START_G)
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->height.start_color.values, 1));
+    if (bits & FOG_RR_BIT_HEIGHTFOG_START_B)
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->height.start_color.values, 2));
+   if (bits & FOG_RR_BIT_HEIGHTFOG_START_DIST)
+        WRITE_CHECKED(server_write, io_arg, i32, q2proto_var_coord_get_int_unscaled(&fog->height.start_dist));
+
+    if (bits & FOG_RR_BIT_HEIGHTFOG_END_R)
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->height.end_color.values, 0));
+    if (bits & FOG_RR_BIT_HEIGHTFOG_END_G)
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->height.end_color.values, 1));
+    if (bits & FOG_RR_BIT_HEIGHTFOG_END_B)
+        WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&fog->height.end_color.values, 2));
+   if (bits & FOG_RR_BIT_HEIGHTFOG_END_DIST)
+        WRITE_CHECKED(server_write, io_arg, i32, q2proto_var_coord_get_int_unscaled(&fog->height.end_dist));
+
+    return Q2P_ERR_SUCCESS;
+}
+
 
 // Max size of a Q2rePRO entity baseline
 #define WRITE_GAMESTATE_BASELINE_SIZE (  \
