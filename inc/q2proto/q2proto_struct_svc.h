@@ -438,35 +438,22 @@ enum q2proto_playerstate_delta_flags
      * 'gunframe' is set.
      * Note: due to different transmit granularities in different protocols,
      * if setting just one of the 'gun'  _bits_ during writing,
+     * or if any of the gunframe or gunangles delta bits are set,
      * all of gunframe, gunoffset, gunangles have to be set!
      */
     Q2P_PSD_GUNFRAME = 0x400,
-    /**
-     * 'gunoffset' is set.
-     * Note: due to different transmit granularities in different protocols,
-     * if setting just one of the 'gun'  _bits_ during writing,
-     * all of gunframe, gunoffset, gunangles have to be set!
-     */
-    Q2P_PSD_GUNOFFSET = 0x800,
-    /**
-     * 'gunangles' is set.
-     * Note: due to different transmit granularities in different protocols,
-     * if setting just one of the 'gun'  _bits_ during writing,
-     * all of gunframe, gunoffset, gunangles have to be set!
-     */
-    Q2P_PSD_GUNANGLES = 0x1000,
     /// 'fov' is set
-    Q2P_PSD_FOV = 0x2000,
+    Q2P_PSD_FOV = 0x800,
     /// 'rdflags' is set
-    Q2P_PSD_RDFLAGS = 0x4000,
+    Q2P_PSD_RDFLAGS = 0x1000,
 #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
     /// 'gunrate' is set
-    Q2P_PSD_GUNRATE = 0x8000,
+    Q2P_PSD_GUNRATE = 0x2000,
 #elif defined(Q2PROTO_BUILD)
     Q2P_PSD_GUNRATE = 0,
 #endif
     /// 'clientnum' is set. Requires q2proto_servercontext_t::features.playerstate_clientnum!
-    Q2P_PSD_CLIENTNUM = 0x10000,
+    Q2P_PSD_CLIENTNUM = 0x4000,
 };
 
 /// Player state delta, as contained in frame messages
@@ -506,9 +493,9 @@ typedef struct q2proto_svc_playerstate_s {
     /// gunframe
     uint16_t gunframe;
     /// gunoffset
-    q2proto_var_small_offsets_t gunoffset;
+    q2proto_small_offsets_delta_t gunoffset;
     /// gunangles
-    q2proto_var_small_angles_t gunangles;
+    q2proto_small_angles_delta_t gunangles;
     /// screen blend
     q2proto_color_delta_t blend;
 #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2

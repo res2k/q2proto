@@ -162,6 +162,8 @@ _GENERATE_VARIANT_FUNCTIONS(var_angles, char, int8_t, 3)
 typedef struct q2proto_var_small_offsets_s {
     // Stores types of components
     uint8_t Q2PROTO_PRIVATE_API_MEMBER(type_bits);
+    // Used by small_offsets_delta functions to store set components
+    uint8_t Q2PROTO_PRIVATE_API_MEMBER(delta_bits_space);
     // Component values
     union
     {
@@ -192,6 +194,7 @@ _GENERATE_VARIANT_FUNCTIONS(var_small_offsets, q2repro_gunoffset, int16_t, 3)
 typedef struct q2proto_var_small_angles_s {
     // Stores types of components
     uint8_t Q2PROTO_PRIVATE_API_MEMBER(type_bits);
+    // Used by small_angles_delta functions to store set components
     // Component values
     union
     {
@@ -360,6 +363,100 @@ typedef struct q2proto_angles_delta_s {
             (TO)[1] = q2proto_var_angles_get_##ANGLE_TYPE##_comp(&(ANGLES_DELTA).values, 1); \
         if ((ANGLES_DELTA).delta_bits & BIT(2))                                              \
             (TO)[2] = q2proto_var_angles_get_##ANGLE_TYPE##_comp(&(ANGLES_DELTA).values, 2); \
+    } while (0)
+/** @} */
+
+/// Delta small offsets type
+typedef struct q2proto_small_offsets_delta_s {
+    union {
+        /// Actual coordinate values
+        q2proto_var_small_offsets_t values;
+        struct {
+            uint8_t Q2PROTO_PRIVATE_API_MEMBER(rsvd0); // type_bits
+            uint8_t delta_bits;
+            float Q2PROTO_PRIVATE_API_MEMBER(rsvd1)[3]; // comps
+        };
+    };
+} q2proto_small_offsets_delta_t;
+
+/**\def Q2PROTO_SET_SMALL_OFFSETS_DELTA
+ * Fills \c SMALL_OFFSETS_DELTA with values from \c TO and determines delta bits by comparing
+ * with \c FROM.
+ */
+#define Q2PROTO_SET_SMALL_OFFSETS_DELTA(SMALL_OFFSETS_DELTA, TO, FROM, COORD_TYPE)           \
+    do                                                                                       \
+    {                                                                                        \
+        (SMALL_OFFSETS_DELTA).delta_bits = 0;                                                \
+        if ((TO)[0] != (FROM)[0])                                                            \
+            (SMALL_OFFSETS_DELTA).delta_bits |= BIT(0);                                      \
+        if ((TO)[1] != (FROM)[1])                                                            \
+            (SMALL_OFFSETS_DELTA).delta_bits |= BIT(1);                                      \
+        if ((TO)[2] != (FROM)[2])                                                            \
+            (SMALL_OFFSETS_DELTA).delta_bits |= BIT(2);                                      \
+        if ((SMALL_OFFSETS_DELTA).delta_bits != 0)                                           \
+            q2proto_var_small_offsets_set_##COORD_TYPE(&(SMALL_OFFSETS_DELTA).values, (TO)); \
+    } while (0)
+
+/**\def Q2PROTO_APPLY_SMALL_OFFSETS_DELTA
+ * Change all components of \c TO with values from \c SMALL_OFFSETS_DELTA according to set delta bits.
+ */
+#define Q2PROTO_APPLY_SMALL_OFFSETS_DELTA(TO, SMALL_OFFSETS_DELTA, COORD_TYPE)                             \
+    do                                                                                                     \
+    {                                                                                                      \
+        if ((SMALL_OFFSETS_DELTA).delta_bits & BIT(0))                                                     \
+            (TO)[0] = q2proto_var_small_offsets_get_##COORD_TYPE##_comp(&(SMALL_OFFSETS_DELTA).values, 0); \
+        if ((SMALL_OFFSETS_DELTA).delta_bits & BIT(1))                                                     \
+            (TO)[1] = q2proto_var_small_offsets_get_##COORD_TYPE##_comp(&(SMALL_OFFSETS_DELTA).values, 1); \
+        if ((SMALL_OFFSETS_DELTA).delta_bits & BIT(2))                                                     \
+            (TO)[2] = q2proto_var_small_offsets_get_##COORD_TYPE##_comp(&(SMALL_OFFSETS_DELTA).values, 2); \
+    } while (0)
+
+/// Delta small_angles type
+typedef struct q2proto_small_angles_delta_s
+{
+    union
+    {
+        /// Actual angle values
+        q2proto_var_small_angles_t values;
+        struct
+        {
+            uint8_t Q2PROTO_PRIVATE_API_MEMBER(rsvd0); // type_bits
+            uint8_t delta_bits;
+            float Q2PROTO_PRIVATE_API_MEMBER(rsvd1)[3]; // comps
+        };
+    };
+} q2proto_small_angles_delta_t;
+
+/**\def Q2PROTO_SET_SMALL_ANGLES_DELTA
+ * Fills \c SMALL_ANGLES_DELTA with values from \c TO and determines delta bits by comparing
+ * with \c FROM.
+ */
+#define Q2PROTO_SET_SMALL_ANGLES_DELTA(SMALL_ANGLES_DELTA, TO, FROM, ANGLE_TYPE)           \
+    do                                                                                     \
+    {                                                                                      \
+        (SMALL_ANGLES_DELTA).delta_bits = 0;                                               \
+        if ((TO)[0] != (FROM)[0])                                                          \
+            (SMALL_ANGLES_DELTA).delta_bits |= BIT(0);                                     \
+        if ((TO)[1] != (FROM)[1])                                                          \
+            (SMALL_ANGLES_DELTA).delta_bits |= BIT(1);                                     \
+        if ((TO)[2] != (FROM)[2])                                                          \
+            (SMALL_ANGLES_DELTA).delta_bits |= BIT(2);                                     \
+        if ((SMALL_ANGLES_DELTA).delta_bits != 0)                                          \
+            q2proto_var_small_angles_set_##ANGLE_TYPE(&(SMALL_ANGLES_DELTA).values, (TO)); \
+    } while (0)
+
+/**\def Q2PROTO_APPLY_SMALL_ANGLES_DELTA
+ * Change all components of \c TO with values from \c SMALL_ANGLES_DELTA according to set delta bits.
+ */
+#define Q2PROTO_APPLY_SMALL_ANGLES_DELTA(TO, SMALL_ANGLES_DELTA, ANGLE_TYPE)                             \
+    do                                                                                                   \
+    {                                                                                                    \
+        if ((SMALL_ANGLES_DELTA).delta_bits & BIT(0))                                                    \
+            (TO)[0] = q2proto_var_small_angles_get_##ANGLE_TYPE##_comp(&(SMALL_ANGLES_DELTA).values, 0); \
+        if ((SMALL_ANGLES_DELTA).delta_bits & BIT(1))                                                    \
+            (TO)[1] = q2proto_var_small_angles_get_##ANGLE_TYPE##_comp(&(SMALL_ANGLES_DELTA).values, 1); \
+        if ((SMALL_ANGLES_DELTA).delta_bits & BIT(2))                                                    \
+            (TO)[2] = q2proto_var_small_angles_get_##ANGLE_TYPE##_comp(&(SMALL_ANGLES_DELTA).values, 2); \
     } while (0)
 /** @} */
 

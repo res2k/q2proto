@@ -493,10 +493,16 @@ static q2proto_error_t r1q2_client_read_playerstate(uintptr_t io_arg, uint8_t ex
 
     if (delta_bits_check(flags, PS_WEAPONFRAME, &playerstate->delta_bits, Q2P_PSD_GUNFRAME))
         READ_CHECKED(client_read, io_arg, playerstate->gunframe, u8);
-    if (delta_bits_check(extraflags, EPS_GUNOFFSET, &playerstate->delta_bits, Q2P_PSD_GUNOFFSET))
-        CHECKED(client_read, io_arg, read_var_small_offsets(io_arg, &playerstate->gunoffset));
-    if (delta_bits_check(extraflags, EPS_GUNANGLES, &playerstate->delta_bits, Q2P_PSD_GUNANGLES))
-        CHECKED(client_read, io_arg, read_var_small_angles(io_arg, &playerstate->gunangles));
+    if (extraflags & EPS_GUNOFFSET)
+    {
+        CHECKED(client_read, io_arg, read_var_small_offsets(io_arg, &playerstate->gunoffset.values));
+        playerstate->gunoffset.delta_bits = BIT(0) | BIT(1) | BIT(2);
+    }
+    if (extraflags & EPS_GUNANGLES)
+    {
+        CHECKED(client_read, io_arg, read_var_small_angles(io_arg, &playerstate->gunangles.values));
+        playerstate->gunangles.delta_bits = BIT(0) | BIT(1) | BIT(2);
+    }
 
     if (flags & PS_BLEND)
     {
@@ -1168,9 +1174,9 @@ static q2proto_error_t r1q2_server_write_playerstate(uintptr_t io_arg, const q2p
         if (playerstate->gunframe > UINT8_MAX)
             return Q2P_ERR_BAD_DATA;
     }
-    if(playerstate->delta_bits & Q2P_PSD_GUNOFFSET)
+    if(playerstate->gunoffset.delta_bits != 0)
         *extraflags |= EPS_GUNOFFSET;
-    if(playerstate->delta_bits & Q2P_PSD_GUNANGLES)
+    if(playerstate->gunangles.delta_bits != 0)
         *extraflags |= EPS_GUNANGLES;
     if(playerstate->statbits != 0)
         *extraflags |= EPS_STATS;
@@ -1261,15 +1267,15 @@ static q2proto_error_t r1q2_server_write_playerstate(uintptr_t io_arg, const q2p
         WRITE_CHECKED(server_write, io_arg, u8, playerstate->gunframe);
     if (*extraflags & EPS_GUNOFFSET)
     {
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offsets_get_char_comp(&playerstate->gunoffset, 0));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offsets_get_char_comp(&playerstate->gunoffset, 1));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offsets_get_char_comp(&playerstate->gunoffset, 2));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offsets_get_char_comp(&playerstate->gunoffset.values, 0));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offsets_get_char_comp(&playerstate->gunoffset.values, 1));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offsets_get_char_comp(&playerstate->gunoffset.values, 2));
     }
     if (*extraflags & EPS_GUNANGLES)
     {
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->gunangles, 0));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->gunangles, 1));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->gunangles, 2));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->gunangles.values, 0));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->gunangles.values, 1));
+        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->gunangles.values, 2));
     }
 
     if (flags & PS_BLEND)

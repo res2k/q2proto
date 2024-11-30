@@ -252,22 +252,26 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
         delta->delta_bits |= Q2P_PSD_RDFLAGS;
         delta->rdflags = to->rdflags;
     }
-
     if (to->gunframe != from->gunframe)
         delta->delta_bits |= Q2P_PSD_GUNFRAME;
-    if (memcmp(to->gunoffset, from->gunoffset, sizeof(to->gunoffset)))
-        delta->delta_bits |= Q2P_PSD_GUNOFFSET;
-    if (memcmp(to->gunangles, from->gunangles, sizeof(to->gunangles)))
-        delta->delta_bits |= Q2P_PSD_GUNANGLES;
-    if (delta->delta_bits & (Q2P_PSD_GUNFRAME | Q2P_PSD_GUNOFFSET | Q2P_PSD_GUNANGLES))
+    delta->gunoffset.delta_bits = 0;
+    delta->gunangles.delta_bits = 0;
+    for (int c = 0; c < 3; c++)
+    {
+        if (to->gunoffset[c] != from->gunoffset[c])
+            delta->gunoffset.delta_bits |= BIT(c);
+        if (to->gunangles[c] != from->gunangles[c])
+            delta->gunangles.delta_bits |= BIT(c);
+    }
+    if ((delta->delta_bits & Q2P_PSD_GUNFRAME) || (delta->gunoffset.delta_bits != 0) || (delta->gunangles.delta_bits != 0))
     {
         delta->gunframe = to->gunframe;
-        q2proto_var_small_offsets_set_char_comp(&delta->gunoffset, 0, to->gunoffset[0]);
-        q2proto_var_small_offsets_set_char_comp(&delta->gunoffset, 1, to->gunoffset[1]);
-        q2proto_var_small_offsets_set_char_comp(&delta->gunoffset, 2, to->gunoffset[2]);
-        q2proto_var_small_angles_set_char_comp(&delta->gunangles, 0, to->gunangles[0]);
-        q2proto_var_small_angles_set_char_comp(&delta->gunangles, 1, to->gunangles[1]);
-        q2proto_var_small_angles_set_char_comp(&delta->gunangles, 2, to->gunangles[2]);
+        q2proto_var_small_offsets_set_char_comp(&delta->gunoffset.values, 0, to->gunoffset[0]);
+        q2proto_var_small_offsets_set_char_comp(&delta->gunoffset.values, 1, to->gunoffset[1]);
+        q2proto_var_small_offsets_set_char_comp(&delta->gunoffset.values, 2, to->gunoffset[2]);
+        q2proto_var_small_angles_set_char_comp(&delta->gunangles.values, 0, to->gunangles[0]);
+        q2proto_var_small_angles_set_char_comp(&delta->gunangles.values, 1, to->gunangles[1]);
+        q2proto_var_small_angles_set_char_comp(&delta->gunangles.values, 2, to->gunangles[2]);
     }
 
     if (to->gunindex != from->gunindex)
