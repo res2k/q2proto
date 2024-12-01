@@ -188,7 +188,7 @@ q2proto_error_t q2proto_init_servercontext_demo(q2proto_servercontext_t* context
     size_t demo_packet_size = server_info->default_packet_length ? server_info->default_packet_length : 1390; // Default to Vanilla Q2 limit if none is given
     demo_packet_size = MAX(server_info->default_packet_length, MIN_DEMO_PACKET); // ensure a minimal packet size
     connect_info.packet_length = demo_packet_size;
-    switch(server_info->game_type)
+    switch(server_info->game_api)
     {
     case Q2PROTO_GAME_VANILLA:
         connect_info.protocol = Q2P_PROTOCOL_VANILLA;

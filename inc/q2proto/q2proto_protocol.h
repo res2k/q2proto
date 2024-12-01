@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define Q2PROTO_PROTOCOL_H_
 
 #include "q2proto_defs.h"
-#include "q2proto_gametype.h"
+#include "q2proto_game_api.h"
 
 #include <stddef.h>
 
@@ -62,7 +62,7 @@ Q2PROTO_PUBLIC_API int q2proto_get_protocol_netver(q2proto_protocol_t protocol);
 Q2PROTO_PUBLIC_API q2proto_protocol_t q2proto_protocol_from_netver(int version);
 
 /// Get array with protocols, suitable for given game types
-Q2PROTO_PUBLIC_API size_t q2proto_get_protocols_for_gametypes(q2proto_protocol_t *protocols, size_t num_protocols, const q2proto_game_type_t *games, size_t num_games);
+Q2PROTO_PUBLIC_API size_t q2proto_get_protocols_for_gametypes(q2proto_protocol_t *protocols, size_t num_protocols, const q2proto_game_api_t *games, size_t num_games);
 
 /**
  * Multicast protocol.
@@ -85,7 +85,7 @@ typedef enum q2proto_multicast_protocol_e
 } q2proto_multicast_protocol_t;
 
 /// Get suitable multicast protocol for accepted protocol(s) and game type.
-Q2PROTO_PUBLIC_API q2proto_multicast_protocol_t q2proto_get_multicast_protocol(q2proto_protocol_t *protocols, size_t num_protocols, q2proto_game_type_t game_type);
+Q2PROTO_PUBLIC_API q2proto_multicast_protocol_t q2proto_get_multicast_protocol(q2proto_protocol_t *protocols, size_t num_protocols, q2proto_game_api_t game_api);
 
 #if defined(__cplusplus)
 } // extern "C"

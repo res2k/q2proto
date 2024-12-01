@@ -17,13 +17,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 /**\file
- * Server game type
+ * Server game API (type)
  */
-#ifndef Q2PROTO_GAMETYPE_H_
-#define Q2PROTO_GAMETYPE_H_
+#ifndef Q2PROTO_GAME_API_H_
+#define Q2PROTO_GAME_API_H_
 
-/// Type of game run by the server
-typedef enum q2proto_game_type_e
+/// API (type) of game run by the server
+typedef enum q2proto_game_api_e
 {
     /// Vanilla/original/v3 game
     Q2PROTO_GAME_VANILLA = 0,
@@ -33,6 +33,6 @@ typedef enum q2proto_game_type_e
     Q2PROTO_GAME_Q2PRO_EXTENDED_V2,
     /// Rerelease game
     Q2PROTO_GAME_RERELEASE,
-} q2proto_game_type_t;
+} q2proto_game_api_t;
 
-#endif // Q2PROTO_GAMETYPE_H_
+#endif // Q2PROTO_GAME_API_H_

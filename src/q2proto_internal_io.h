@@ -339,7 +339,7 @@ static inline q2proto_error_t read_float_coord(uintptr_t io_arg, float coord[3])
 static inline q2proto_error_t client_read_maybe_diff_coords_comp(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_maybe_diff_coords_t *coord, int comp)
 {
     int val;
-    if (context->features.server_game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
+    if (context->features.server_game_api == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
     {
         bool is_diff;
         READ_CHECKED(client_read, io_arg, val, q2pro_i23, &is_diff);

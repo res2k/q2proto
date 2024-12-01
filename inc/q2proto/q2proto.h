@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_coords.h"
 #include "q2proto_defs.h"
 #include "q2proto_error.h"
-#include "q2proto_gametype.h"
+#include "q2proto_game_api.h"
 #include "q2proto_io.h"
 #include "q2proto_packing.h"
 #include "q2proto_protocol.h"

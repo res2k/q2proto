@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define Q2PROTO_STRUCT_PACKING_H_
 
 #include "q2proto_defs.h"
-#include "q2proto_gametype.h"
+#include "q2proto_game_api.h"
 #include "q2proto_limits.h" // for Q2PROTO_STATS
 
 /// Packed representation of entity state. Use with only server context used for packing!
@@ -144,7 +144,7 @@ typedef enum _q2proto_packing_flavor_e
 } _q2proto_packing_flavor_t;
 
 // Call actual entity packing function
-Q2PROTO_PUBLIC_API _q2proto_packing_flavor_t _q2proto_get_packing_flavor(q2proto_servercontext_t *context, q2proto_game_type_t* game_type);
+Q2PROTO_PUBLIC_API _q2proto_packing_flavor_t _q2proto_get_packing_flavor(q2proto_servercontext_t *context, q2proto_game_api_t* game_api);
 /** @} */
 
 #endif // Q2PROTO_STRUCT_PACKING_H_

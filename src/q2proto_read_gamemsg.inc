@@ -49,7 +49,7 @@ static q2proto_error_t HANDLE_SPECIAL_TEMP_ENT_Q2PRO_EXT(uintptr_t io_arg, q2pro
     return true;
 }
 
-READ_TEMP_ENTITY_DECL q2proto_error_t READ_TEMP_ENTITY_NAME(uintptr_t io_arg, q2proto_game_type_t game_type, q2proto_svc_temp_entity_t *temp_entity)
+READ_TEMP_ENTITY_DECL q2proto_error_t READ_TEMP_ENTITY_NAME(uintptr_t io_arg, q2proto_game_api_t game_api, q2proto_svc_temp_entity_t *temp_entity)
 {
     READ_CHECKED(client_read, io_arg, temp_entity->type, u8);
 
@@ -184,7 +184,7 @@ READ_TEMP_ENTITY_DECL q2proto_error_t READ_TEMP_ENTITY_NAME(uintptr_t io_arg, q2
         {
             q2proto_error_t handle_res = Q2P_ERR_BAD_DATA;
             bool tent_handled = false;
-            if (game_type == Q2PROTO_GAME_Q2PRO_EXTENDED || game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
+            if (game_api == Q2PROTO_GAME_Q2PRO_EXTENDED || game_api == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
                 tent_handled = HANDLE_SPECIAL_TEMP_ENT_Q2PRO_EXT(io_arg, temp_entity, &handle_res);
             if (tent_handled)
                 return handle_res;

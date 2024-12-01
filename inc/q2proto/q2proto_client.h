@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_coords.h"
 #include "q2proto_defs.h"
 #include "q2proto_error.h"
-#include "q2proto_gametype.h"
+#include "q2proto_game_api.h"
 #include "q2proto_protocol.h"
 #include "q2proto_struct_clc.h"
 #include "q2proto_struct_svc.h"
@@ -99,7 +99,7 @@ struct q2proto_clientcontext_s {
         /// Protocol sends fog data as part of playerstate
         bool has_playerfog;
         /// Type of game run by the server
-        q2proto_game_type_t server_game_type;
+        q2proto_game_api_t server_game_api;
     } features;
 
     /// Server protocol number

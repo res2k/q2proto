@@ -129,11 +129,11 @@ q2proto_error_t q2proto_q2pro_continue_serverdata(q2proto_clientcontext_t *conte
     context->features.has_solid32 = true;
     context->features.has_playerfog = serverdata->protocol_version >= PROTOCOL_VERSION_Q2PRO_PLAYERFOG;
     if (serverdata->q2pro.extensions_v2)
-        context->features.server_game_type = Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
+        context->features.server_game_api = Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
     else if (serverdata->q2pro.extensions)
-        context->features.server_game_type = Q2PROTO_GAME_Q2PRO_EXTENDED;
+        context->features.server_game_api = Q2PROTO_GAME_Q2PRO_EXTENDED;
     else
-        context->features.server_game_type = Q2PROTO_GAME_VANILLA;
+        context->features.server_game_api = Q2PROTO_GAME_VANILLA;
 
     return Q2P_ERR_SUCCESS;
 }
@@ -386,16 +386,16 @@ static q2proto_error_t q2pro_client_read_serverdata(q2proto_clientcontext_t *con
 q2proto_error_t q2proto_q2pro_client_read_temp_entity(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_temp_entity_t *temp_entity)
 {
     // For q2pro protocol, position encoding depends on game type
-    if (context->features.server_game_type >= Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
-        return q2proto_common_client_read_temp_entity_q2pro_ext_v2(io_arg, context->features.server_game_type, temp_entity);
+    if (context->features.server_game_api >= Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
+        return q2proto_common_client_read_temp_entity_q2pro_ext_v2(io_arg, context->features.server_game_api, temp_entity);
     else
-        return q2proto_common_client_read_temp_entity_short(io_arg, context->features.server_game_type, temp_entity);
+        return q2proto_common_client_read_temp_entity_short(io_arg, context->features.server_game_api, temp_entity);
 }
 
 q2proto_error_t q2proto_q2pro_client_read_sound(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_sound_t *sound)
 {
     // For q2pro protocol, position encoding depends on game type
-    if (context->features.server_game_type >= Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
+    if (context->features.server_game_api >= Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
         return q2proto_common_client_read_sound_q2pro_ext_v2(io_arg, sound);
     else
         return q2proto_common_client_read_sound_short(io_arg, sound);
@@ -403,8 +403,8 @@ q2proto_error_t q2proto_q2pro_client_read_sound(q2proto_clientcontext_t *context
 
 q2proto_error_t q2proto_q2pro_client_read_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, uint64_t bits, q2proto_entity_state_delta_t *entity_state)
 {
-    bool has_q2pro_extensions = context->features.server_game_type != Q2PROTO_GAME_VANILLA;
-    bool has_q2pro_extensions_v2 = context->features.server_game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
+    bool has_q2pro_extensions = context->features.server_game_api != Q2PROTO_GAME_VANILLA;
+    bool has_q2pro_extensions_v2 = context->features.server_game_api == Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
     bool model16 = has_q2pro_extensions && (bits & U_MODEL16);
     if (delta_bits_check(bits, U_MODEL, &entity_state->delta_bits, Q2P_ESD_MODELINDEX))
     {
@@ -688,8 +688,8 @@ q2proto_error_t q2proto_q2pro_client_read_playerfog(q2proto_clientcontext_t *con
 
 static q2proto_error_t q2pro_client_read_playerstate(q2proto_clientcontext_t *context, uintptr_t io_arg, uint8_t extraflags, q2proto_svc_playerstate_t *playerstate)
 {
-    bool has_q2pro_extensions = context->features.server_game_type != Q2PROTO_GAME_VANILLA;
-    bool has_q2pro_extensions_v2 = context->features.server_game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
+    bool has_q2pro_extensions = context->features.server_game_api != Q2PROTO_GAME_VANILLA;
+    bool has_q2pro_extensions_v2 = context->features.server_game_api == Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
     bool has_playerfog = context->protocol_version >= PROTOCOL_VERSION_Q2PRO_PLAYERFOG;
     uint32_t flags;
     READ_CHECKED(client_read, io_arg, flags, u16);
@@ -874,7 +874,7 @@ q2proto_error_t q2proto_q2pro_client_read_muzzleflash2(q2proto_clientcontext_t *
 {
     READ_CHECKED(client_read, io_arg, muzzleflash->entity, i16);
     READ_CHECKED(client_read, io_arg, muzzleflash->weapon, u8);
-    if(context->features.server_game_type != Q2PROTO_GAME_VANILLA)
+    if(context->features.server_game_api != Q2PROTO_GAME_VANILLA)
     {
         muzzleflash->weapon |= (muzzleflash->entity >> 13) << 8;
         muzzleflash->entity &= (1 << 13) - 1;
@@ -950,7 +950,7 @@ static q2proto_error_t q2pro_client_read_zdownload(q2proto_clientcontext_t *cont
 
 static q2proto_error_t q2pro_client_read_streamed_configstring(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message)
 {
-    bool has_q2pro_extensions = context->features.server_game_type != Q2PROTO_GAME_VANILLA;
+    bool has_q2pro_extensions = context->features.server_game_api != Q2PROTO_GAME_VANILLA;
     unsigned int max_configstrings = has_q2pro_extensions ? MAX_CONFIGSTRINGS_EXTENDED : MAX_CONFIGSTRINGS_V3;
     uint16_t index;
     READ_CHECKED(client_read, io_arg, index, u16);
@@ -1315,7 +1315,7 @@ static q2proto_error_t q2pro_client_write_userinfo_delta(uintptr_t io_arg, const
 
 static uint32_t q2pro_pack_solid(q2proto_clientcontext_t *context, const q2proto_vec3_t mins, const q2proto_vec3_t maxs)
 {
-    if (context->features.server_game_type >= Q2PROTO_GAME_Q2PRO_EXTENDED)
+    if (context->features.server_game_api >= Q2PROTO_GAME_Q2PRO_EXTENDED)
         return q2proto_pack_solid_32_q2pro_v2(mins, maxs);
     else
         return q2proto_pack_solid_32_r1q2(mins, maxs);
@@ -1323,7 +1323,7 @@ static uint32_t q2pro_pack_solid(q2proto_clientcontext_t *context, const q2proto
 
 static void q2pro_unpack_solid(q2proto_clientcontext_t *context, uint32_t solid, q2proto_vec3_t mins, q2proto_vec3_t maxs)
 {
-    if (context->features.server_game_type >= Q2PROTO_GAME_Q2PRO_EXTENDED)
+    if (context->features.server_game_api >= Q2PROTO_GAME_Q2PRO_EXTENDED)
         q2proto_unpack_solid_32_q2pro_v2(solid, mins, maxs);
     else
         q2proto_unpack_solid_32_r1q2(solid, mins, maxs);
@@ -1335,7 +1335,7 @@ static void q2pro_unpack_solid(q2proto_clientcontext_t *context, uint32_t solid,
 
 static q2proto_error_t q2proto_server_write_maybe_diff_coords_comp(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_maybe_diff_coords_t *coord, int comp)
 {
-    if (context->server_info->game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
+    if (context->server_info->game_api == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
     {
         int32_t prev_val = q2proto_var_coords_get_int_comp(&coord->write.prev, comp);
         int32_t curr_val = q2proto_var_coords_get_int_comp(&coord->write.current, comp);
@@ -1369,7 +1369,7 @@ static const struct q2proto_download_funcs_s q2pro_download_funcs = {
 
 q2proto_error_t q2proto_q2pro_init_servercontext(q2proto_servercontext_t *context, const q2proto_connect_t *connect_info)
 {
-    if (context->server_info->game_type > Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
+    if (context->server_info->game_api > Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
         return Q2P_ERR_GAMETYPE_UNSUPPORTED;
 
     context->protocol_version = connect_info->version;
@@ -1398,14 +1398,14 @@ static q2proto_error_t q2pro_server_fill_serverdata(q2proto_servercontext_t *con
 {
     serverdata->protocol = PROTOCOL_Q2PRO;
     serverdata->protocol_version = context->protocol_version;
-    serverdata->q2pro.extensions = context->server_info->game_type >= Q2PROTO_GAME_Q2PRO_EXTENDED;
-    serverdata->q2pro.extensions_v2 = context->server_info->game_type >= Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
+    serverdata->q2pro.extensions = context->server_info->game_api >= Q2PROTO_GAME_Q2PRO_EXTENDED;
+    serverdata->q2pro.extensions_v2 = context->server_info->game_api >= Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
     return Q2P_ERR_SUCCESS;
 }
 
 static void q2pro_server_make_entity_state_delta(q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, q2proto_entity_state_delta_t *delta)
 {
-    q2proto_packing_make_entity_state_delta(from, to, write_old_origin, context->server_info->game_type != Q2PROTO_GAME_VANILLA, delta);
+    q2proto_packing_make_entity_state_delta(from, to, write_old_origin, context->server_info->game_api != Q2PROTO_GAME_VANILLA, delta);
 }
 
 static void q2pro_server_make_player_state_delta(q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta)
@@ -1522,7 +1522,7 @@ q2proto_error_t q2proto_q2pro_server_write_sound(q2proto_protocol_t protocol, co
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG:
-        if (server_info->game_type >= Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
+        if (server_info->game_api >= Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
         {
             q2proto_common_server_write_sound(Q2P_PROTOCOL_MULTICAST_Q2PRO_EXT, io_arg, sound);
             break;
@@ -1538,8 +1538,8 @@ q2proto_error_t q2proto_q2pro_server_write_sound(q2proto_protocol_t protocol, co
 
 q2proto_error_t q2proto_q2pro_server_write_entity_state_delta(q2proto_servercontext_t *context, uintptr_t io_arg, uint16_t entnum, const q2proto_entity_state_delta_t *entity_state_delta)
 {
-    bool has_q2pro_extensions = context->server_info->game_type != Q2PROTO_GAME_VANILLA;
-    bool has_q2pro_extensions_v2 = context->server_info->game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
+    bool has_q2pro_extensions = context->server_info->game_api != Q2PROTO_GAME_VANILLA;
+    bool has_q2pro_extensions_v2 = context->server_info->game_api == Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
     uint64_t bits = 0;
 
     unsigned origin_changes = q2proto_maybe_diff_coords_write_differs_int(&entity_state_delta->origin);
@@ -1846,8 +1846,8 @@ q2proto_error_t q2proto_q2pro_server_write_playerfog(q2proto_servercontext_t *co
 
 static q2proto_error_t q2pro_server_write_playerstate(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_playerstate_t *playerstate, uint8_t *extraflags)
 {
-    bool has_q2pro_extensions = context->server_info->game_type != Q2PROTO_GAME_VANILLA;
-    bool has_q2pro_extensions_v2 = context->server_info->game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
+    bool has_q2pro_extensions = context->server_info->game_api != Q2PROTO_GAME_VANILLA;
+    bool has_q2pro_extensions_v2 = context->server_info->game_api == Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
     bool has_morebits = context->protocol_version >= PROTOCOL_VERSION_Q2PRO_PLAYERFOG;
     uint32_t flags = 0;
     *extraflags = 0;
@@ -2171,7 +2171,7 @@ static q2proto_error_t q2pro_server_write_frame_entity_delta(q2proto_serverconte
 
 static q2proto_error_t q2pro_server_write_gamestate_stream(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate)
 {
-    bool has_q2pro_extensions = context->server_info->game_type != Q2PROTO_GAME_VANILLA;
+    bool has_q2pro_extensions = context->server_info->game_api != Q2PROTO_GAME_VANILLA;
     unsigned int max_configstrings = has_q2pro_extensions ? MAX_CONFIGSTRINGS_EXTENDED : MAX_CONFIGSTRINGS_V3;
 
     q2proto_maybe_zpacket_t zpacket_state;
@@ -2238,7 +2238,7 @@ not_enough_packet_space:
 
 static q2proto_error_t q2pro_server_write_gamestate_mono(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate)
 {
-    bool has_q2pro_extensions = context->server_info->game_type != Q2PROTO_GAME_VANILLA;
+    bool has_q2pro_extensions = context->server_info->game_api != Q2PROTO_GAME_VANILLA;
     unsigned int max_configstrings = has_q2pro_extensions ? MAX_CONFIGSTRINGS_EXTENDED : MAX_CONFIGSTRINGS_V3;
 
     q2proto_maybe_zpacket_t zpacket_state;

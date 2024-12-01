@@ -190,13 +190,13 @@ q2proto_error_t q2proto_q2repro_continue_serverdata(q2proto_clientcontext_t *con
     if (serverdata->q2repro.game3_compat) {
         // FIXME: correct?
         if (serverdata->q2pro.extensions_v2)
-            context->features.server_game_type = Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
+            context->features.server_game_api = Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
         else if (serverdata->q2pro.extensions)
-            context->features.server_game_type = Q2PROTO_GAME_Q2PRO_EXTENDED;
+            context->features.server_game_api = Q2PROTO_GAME_Q2PRO_EXTENDED;
         else
-            context->features.server_game_type = Q2PROTO_GAME_VANILLA;
+            context->features.server_game_api = Q2PROTO_GAME_VANILLA;
     } else
-        context->features.server_game_type = Q2PROTO_GAME_RERELEASE;
+        context->features.server_game_api = Q2PROTO_GAME_RERELEASE;
 
     return Q2P_ERR_SUCCESS;
 }
@@ -332,7 +332,7 @@ static q2proto_error_t q2repro_client_read(q2proto_clientcontext_t *context, uin
 
     case svc_temp_entity:
         svc_message->type = Q2P_SVC_TEMP_ENTITY;
-        return q2proto_common_client_read_temp_entity_float(io_arg, context->features.server_game_type, &svc_message->temp_entity);
+        return q2proto_common_client_read_temp_entity_float(io_arg, context->features.server_game_api, &svc_message->temp_entity);
 
     case svc_muzzleflash:
         svc_message->type = Q2P_SVC_MUZZLEFLASH;
@@ -1016,7 +1016,7 @@ static q2proto_error_t q2repro_client_read_zdownload(q2proto_clientcontext_t *co
 
 static q2proto_error_t q2repro_client_read_streamed_configstring(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message)
 {
-    unsigned int max_configstrings = max_configstrings_for_game(context->features.server_game_type);
+    unsigned int max_configstrings = max_configstrings_for_game(context->features.server_game_api);
     uint16_t index;
     READ_CHECKED(client_read, io_arg, index, u16);
     if (index == max_configstrings)
@@ -1427,9 +1427,9 @@ static q2proto_error_t q2repro_server_fill_serverdata(q2proto_servercontext_t *c
 {
     serverdata->protocol = PROTOCOL_Q2REPRO;
     serverdata->protocol_version = context->protocol_version;
-    serverdata->q2pro.extensions = context->server_info->game_type >= Q2PROTO_GAME_Q2PRO_EXTENDED;
-    serverdata->q2pro.extensions_v2 = context->server_info->game_type >= Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
-    serverdata->q2repro.game3_compat = context->server_info->game_type != Q2PROTO_GAME_RERELEASE;
+    serverdata->q2pro.extensions = context->server_info->game_api >= Q2PROTO_GAME_Q2PRO_EXTENDED;
+    serverdata->q2pro.extensions_v2 = context->server_info->game_api >= Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
+    serverdata->q2repro.game3_compat = context->server_info->game_api != Q2PROTO_GAME_RERELEASE;
     return Q2P_ERR_SUCCESS;
 }
 
@@ -2394,7 +2394,7 @@ static q2proto_error_t q2repro_server_write_fog(uintptr_t io_arg, const q2proto_
 
 static q2proto_error_t q2repro_server_write_gamestate(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate)
 {
-    unsigned int max_configstrings = max_configstrings_for_game(context->server_info->game_type);
+    unsigned int max_configstrings = max_configstrings_for_game(context->server_info->game_api);
 
     q2proto_maybe_zpacket_t zpacket_state;
     q2proto_maybe_zpacket_begin(context, deflate_args, io_arg, &zpacket_state, &io_arg);

@@ -366,10 +366,10 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
 #endif
 }
 
-_q2proto_packing_flavor_t _q2proto_get_packing_flavor(q2proto_servercontext_t *context, q2proto_game_type_t* game_type)
+_q2proto_packing_flavor_t _q2proto_get_packing_flavor(q2proto_servercontext_t *context, q2proto_game_api_t* game_api)
 {
-    if (game_type)
-        *game_type = context->server_info->game_type;
+    if (game_api)
+        *game_api = context->server_info->game_api;
     if (context->protocol == Q2P_PROTOCOL_Q2REPRO)
         return _Q2P_PACKING_REPRO;
     else

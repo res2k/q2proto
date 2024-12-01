@@ -52,8 +52,8 @@ Q2PROTO_PRIVATE_API int q2proto_common_entity_bits_size(uint64_t bits);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_entity_bits(uintptr_t io_arg, uint64_t bits, uint16_t entnum);
 
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_muzzleflash(uintptr_t io_arg, q2proto_svc_muzzleflash_t *muzzleflash, uint16_t silenced_mask);
-Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_temp_entity_short(uintptr_t io_arg, q2proto_game_type_t game_type, q2proto_svc_temp_entity_t *temp_entity);
-Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_temp_entity_float(uintptr_t io_arg, q2proto_game_type_t game_type, q2proto_svc_temp_entity_t *temp_entity);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_temp_entity_short(uintptr_t io_arg, q2proto_game_api_t game_api, q2proto_svc_temp_entity_t *temp_entity);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_temp_entity_float(uintptr_t io_arg, q2proto_game_api_t game_api, q2proto_svc_temp_entity_t *temp_entity);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_layout(uintptr_t io_arg, q2proto_svc_layout_t *layout);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_inventory(uintptr_t io_arg, q2proto_svc_inventory_t *inventory);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_sound_short(uintptr_t io_arg, q2proto_svc_sound_t *sound);

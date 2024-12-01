@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_connect.h"
 #include "q2proto_defs.h"
 #include "q2proto_error.h"
-#include "q2proto_gametype.h"
+#include "q2proto_game_api.h"
 #include "q2proto_io.h"
 #include "q2proto_packing.h"
 #include "q2proto_protocol.h"
@@ -57,7 +57,7 @@ Q2PROTO_PUBLIC_API q2proto_error_t q2proto_get_challenge_extras(char *buf, size_
 typedef struct q2proto_server_info_s
 {
     /// Type of game run by server
-    q2proto_game_type_t game_type;
+    q2proto_game_api_t game_api;
     /// Default packet length value, used for \c packet_length member of q2proto_connect_t.
     int default_packet_length;
 } q2proto_server_info_t;

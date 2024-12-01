@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef Q2PROTO_INTERNAL_PROTOCOL_H_
 #define Q2PROTO_INTERNAL_PROTOCOL_H_
 
-#include "q2proto/q2proto_gametype.h"
+#include "q2proto/q2proto_game_api.h"
 #include "q2proto_internal_defs.h"
 
 // Protocol major version numbers
@@ -331,7 +331,7 @@ enum common_clc_cmds
 /// Max. configstrings for "rerelease" games/servers
 #define MAX_CONFIGSTRINGS_RERELEASE     12448
 
-static inline unsigned int max_configstrings_for_game(q2proto_game_type_t game)
+static inline unsigned int max_configstrings_for_game(q2proto_game_api_t game)
 {
     switch(game)
     {

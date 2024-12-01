@@ -68,7 +68,7 @@ q2proto_error_t q2proto_q2pro_extdemo_continue_serverdata(q2proto_clientcontext_
     context->features.has_clientnum = true;
     context->features.has_solid32 = true;
     context->features.has_playerfog = has_playerfog;
-    context->features.server_game_type = has_q2pro_extensions_v2 ? Q2PROTO_GAME_Q2PRO_EXTENDED_V2 : Q2PROTO_GAME_Q2PRO_EXTENDED;
+    context->features.server_game_api = has_q2pro_extensions_v2 ? Q2PROTO_GAME_Q2PRO_EXTENDED_V2 : Q2PROTO_GAME_Q2PRO_EXTENDED;
 
     return Q2P_ERR_SUCCESS;
 }
@@ -255,7 +255,7 @@ static q2proto_error_t q2pro_extdemo_client_read_baseline(q2proto_clientcontext_
 
 static q2proto_error_t q2pro_extdemo_client_read_playerstate(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_playerstate_t *playerstate)
 {
-    bool has_q2pro_extensions_v2 = context->features.server_game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
+    bool has_q2pro_extensions_v2 = context->features.server_game_api == Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
     bool has_playerfog = context->server_protocol >= PROTOCOL_Q2PRO_DEMO_EXT_PLAYERFOG;
     uint32_t flags;
     READ_CHECKED(client_read, io_arg, flags, u16);
@@ -453,7 +453,7 @@ static q2proto_error_t q2pro_extdemo_server_write_gamestate(q2proto_servercontex
 q2proto_error_t q2proto_q2pro_extdemo_init_servercontext(q2proto_servercontext_t *context, const q2proto_connect_t *connect_info)
 {
     // Protocol version for compatibility
-    context->protocol_version = context->server_info->game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2 ? PROTOCOL_VERSION_Q2PRO_CURRENT : PROTOCOL_VERSION_Q2PRO_EXTENDED_LIMITS;
+    context->protocol_version = context->server_info->game_api == Q2PROTO_GAME_Q2PRO_EXTENDED_V2 ? PROTOCOL_VERSION_Q2PRO_CURRENT : PROTOCOL_VERSION_Q2PRO_EXTENDED_LIMITS;
     context->features.enable_deflate = connect_info->has_zlib;
     context->features.download_compress_raw = context->features.enable_deflate && context->protocol_version >= PROTOCOL_VERSION_Q2PRO_ZLIB_DOWNLOADS;
     context->features.has_beam_old_origin_fix = context->protocol_version >= PROTOCOL_VERSION_Q2PRO_BEAM_ORIGIN;
@@ -470,7 +470,7 @@ q2proto_error_t q2proto_q2pro_extdemo_init_servercontext(q2proto_servercontext_t
 
 static q2proto_error_t q2pro_extdemo_server_fill_serverdata(q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata)
 {
-    if (context->server_info->game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
+    if (context->server_info->game_api == Q2PROTO_GAME_Q2PRO_EXTENDED_V2)
         serverdata->protocol = PROTOCOL_Q2PRO_DEMO_EXT_CURRENT;
     else
         serverdata->protocol = PROTOCOL_Q2PRO_DEMO_EXT;
@@ -480,7 +480,7 @@ static q2proto_error_t q2pro_extdemo_server_fill_serverdata(q2proto_servercontex
 
 static void q2pro_extdemo_server_make_entity_state_delta(q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, q2proto_entity_state_delta_t *delta)
 {
-    q2proto_packing_make_entity_state_delta(from, to, write_old_origin, context->server_info->game_type != Q2PROTO_GAME_VANILLA, delta);
+    q2proto_packing_make_entity_state_delta(from, to, write_old_origin, context->server_info->game_api != Q2PROTO_GAME_VANILLA, delta);
 }
 
 static void q2pro_extdemo_server_make_player_state_delta(q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta)
@@ -567,7 +567,7 @@ static q2proto_error_t q2pro_extdemo_server_write_spawnbaseline(q2proto_serverco
 
 static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_playerstate_t *playerstate)
 {
-    bool has_q2pro_extensions_v2 = context->server_info->game_type == Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
+    bool has_q2pro_extensions_v2 = context->server_info->game_api == Q2PROTO_GAME_Q2PRO_EXTENDED_V2;
     bool has_morebits = context->protocol >= Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG;
     uint32_t flags = 0;
 

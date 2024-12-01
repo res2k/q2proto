@@ -314,13 +314,13 @@ typedef struct q2proto_svc_serverdata_s {
         /**
          * Q2PRO: Extensions enabled
          * Note: It's recommended you let q2proto_server_fill_serverdata() set this flag
-         * and use \c server_game_type stored in the client context to check the game type.
+         * and use \c server_game_api stored in the client context to check the game type.
          */
         bool extensions;
         /**
          * Q2PRO: "Extensions v2" enabled
          * Note: It's recommended you let q2proto_server_fill_serverdata() set this flag
-         * and use \c server_game_type stored in the client context to check the game type.
+         * and use \c server_game_api stored in the client context to check the game type.
          */
         bool extensions_v2;
     } q2pro;
@@ -332,7 +332,7 @@ typedef struct q2proto_svc_serverdata_s {
         /**
          * game3 compatibility flag
          * Note: It's recommended you let q2proto_server_fill_serverdata() set this flag
-         * and use \c server_game_type stored in the client context to check the game type.
+         * and use \c server_game_api stored in the client context to check the game type.
          */
         bool game3_compat;
     } q2repro;

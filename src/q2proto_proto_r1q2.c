@@ -189,7 +189,7 @@ static q2proto_error_t r1q2_client_read(q2proto_clientcontext_t *context, uintpt
 
     case svc_temp_entity:
         svc_message->type = Q2P_SVC_TEMP_ENTITY;
-        return q2proto_common_client_read_temp_entity_short(io_arg, context->features.server_game_type, &svc_message->temp_entity);
+        return q2proto_common_client_read_temp_entity_short(io_arg, context->features.server_game_api, &svc_message->temp_entity);
 
     case svc_muzzleflash:
         svc_message->type = Q2P_SVC_MUZZLEFLASH;
@@ -810,7 +810,7 @@ static const struct q2proto_download_funcs_s r1q2_download_funcs = {
 
 q2proto_error_t q2proto_r1q2_init_servercontext(q2proto_servercontext_t *context, const q2proto_connect_t *connect_info)
 {
-    if (context->server_info->game_type != Q2PROTO_GAME_VANILLA)
+    if (context->server_info->game_api != Q2PROTO_GAME_VANILLA)
         return Q2P_ERR_GAMETYPE_UNSUPPORTED;
 
     context->protocol_version = connect_info->version;

@@ -58,7 +58,7 @@ void Q2P_PACK_ENTITY_FUNCTION_NAME(q2proto_servercontext_t *context, const Q2P_P
 
 #define _Q2PROTO_PACKING_CAST_ENTITYSTATE       (*((const Q2P_PACK_ENTITY_TYPE*)entity_state_p))
 
-static void _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME(const void * restrict entity_state_p, q2proto_game_type_t game_type, q2proto_packed_entity_state_t * restrict entity_packed)
+static void _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME(const void * restrict entity_state_p, q2proto_game_api_t game_api, q2proto_packed_entity_state_t * restrict entity_packed)
 {
     memset(entity_packed, 0, sizeof(*entity_packed));
 
@@ -77,7 +77,7 @@ static void _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME(const void * restrict entity_
     entity_packed->event = (uint8_t)Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, event);
     entity_packed->solid = (uint32_t)Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, solid);
 #if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
-    if (game_type >= Q2PROTO_GAME_Q2PRO_EXTENDED)
+    if (game_api >= Q2PROTO_GAME_Q2PRO_EXTENDED)
     {
         entity_packed->loop_volume = _q2proto_valenc_clamped_mul(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, loop_volume), 255, 0, UINT8_MAX);
         entity_packed->loop_attenuation = q2proto_sound_encode_loop_attenuation(Q2P_PACK_GET_ENTITY_VALUE(_Q2PROTO_PACKING_CAST_ENTITYSTATE, loop_attenuation));
@@ -117,8 +117,8 @@ static void _Q2P_PACK_ENTITY_Q2REPRO_FUNCTION_NAME(const void * restrict entity_
 
 void Q2P_PACK_ENTITY_FUNCTION_NAME(q2proto_servercontext_t *context, const Q2P_PACK_ENTITY_TYPE entity_state, q2proto_packed_entity_state_t *entity_packed)
 {
-    q2proto_game_type_t game_type;
-    switch(_q2proto_get_packing_flavor(context, &game_type))
+    q2proto_game_api_t game_api;
+    switch(_q2proto_get_packing_flavor(context, &game_api))
     {
     case _Q2P_PACKING_VANILLA:
         // Fall through to default case
@@ -127,7 +127,7 @@ void Q2P_PACK_ENTITY_FUNCTION_NAME(q2proto_servercontext_t *context, const Q2P_P
         _Q2P_PACK_ENTITY_Q2REPRO_FUNCTION_NAME(entity_state, entity_packed);
         return;
     }
-    _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME(entity_state, game_type, entity_packed);
+    _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME(entity_state, game_api, entity_packed);
 }
 
 #undef _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME
