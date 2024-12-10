@@ -171,8 +171,8 @@ static MAYBE_UNUSED const char* q2pro_server_cmd_string(int command)
 void q2proto_q2pro_debug_player_delta_bits_to_str(char *buf, size_t size, uint32_t bits)
 {
     q2proto_debug_common_player_delta_bits_to_str(buf, size, bits & ~(PS_Q2PRO_MOREBITS | PS_Q2PRO_PLAYERFOG));
-    buf += strlen(buf);
     size -= strlen(buf);
+    buf += strlen(buf);
 
 #define S(b, s)                                         \
     if (bits & PS_##b)                                  \

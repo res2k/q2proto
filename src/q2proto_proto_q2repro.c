@@ -247,8 +247,8 @@ static MAYBE_UNUSED const char* q2repro_server_cmd_string(int command)
 static MAYBE_UNUSED void debug_player_delta_bits_to_str(char *buf, size_t size, uint32_t bits)
 {
     q2proto_debug_common_player_delta_bits_to_str(buf, size, bits & ~PS_RR_VIEWHEIGHT);
-    buf += strlen(buf);
     size -= strlen(buf);
+    buf += strlen(buf);
 
 #define S(b, s)                                         \
     if (bits & PS_##b)                                  \
