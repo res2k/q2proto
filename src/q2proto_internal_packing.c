@@ -254,6 +254,8 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
     }
     if (to->gunframe != from->gunframe)
         delta->delta_bits |= Q2P_PSD_GUNFRAME;
+    if (to->gunrate != from->gunrate)
+        delta->delta_bits |= Q2P_PSD_GUNRATE;
     delta->gunoffset.delta_bits = 0;
     delta->gunangles.delta_bits = 0;
     for (int c = 0; c < 3; c++)
@@ -263,7 +265,7 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
         if (to->gunangles[c] != from->gunangles[c])
             delta->gunangles.delta_bits |= BIT(c);
     }
-    if ((delta->delta_bits & Q2P_PSD_GUNFRAME) || (delta->gunoffset.delta_bits != 0) || (delta->gunangles.delta_bits != 0))
+    if ((delta->delta_bits & (Q2P_PSD_GUNFRAME | Q2P_PSD_GUNRATE)) || (delta->gunoffset.delta_bits != 0) || (delta->gunangles.delta_bits != 0))
     {
         delta->gunframe = to->gunframe;
         q2proto_var_small_offsets_set_char_comp(&delta->gunoffset.values, 0, to->gunoffset[0]);
@@ -272,6 +274,7 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
         q2proto_var_small_angles_set_char_comp(&delta->gunangles.values, 0, to->gunangles[0]);
         q2proto_var_small_angles_set_char_comp(&delta->gunangles.values, 1, to->gunangles[1]);
         q2proto_var_small_angles_set_char_comp(&delta->gunangles.values, 2, to->gunangles[2]);
+        delta->gunrate = to->gunrate;
     }
 
     if (to->gunindex != from->gunindex)

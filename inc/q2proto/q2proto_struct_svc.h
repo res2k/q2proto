@@ -437,9 +437,9 @@ enum q2proto_playerstate_delta_flags
     /**
      * 'gunframe' is set.
      * Note: due to different transmit granularities in different protocols,
-     * if setting just one of the 'gun'  _bits_ during writing,
-     * or if any of the gunframe or gunangles delta bits are set,
-     * all of gunframe, gunoffset, gunangles have to be set!
+     * if setting either 'gunframe' or 'gunrate' _bits_ during writing,
+     * or if any of the gunoffset or gunangles delta bits are set,
+     * all of gunframe, gunoffset, gunangles, gunrate have to be set!
      */
     Q2P_PSD_GUNFRAME = 0x400,
     /// 'fov' is set
@@ -447,7 +447,13 @@ enum q2proto_playerstate_delta_flags
     /// 'rdflags' is set
     Q2P_PSD_RDFLAGS = 0x1000,
 #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
-    /// 'gunrate' is set
+    /**
+     * 'gunrate' is set.
+     * Note: due to different transmit granularities in different protocols,
+     * if setting either 'gunframe' or 'gunrate' _bits_ during writing,
+     * or if any of the gunoffset or gunangles delta bits are set,
+     * all of gunframe, gunoffset, gunangles, gunrate have to be set!
+     */
     Q2P_PSD_GUNRATE = 0x2000,
 #elif defined(Q2PROTO_BUILD)
     Q2P_PSD_GUNRATE = 0,
