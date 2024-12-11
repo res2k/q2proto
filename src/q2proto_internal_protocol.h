@@ -90,6 +90,8 @@ enum common_svc_cmds
     svc_q2pro_configstringstream = 25,
     svc_q2pro_baselinestream,
     svc_rr_splitclient = 21,
+    svc_rr_configblast,
+    svc_rr_spawnbaselineblast,
     svc_rr_damage = 25,
     svc_rr_locprint,
     svc_rr_fog,

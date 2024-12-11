@@ -69,6 +69,8 @@ static q2proto_error_t kex_client_read_baseline(q2proto_clientcontext_t *context
 static q2proto_error_t kex_client_read_sound(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_sound_t *sound);
 static q2proto_error_t kex_client_read_frame(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_frame_t *frame);
 static q2proto_error_t kex_client_read_splitclient(q2proto_clientcontext_t *context, uintptr_t io_arg);
+static q2proto_error_t kex_client_read_begin_configblast(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
+static q2proto_error_t kex_client_read_begin_spawnbaselineblast(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
 static q2proto_error_t kex_client_read_locprint(uintptr_t io_arg, q2proto_svc_locprint_t *locprint);
 
 static MAYBE_UNUSED const char* kex_server_cmd_string(int command)
@@ -80,6 +82,8 @@ static MAYBE_UNUSED const char* kex_server_cmd_string(int command)
     switch(command)
     {
     S(svc_rr_splitclient)
+    S(svc_rr_configblast)
+    S(svc_rr_spawnbaselineblast)
     S(svc_rr_damage)
     S(svc_rr_locprint)
     S(svc_rr_fog)
@@ -229,6 +233,12 @@ static q2proto_error_t kex_client_read(q2proto_clientcontext_t *context, uintptr
         // Split screen messages are currently not supported...
         svc_message->type = Q2P_SVC_NOP;
         return kex_client_read_splitclient(context, io_arg);
+
+    case svc_rr_configblast:
+        return kex_client_read_begin_configblast(context, io_arg, svc_message);
+
+    case svc_rr_spawnbaselineblast:
+        return kex_client_read_begin_spawnbaselineblast(context, io_arg, svc_message);
 
     case svc_rr_damage:
         svc_message->type = Q2P_SVC_DAMAGE;
@@ -814,6 +824,89 @@ static q2proto_error_t kex_client_read_splitclient(q2proto_clientcontext_t *cont
     (void)isplit;
 
     return Q2P_ERR_SUCCESS;
+}
+
+#if Q2PROTO_COMPRESSION_DEFLATE
+static q2proto_error_t kex_client_read_continue_spawnbaselineblast(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message)
+{
+    memset(svc_message, 0, sizeof(*svc_message));
+
+    if (q2protoio_read_available(context->inflate_io_arg) == 0)
+    {
+        // No more configblast data, tear down
+        CHECKED_IO(client_read, io_arg, q2protoio_inflate_end(context->inflate_io_arg), "finishing inflate");
+
+        context->client_read = kex_client_read;
+        // Call recursively to pick up next message from raw message
+        return kex_client_read(context, io_arg, svc_message);
+    }
+
+    svc_message->type = Q2P_SVC_SPAWNBASELINE;
+    return kex_client_read_baseline(context, context->inflate_io_arg, &svc_message->spawnbaseline);
+}
+#endif
+
+static q2proto_error_t kex_client_read_begin_spawnbaselineblast(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message)
+{
+#if Q2PROTO_COMPRESSION_DEFLATE
+    uint16_t compressed_len, uncompressed_len;
+    READ_CHECKED(client_read, io_arg, compressed_len, u16);
+    READ_CHECKED(client_read, io_arg, uncompressed_len, u16);
+    (void)uncompressed_len;
+
+    uintptr_t inflate_io_arg;
+    CHECKED(client_read, io_arg, q2protoio_inflate_begin(io_arg, Q2P_INFL_DEFL_HEADER, &inflate_io_arg));
+    CHECKED(client_read, io_arg, q2protoio_inflate_data(io_arg, inflate_io_arg, compressed_len));
+    context->inflate_io_arg = inflate_io_arg;
+
+    context->client_read = kex_client_read_continue_spawnbaselineblast;
+    return kex_client_read_continue_spawnbaselineblast(context, io_arg, svc_message);
+#else
+    return Q2P_ERR_DEFLATE_NOT_SUPPORTED;
+#endif
+}
+
+#if Q2PROTO_COMPRESSION_DEFLATE
+static q2proto_error_t kex_client_read_continue_configblast(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message)
+{
+    memset(svc_message, 0, sizeof(*svc_message));
+
+    if (q2protoio_read_available(context->inflate_io_arg) == 0)
+    {
+        // No more configblast data, tear down
+        CHECKED_IO(client_read, io_arg, q2protoio_inflate_end(context->inflate_io_arg), "finishing inflate");
+
+        context->client_read = kex_client_read;
+        // Call recursively to pick up next message from raw message
+        return kex_client_read(context, io_arg, svc_message);
+    }
+
+    svc_message->type = Q2P_SVC_CONFIGSTRING;
+    READ_CHECKED(client_read, context->inflate_io_arg, svc_message->configstring.index, u16);
+    READ_CHECKED(client_read, context->inflate_io_arg, svc_message->configstring.value, string);
+
+    return Q2P_ERR_SUCCESS;
+}
+#endif
+
+static q2proto_error_t kex_client_read_begin_configblast(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message)
+{
+#if Q2PROTO_COMPRESSION_DEFLATE
+    uint16_t compressed_len, uncompressed_len;
+    READ_CHECKED(client_read, io_arg, compressed_len, u16);
+    READ_CHECKED(client_read, io_arg, uncompressed_len, u16);
+    (void)uncompressed_len;
+
+    uintptr_t inflate_io_arg;
+    CHECKED(client_read, io_arg, q2protoio_inflate_begin(io_arg, Q2P_INFL_DEFL_HEADER, &inflate_io_arg));
+    CHECKED(client_read, io_arg, q2protoio_inflate_data(io_arg, inflate_io_arg, compressed_len));
+    context->inflate_io_arg = inflate_io_arg;
+
+    context->client_read = kex_client_read_continue_configblast;
+    return kex_client_read_continue_configblast(context, io_arg, svc_message);
+#else
+    return Q2P_ERR_DEFLATE_NOT_SUPPORTED;
+#endif
 }
 
 static q2proto_error_t kex_client_read_locprint(uintptr_t io_arg, q2proto_svc_locprint_t *locprint)
