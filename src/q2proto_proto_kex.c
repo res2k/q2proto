@@ -713,6 +713,7 @@ static q2proto_error_t kex_client_read_playerstate(q2proto_clientcontext_t *cont
         uint16_t gunbits;
         READ_CHECKED(client_read, io_arg, gunbits, u16);
         playerstate->gunframe = gunbits & 0x1ff;
+        playerstate->delta_bits |= Q2P_PSD_GUNFRAME;
         gunbits >>= 9;
 
         if (gunbits & GUNBIT_OFFSET_X)
@@ -733,7 +734,7 @@ static q2proto_error_t kex_client_read_playerstate(q2proto_clientcontext_t *cont
             READ_CHECKED(client_read, io_arg, gunrate, u8);
         #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
             playerstate->gunrate = gunrate;
-            playerstate->pm_flags |= Q2P_PSD_GUNRATE;
+            playerstate->delta_bits |= Q2P_PSD_GUNRATE;
         #endif
         }
     }
