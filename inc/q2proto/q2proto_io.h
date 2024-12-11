@@ -63,6 +63,9 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_string_t q2protoio_read_string(uintptr_
  */
 Q2PROTO_EXTERNALLY_PROVIDED_DECL const void* q2protoio_read_raw(uintptr_t io_arg, size_t size, size_t* readcount);
 
+/// Return how many bytes are still available to read.
+Q2PROTO_EXTERNALLY_PROVIDED_DECL size_t q2protoio_read_available(uintptr_t io_arg);
+
 /// Write an 8-bit unsigned integer.
 Q2PROTO_EXTERNALLY_PROVIDED_DECL void q2protoio_write_u8(uintptr_t io_arg, uint8_t x);
 /// Write a 16-bit unsigned integer.
@@ -92,6 +95,15 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL size_t q2protoio_write_available(uintptr_t io_a
 typedef struct q2protoio_deflate_args_s q2protoio_deflate_args_t;
 
 #if Q2PROTO_COMPRESSION_DEFLATE
+/// Specify presence or absence of zlib header & footer (per RFC 1950) in deflated data.
+typedef enum q2proto_inflate_deflate_header_mode_e
+{
+    /// Header/footer should not be expected (inflate) resp emitted (deflate)
+    Q2P_INFL_DEFL_RAW = 0,
+    /// Header/footer should be expected (inflate) resp emitted (deflate)
+    Q2P_INFL_DEFL_HEADER = 1,
+} q2proto_inflate_deflate_header_mode_t;
+
 /**
  * Initialize inflate decompression.
  *
@@ -104,10 +116,11 @@ typedef struct q2protoio_deflate_args_s q2protoio_deflate_args_t;
  *   Inflated data not being completely consumed can be considered an error.
  * - If processing the inflated data was successful, q2protoio_inflate_end() is called.
  * \param io_arg "I/O argument" to source compressed data from.
+ * \param header_mode Whether to expect a header in compressed data.
  * \param inflate_io_arg Receives I/O argument that will be used to retrieve the inflated data.
  * \returns Error code
  */
-Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_begin(uintptr_t io_arg, uintptr_t* inflate_io_arg);
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_begin(uintptr_t io_arg, q2proto_inflate_deflate_header_mode_t header_mode, uintptr_t* inflate_io_arg);
 /**
  * Inflate some data.
  * \param io_arg "I/O argument" to source compressed data from.
@@ -136,10 +149,11 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_end(uintptr_t
  * Begin deflation.
  * \param deflate_args Deflation args. Passed through from functions providing deflation support.
  * \param max_deflated Maximum size of deflated data.
+ * \param header_mode Whether to expect a header in compressed data.
  * \param deflate_io_arg Receives an "I/O argument" used for deflation operation.
  * \returns Error code
  */
-Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_deflate_begin(q2protoio_deflate_args_t* deflate_args, size_t max_deflated, uintptr_t *deflate_io_arg);
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_deflate_begin(q2protoio_deflate_args_t *deflate_args, size_t max_deflated, q2proto_inflate_deflate_header_mode_t header_mode, uintptr_t *deflate_io_arg);
 /**
  * Retrieve deflated data.
  * This function should deflate the data previously written to the deflate "I/O argument".

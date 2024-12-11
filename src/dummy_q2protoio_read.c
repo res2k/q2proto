@@ -50,3 +50,8 @@ const void* q2protoio_read_raw(uintptr_t io_arg, size_t size, size_t* readcount)
 {
     return NULL;
 }
+
+size_t q2protoio_read_available(uintptr_t io_arg)
+{
+    return 0;
+}

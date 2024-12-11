@@ -42,7 +42,7 @@ q2proto_error_t q2proto_maybe_zpacket_begin(q2proto_servercontext_t *context, q2
         if (max_deflated < MIN_COMPRESS_SIZE)
             return Q2P_ERR_NOT_ENOUGH_PACKET_SPACE;
         max_deflated -= SVC_ZPACKET_SIZE;
-        q2proto_error_t deflate_err = q2protoio_deflate_begin(deflate_args, max_deflated, new_io_arg);
+        q2proto_error_t deflate_err = q2protoio_deflate_begin(deflate_args, max_deflated, Q2P_INFL_DEFL_RAW, new_io_arg);
         if (deflate_err == Q2P_ERR_SUCCESS)
         {
             state->deflate_enabled = true;

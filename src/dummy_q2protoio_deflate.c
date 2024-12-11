@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Dummy q2protoio_deflate_* function definitions to make linking work
 
-q2proto_error_t q2protoio_deflate_begin(q2protoio_deflate_args_t* deflate_args, size_t max_deflated, uintptr_t *deflate_io_arg)
+q2proto_error_t q2protoio_deflate_begin(q2protoio_deflate_args_t* deflate_args, size_t max_deflated, q2proto_inflate_deflate_header_mode_t header_mode, uintptr_t *deflate_io_arg)
 {
     *deflate_io_arg = 0;
     return Q2P_ERR_NOT_IMPLEMENTED;

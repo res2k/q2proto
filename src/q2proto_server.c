@@ -279,7 +279,7 @@ q2proto_error_t q2proto_server_write_zpacket(q2proto_servercontext_t *context, q
 
     size_t deflate_io_arg;
     size_t max_deflated = q2protoio_write_available(io_arg);
-    CHECKED(server_write, io_arg, q2protoio_deflate_begin(deflate_args, max_deflated, &deflate_io_arg));
+    CHECKED(server_write, io_arg, q2protoio_deflate_begin(deflate_args, max_deflated, Q2P_INFL_DEFL_RAW, &deflate_io_arg));
     WRITE_CHECKED(server_write, deflate_io_arg, raw, packet_data, packet_len, NULL);
     const void *compressed_data;
     size_t uncompressed_len, compressed_len;

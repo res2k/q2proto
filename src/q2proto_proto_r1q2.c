@@ -574,7 +574,7 @@ q2proto_error_t r1q2_client_read_zpacket(q2proto_clientcontext_t *context, uintp
     (void)uncompressed_len;
 
     uintptr_t inflate_io_arg;
-    CHECKED(client_read, io_arg, q2protoio_inflate_begin(io_arg, &inflate_io_arg));
+    CHECKED(client_read, io_arg, q2protoio_inflate_begin(io_arg, Q2P_INFL_DEFL_RAW, &inflate_io_arg));
     CHECKED(client_read, io_arg, q2protoio_inflate_data(io_arg, inflate_io_arg, compressed_len));
     context->has_inflate_io_arg = true;
     context->inflate_io_arg = inflate_io_arg;
@@ -594,7 +594,7 @@ static q2proto_error_t r1q2_client_read_zdownload(uintptr_t io_arg, q2proto_svc_
     READ_CHECKED(client_read, io_arg, uncompressed_len, u16);
 
     uintptr_t inflate_io_arg;
-    CHECKED(client_read, io_arg, q2protoio_inflate_begin(io_arg, &inflate_io_arg));
+    CHECKED(client_read, io_arg, q2protoio_inflate_begin(io_arg, Q2P_INFL_DEFL_RAW, &inflate_io_arg));
     CHECKED(client_read, io_arg, q2protoio_inflate_data(io_arg, inflate_io_arg, download->size));
     READ_CHECKED(client_read, inflate_io_arg, download->data, raw, uncompressed_len, NULL);
     CHECKED_IO(client_read, io_arg, q2protoio_inflate_end(inflate_io_arg), "finishing inflate");
@@ -1561,7 +1561,7 @@ static q2proto_error_t r1q2_download_data(q2proto_server_download_state_t *state
         }
 
         uintptr_t deflate_io;
-        q2proto_error_t err = q2protoio_deflate_begin(state->deflate_args, max_compressed, &deflate_io);
+        q2proto_error_t err = q2protoio_deflate_begin(state->deflate_args, max_compressed, Q2P_INFL_DEFL_RAW, &deflate_io);
         if (err != Q2P_ERR_SUCCESS)
             return err;
         state->deflate_io = deflate_io;
