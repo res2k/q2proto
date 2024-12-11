@@ -170,7 +170,7 @@ static MAYBE_UNUSED const char* q2pro_server_cmd_string(int command)
 
 void q2proto_q2pro_debug_player_delta_bits_to_str(char *buf, size_t size, uint32_t bits)
 {
-    q2proto_debug_common_player_delta_bits_to_str(buf, size, bits & ~(PS_Q2PRO_MOREBITS | PS_Q2PRO_PLAYERFOG));
+    q2proto_debug_common_player_delta_bits_to_str(buf, size, bits & ~(PS_MOREBITS | PS_Q2PRO_PLAYERFOG));
     size -= strlen(buf);
     buf += strlen(buf);
 
@@ -693,7 +693,7 @@ static q2proto_error_t q2pro_client_read_playerstate(q2proto_clientcontext_t *co
     bool has_playerfog = context->protocol_version >= PROTOCOL_VERSION_Q2PRO_PLAYERFOG;
     uint32_t flags;
     READ_CHECKED(client_read, io_arg, flags, u16);
-    if (has_playerfog && flags & PS_Q2PRO_MOREBITS)
+    if (has_playerfog && flags & PS_MOREBITS)
     {
         uint8_t more_flags;
         READ_CHECKED(client_read, io_arg, more_flags, u8);
@@ -1941,14 +1941,14 @@ static q2proto_error_t q2pro_server_write_playerstate(q2proto_servercontext_t *c
     {
         if (!has_morebits)
             return Q2P_ERR_BAD_DATA;
-        flags |= PS_Q2PRO_MOREBITS;
+        flags |= PS_MOREBITS;
     }
 
     //
     // write it
     //
     WRITE_CHECKED(server_write, io_arg, u16, flags & 0xffff);
-    if (flags & PS_Q2PRO_MOREBITS)
+    if (flags & PS_MOREBITS)
         WRITE_CHECKED(server_write, io_arg, u8, flags >> 16);
 
     if (flags & PS_M_TYPE)

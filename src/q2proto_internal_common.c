@@ -238,7 +238,7 @@ q2proto_error_t q2proto_common_server_write_sound(q2proto_multicast_protocol_t m
 {
     WRITE_CHECKED(server_write, io_arg, u8, svc_sound);
     WRITE_CHECKED(server_write, io_arg, u8, sound->flags);
-    if (sound->flags & SND_INDEX16)
+    if (sound->flags & SND_Q2PRO_INDEX16)
         WRITE_CHECKED(server_write, io_arg, u16, sound->index);
     else
         WRITE_CHECKED(server_write, io_arg, u8, sound->index);

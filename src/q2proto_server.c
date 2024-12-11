@@ -133,6 +133,8 @@ q2proto_error_t q2proto_parse_connect(const char *connect_args, const q2proto_pr
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG:
+    case Q2P_PROTOCOL_KEX_DEMOS:
+    case Q2P_PROTOCOL_KEX:
     case Q2P_NUM_PROTOCOLS:
         return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
     case Q2P_PROTOCOL_OLD_DEMO:
@@ -173,6 +175,9 @@ q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t* context, con
         return q2proto_q2pro_extdemo_init_servercontext(context, connect_info);
     case Q2P_PROTOCOL_Q2REPRO:
         return q2proto_q2repro_init_servercontext(context, connect_info);
+    case Q2P_PROTOCOL_KEX_DEMOS:
+    case Q2P_PROTOCOL_KEX:
+        return q2proto_kex_init_servercontext(context, connect_info);
     }
 
     return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;

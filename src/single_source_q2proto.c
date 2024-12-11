@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_internal_maybe_zpacket.c"
 #include "q2proto_internal_packing.c"
 #include "q2proto_multicast.c"
+#include "q2proto_proto_kex.c"
 #include "q2proto_proto_q2pro.c"
 #include "q2proto_proto_q2pro_extdemo.c"
 #include "q2proto_proto_q2repro.c"

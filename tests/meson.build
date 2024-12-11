@@ -18,6 +18,7 @@ q2proto_src = [
   '../src/q2proto_internal_maybe_zpacket.c',
   '../src/q2proto_internal_packing.c',
   '../src/q2proto_multicast.c',
+  '../src/q2proto_proto_kex.c',
   '../src/q2proto_proto_q2pro_extdemo.c',
   '../src/q2proto_proto_q2pro.c',
   '../src/q2proto_proto_q2repro.c',

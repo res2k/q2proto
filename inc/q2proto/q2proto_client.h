@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_connect.h"
 #include "q2proto_coords.h"
 #include "q2proto_defs.h"
+#include "q2proto_entity_bits.h"
 #include "q2proto_error.h"
 #include "q2proto_game_api.h"
 #include "q2proto_protocol.h"
@@ -116,6 +117,11 @@ struct q2proto_clientcontext_s {
     bool Q2PROTO_PRIVATE_API_MEMBER(has_zdownload_inflate_io_arg);
     /// zdownload inflate ioarg
     uintptr_t Q2PROTO_PRIVATE_API_MEMBER(zdownload_inflate_io_arg);
+
+    /// For Q2P_PROTOCOL_KEX_DEMOS. Bits indicating whether a baseline entity has a solid value != 0
+    q2proto_entity_bits Q2PROTO_PRIVATE_API_MEMBER(kex_demo_baseline_nonzero_solid);
+    /// For Q2P_PROTOCOL_KEX_DEMOS. Bits indicating whether an entity was previously seen to have a solid value != 0
+    q2proto_entity_bits Q2PROTO_PRIVATE_API_MEMBER(kex_demo_edict_nonzero_solid);
 
     /// "Pack solid" function
     Q2PROTO_PRIVATE_API_FUNC_PTR(uint32_t, pack_solid, q2proto_clientcontext_t *context, const q2proto_vec3_t mins, const q2proto_vec3_t maxs);

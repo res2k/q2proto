@@ -336,6 +336,12 @@ typedef struct q2proto_svc_serverdata_s {
          */
         bool game3_compat;
     } q2repro;
+
+    /// KEX specific serverdata
+    struct {
+        /// Server update rate
+        uint8_t server_fps;
+    } kex;
 } q2proto_svc_serverdata_t;
 
 /// Rerelease fog, global part
@@ -628,6 +634,18 @@ typedef struct q2proto_svc_achievement_s {
     q2proto_string_t id;
 } q2proto_svc_achievement_t;
 
+/// Rerelease localized print
+typedef struct q2proto_svc_locprint_s {
+    /// Print flags
+    uint8_t flags;
+    /// Base string
+    q2proto_string_t base;
+    /// Numer of argument strings
+    uint8_t num_args;
+    /// Argument strings
+    q2proto_string_t args[Q2PROTO_MAX_LOCALIZATION_ARGS];
+} q2proto_svc_locprint_t;
+
 /// Types of message from server
 typedef enum q2proto_svc_message_type_e
 {
@@ -690,6 +708,8 @@ typedef enum q2proto_svc_message_type_e
     Q2P_SVC_HELP_PATH,
     /// Rerelease achievement
     Q2P_SVC_ACHIEVEMENT,
+    /// Rerelease localized print
+    Q2P_SVC_LOCPRINT,
 }
 q2proto_svc_message_type_t;
 
@@ -752,6 +772,8 @@ typedef struct q2proto_svc_message_s {
         q2proto_svc_help_path_t help_path;
         /// Q2P_SVC_ACHIEVEMENT message
         q2proto_svc_achievement_t achievement;
+        /// Q2P_SVC_LOCPRINT message
+        q2proto_svc_locprint_t locprint;
     };
 } q2proto_svc_message_t;
 

@@ -59,7 +59,7 @@ void q2proto_sound_encode_message(const q2proto_sound_t *sound_data, q2proto_svc
 
     sound_msg->index = sound_data->index;
     if (sound_msg->index > 255)
-        sound_msg->flags |= SND_INDEX16;
+        sound_msg->flags |= SND_Q2PRO_INDEX16;
     if (sound_data->has_entity_channel)
     {
         sound_msg->entity = sound_data->entity;

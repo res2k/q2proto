@@ -253,6 +253,23 @@ static inline q2proto_error_t read_var_angles16(uintptr_t io_arg, q2proto_var_an
     return Q2P_ERR_SUCCESS;
 }
 
+/// Read a single component of a float encoded angle
+#define READ_CHECKED_VAR_ANGLES_COMP_FLOAT(SOURCE, IO_ARG, TARGET, COMP) \
+    do                                                                   \
+    {                                                                    \
+        float a;                                                         \
+        READ_CHECKED(SOURCE, (IO_ARG), a, float);                        \
+        q2proto_var_angles_set_float_comp(TARGET, COMP, a);              \
+    } while (0)
+
+static inline q2proto_error_t read_var_angles_float(uintptr_t io_arg, q2proto_var_angles_t *angle)
+{
+    READ_CHECKED_VAR_ANGLES_COMP_FLOAT(client_read, io_arg, angle, 0);
+    READ_CHECKED_VAR_ANGLES_COMP_FLOAT(client_read, io_arg, angle, 1);
+    READ_CHECKED_VAR_ANGLES_COMP_FLOAT(client_read, io_arg, angle, 2);
+    return Q2P_ERR_SUCCESS;
+}
+
 /// Read a single component of an 8-bit small offset
 #define READ_CHECKED_VAR_SMALL_OFFSETS_COMP(SOURCE, IO_ARG, TARGET, COMP) \
     do                                                                    \
@@ -270,6 +287,40 @@ static inline q2proto_error_t read_var_small_offsets(uintptr_t io_arg, q2proto_v
     return Q2P_ERR_SUCCESS;
 }
 
+/// Read a single viewoffset component in Q2rePRO, KEX(?) specific encoding
+#define READ_CHECKED_VIEWOFFSET_COMP_Q2REPRO(SOURCE, IO_ARG, TARGET, COMP)      \
+    do                                                                          \
+    {                                                                           \
+        int16_t o;                                                              \
+        READ_CHECKED(SOURCE, (IO_ARG), o, i16);                                 \
+        q2proto_var_small_offsets_set_q2repro_viewoffset_comp(TARGET, COMP, o); \
+    } while (0)
+
+static inline q2proto_error_t read_viewoffsets_q2repro(uintptr_t io_arg, q2proto_var_small_offsets_t* offs)
+{
+    READ_CHECKED_VIEWOFFSET_COMP_Q2REPRO(client_read, io_arg, offs, 0);
+    READ_CHECKED_VIEWOFFSET_COMP_Q2REPRO(client_read, io_arg, offs, 1);
+    READ_CHECKED_VIEWOFFSET_COMP_Q2REPRO(client_read, io_arg, offs, 2);
+    return Q2P_ERR_SUCCESS;
+}
+
+/// Read a single viewoffset component in float specific encoding
+#define READ_CHECKED_VIEWOFFSET_COMP_FLOAT(SOURCE, IO_ARG, TARGET, COMP) \
+    do                                                                   \
+    {                                                                    \
+        float o;                                                         \
+        READ_CHECKED(SOURCE, (IO_ARG), o, float);                        \
+        q2proto_var_small_offsets_set_float_comp(TARGET, COMP, o);       \
+    } while (0)
+
+static inline q2proto_error_t read_viewoffsets_float(uintptr_t io_arg, q2proto_var_small_offsets_t* offs)
+{
+    READ_CHECKED_VIEWOFFSET_COMP_FLOAT(client_read, io_arg, offs, 0);
+    READ_CHECKED_VIEWOFFSET_COMP_FLOAT(client_read, io_arg, offs, 1);
+    READ_CHECKED_VIEWOFFSET_COMP_FLOAT(client_read, io_arg, offs, 2);
+    return Q2P_ERR_SUCCESS;
+}
+
 /// Read a single component of an 8-bit small angle
 #define READ_CHECKED_VAR_SMALL_ANGLES_COMP(SOURCE, IO_ARG, TARGET, COMP) \
     do                                                                   \
@@ -284,6 +335,23 @@ static inline q2proto_error_t read_var_small_angles(uintptr_t io_arg, q2proto_va
     READ_CHECKED_VAR_SMALL_ANGLES_COMP(client_read, io_arg, angle, 0);
     READ_CHECKED_VAR_SMALL_ANGLES_COMP(client_read, io_arg, angle, 1);
     READ_CHECKED_VAR_SMALL_ANGLES_COMP(client_read, io_arg, angle, 2);
+    return Q2P_ERR_SUCCESS;
+}
+
+/// Read a single kick_angles component in Q2rePRO, KEX specific encoding
+#define READ_CHECKED_KICK_ANGLES_COMP_Q2REPRO(SOURCE, IO_ARG, TARGET, COMP)     \
+    do                                                                          \
+    {                                                                           \
+        int16_t a;                                                              \
+        READ_CHECKED(SOURCE, (IO_ARG), a, i16);                                 \
+        q2proto_var_small_angles_set_q2repro_kick_angles_comp(TARGET, COMP, a); \
+    } while (0)
+
+static inline q2proto_error_t read_kickangles_q2repro(uintptr_t io_arg, q2proto_var_small_angles_t* angles)
+{
+    READ_CHECKED_KICK_ANGLES_COMP_Q2REPRO(client_read, io_arg, angles, 0);
+    READ_CHECKED_KICK_ANGLES_COMP_Q2REPRO(client_read, io_arg, angles, 1);
+    READ_CHECKED_KICK_ANGLES_COMP_Q2REPRO(client_read, io_arg, angles, 2);
     return Q2P_ERR_SUCCESS;
 }
 

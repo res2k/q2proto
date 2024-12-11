@@ -17,18 +17,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 /**\file
- * Limits (across all supported protocols)
+ * Entity bits type
  */
-#ifndef Q2PROTO_LIMITS_H_
-#define Q2PROTO_LIMITS_H_
+#ifndef Q2PROTO_ENTITY_H_
+#define Q2PROTO_ENTITY_H_
 
-/// Supported number of stats
-#define Q2PROTO_STATS           64
-/// Supported number of damage indicators. Same value as in rerelease game.
-#define Q2PROTO_MAX_DAMAGE_INDICATORS   4
-/// Supported max number of entities
-#define Q2PROTO_MAX_ENTITIES            8192
-/// Supported number of localization print arguments
-#define Q2PROTO_MAX_LOCALIZATION_ARGS   8
+#include "q2proto_limits.h"
 
-#endif // Q2PROTO_LIMITS_H_
+#include <stdint.h>
+
+/// \internal Bit array to store a single bit for each entity
+typedef uint32_t q2proto_entity_bits[Q2PROTO_MAX_ENTITIES / 32];
+
+#endif // Q2PROTO_ENTITY_H_

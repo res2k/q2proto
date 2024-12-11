@@ -259,7 +259,7 @@ static q2proto_error_t q2pro_extdemo_client_read_playerstate(q2proto_clientconte
     bool has_playerfog = context->server_protocol >= PROTOCOL_Q2PRO_DEMO_EXT_PLAYERFOG;
     uint32_t flags;
     READ_CHECKED(client_read, io_arg, flags, u16);
-    if (has_playerfog && flags & PS_Q2PRO_MOREBITS)
+    if (has_playerfog && flags & PS_MOREBITS)
     {
         uint8_t more_flags;
         READ_CHECKED(client_read, io_arg, more_flags, u8);
@@ -634,7 +634,7 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
     {
         if (!has_morebits)
             return Q2P_ERR_BAD_DATA;
-        flags |= PS_Q2PRO_MOREBITS;
+        flags |= PS_MOREBITS;
     }
 
     //
@@ -642,7 +642,7 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
     //
     WRITE_CHECKED(server_write, io_arg, u8, svc_playerinfo);
     WRITE_CHECKED(server_write, io_arg, u16, flags);
-    if (flags & PS_Q2PRO_MOREBITS)
+    if (flags & PS_MOREBITS)
         WRITE_CHECKED(server_write, io_arg, u8, flags >> 16);
 
     if (flags & PS_M_TYPE)

@@ -150,13 +150,13 @@ static inline uint8_t _q2proto_valenc_entityscale2byte(float x)
     return x != 0 ? _q2proto_valenc_clamped_mul(x, 16, 1, UINT8_MAX) : 0;
 }
 
-// Decode a viewoffset component for Q2rePRO protocol
+// Decode a viewoffset component for Q2rePRO, KEX protocols
 static inline float _q2proto_valenc_q2repro_short2viewoffset(int16_t x)
 {
     return x / 16.f;
 }
 
-// Encode a viewoffset component for Q2rePRO protocol
+// Encode a viewoffset component for Q2rePRO, KEX protocols
 static inline int16_t _q2proto_valenc_q2repro_viewoffset2short(float x)
 {
     return _q2proto_valenc_clamped_mul(x, 16, INT16_MIN, INT16_MAX);
@@ -174,13 +174,13 @@ static inline int16_t _q2proto_valenc_q2repro_gunoffset2short(float x)
     return _q2proto_valenc_clamped_mul(x, 512, INT16_MIN, INT16_MAX);
 }
 
-// Encode a kick_angles component for Q2rePRO protocol
+// Encode a kick_angles component for Q2rePRO, KEX protocols
 static inline float _q2proto_valenc_q2repro_short2kick_angle(int16_t x)
 {
     return x / 1024.f;
 }
 
-// Encode a kick_angles component for Q2rePRO protocol
+// Encode a kick_angles component for Q2rePRO, KEX protocols
 static inline int16_t _q2proto_valenc_q2repro_kick_angle2short(float x)
 {
     return _q2proto_valenc_clamped_mul(x, 1024, INT16_MIN, INT16_MAX);

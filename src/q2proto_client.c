@@ -108,6 +108,8 @@ q2proto_error_t q2proto_complete_connect(q2proto_connect_t *connect)
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG:
+    case Q2P_PROTOCOL_KEX_DEMOS:
+    case Q2P_PROTOCOL_KEX:
     case Q2P_NUM_PROTOCOLS:
         // none of these should be used for actual connections
         break;
@@ -186,6 +188,8 @@ q2proto_error_t q2proto_get_connect_arguments(char *args_str, size_t size, size_
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG:
+    case Q2P_PROTOCOL_KEX_DEMOS:
+    case Q2P_PROTOCOL_KEX:
     case Q2P_NUM_PROTOCOLS:
         // shouldn't be used for "connect"
         SET_ERROR(Q2P_ERR_PROTOCOL_NOT_SUPPORTED);
@@ -290,6 +294,9 @@ static q2proto_error_t default_client_packet_parse(q2proto_clientcontext_t *cont
         return q2proto_q2pro_extdemo_continue_serverdata(context, io_arg, &svc_message->serverdata);
     case PROTOCOL_Q2REPRO:
         return q2proto_q2repro_continue_serverdata(context, io_arg, &svc_message->serverdata);
+    case PROTOCOL_KEX_DEMOS:
+    case PROTOCOL_KEX:
+        return q2proto_kex_continue_serverdata(context, io_arg, &svc_message->serverdata);
     }
 
     return HANDLE_ERROR(client_read, io_arg, Q2P_ERR_PROTOCOL_NOT_SUPPORTED, "protocol unsupported: %d", protocol);

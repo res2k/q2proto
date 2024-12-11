@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "q2proto_connect.h"
 #include "q2proto_defs.h"
+#include "q2proto_entity_bits.h"
 #include "q2proto_error.h"
 #include "q2proto_game_api.h"
 #include "q2proto_io.h"
@@ -102,6 +103,11 @@ struct q2proto_servercontext_s {
     int Q2PROTO_PRIVATE_API_MEMBER(protocol_version);
     /// zpacket command (differs between R1Q2/Q2PRO and Q2rePRO protocol)
     uint8_t Q2PROTO_PRIVATE_API_MEMBER(zpacket_cmd);
+
+    /// For Q2P_PROTOCOL_KEX_DEMOS. Bits indicating whether a baseline entity has a solid value != 0
+    q2proto_entity_bits Q2PROTO_PRIVATE_API_MEMBER(kex_demo_baseline_nonzero_solid);
+    /// For Q2P_PROTOCOL_KEX_DEMOS. Bits indicating whether an entity was previously seen to have a solid value != 0
+    q2proto_entity_bits Q2PROTO_PRIVATE_API_MEMBER(kex_demo_edict_nonzero_solid);
 
     /// serverdata filling
     Q2PROTO_PRIVATE_API_FUNC_PTR(q2proto_error_t, fill_serverdata, q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata);

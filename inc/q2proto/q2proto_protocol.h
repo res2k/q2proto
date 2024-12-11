@@ -51,6 +51,10 @@ typedef enum q2proto_protocol_e {
     Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG,
     /// Q2rePRO (Q2PRO fork w/ rerelease game support) protocol
     Q2P_PROTOCOL_Q2REPRO,
+    /// Quake 2 Remastered/KEX, protocol used for demos
+    Q2P_PROTOCOL_KEX_DEMOS,
+    /// Quake 2 Remastered/KEX protocol
+    Q2P_PROTOCOL_KEX,
 
     /// Number of supported protocols
     Q2P_NUM_PROTOCOLS

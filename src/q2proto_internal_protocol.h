@@ -36,6 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PROTOCOL_Q2PRO_DEMO_EXT_PLAYERFOG   3436
 #define PROTOCOL_Q2PRO_DEMO_EXT_CURRENT     3436
 #define PROTOCOL_Q2REPRO                    1038
+#define PROTOCOL_KEX_DEMOS                  2022
+#define PROTOCOL_KEX                        2023
 
 // Protocol revision numbers used by R1Q2 and Q2PRO
 #define PROTOCOL_VERSION_R1Q2_MINIMUM           1903    // b6377
@@ -87,8 +89,10 @@ enum common_svc_cmds
     svc_q2pro_gamestate = 23,
     svc_q2pro_configstringstream = 25,
     svc_q2pro_baselinestream,
+    svc_rr_splitclient = 21,
     svc_rr_damage = 25,
-    svc_rr_fog = 27,
+    svc_rr_locprint,
+    svc_rr_fog,
     svc_rr_poi = 30,
     svc_rr_help_path,
     svc_rr_muzzleflash3,
@@ -101,12 +105,13 @@ enum common_svc_cmds
     svc_q2repro_baselinestream,
 };
 
-#define SND_VOLUME      BIT(0)
-#define SND_ATTENUATION BIT(1)
-#define SND_POS         BIT(2)
-#define SND_ENT         BIT(3)
-#define SND_OFFSET      BIT(4)
-#define SND_INDEX16     BIT(5) // Q2PRO extended
+#define SND_VOLUME              BIT(0)
+#define SND_ATTENUATION         BIT(1)
+#define SND_POS                 BIT(2)
+#define SND_ENT                 BIT(3)
+#define SND_OFFSET              BIT(4)
+#define SND_Q2PRO_INDEX16       BIT(5) // Q2PRO extended
+#define SND_KEX_LARGE_ENT       BIT(6) // KEX
 
 #define DEFAULT_SOUND_PACKET_VOLUME         1.0f
 #define DEFAULT_SOUND_PACKET_ATTENUATION    1.0f
@@ -143,12 +148,16 @@ enum common_svc_cmds
 #define U_SOUND         BIT_ULL(26)
 #define U_SOLID         BIT_ULL(27)
 #define U_MODEL16       BIT_ULL(28)
-#define U_MOREFX8       BIT_ULL(29)
+#define U_MOREFX8       BIT_ULL(29) // Q2PRO, Q2rePRO
+#define U_KEX_EFFECTS64 BIT_ULL(29) // KEX
 #define U_ALPHA         BIT_ULL(30)
 #define U_MOREBITS4     BIT_ULL(31)     // read one additional byte
 
 #define U_SCALE         BIT_ULL(32)
-#define U_MOREFX16      BIT_ULL(33)
+#define U_MOREFX16      BIT_ULL(33) // Q2PRO, Q2rePRO
+#define U_KEX_INSTANCE  BIT_ULL(33)
+#define U_KEX_OWNER     BIT_ULL(34)
+#define U_KEX_OLDFRAME  BIT_ULL(35)
 
 #define U_SKIN32        (U_SKIN8 | U_SKIN16)        // used for laser colors
 #define U_EFFECTS32     (U_EFFECTS8 | U_EFFECTS16)
@@ -250,9 +259,11 @@ typedef enum {
 #define PS_WEAPONINDEX      BIT(12)
 #define PS_WEAPONFRAME      BIT(13)
 #define PS_RDFLAGS          BIT(14)
-#define PS_RR_VIEWHEIGHT    BIT(15) // re-release
-#define PS_Q2PRO_MOREBITS   BIT(15) // Q2PRO extended
+#define PS_RR_VIEWHEIGHT    BIT(15) // Q2rePRO
+#define PS_MOREBITS         BIT(15) // Q2PRO extended, KEX
 #define PS_Q2PRO_PLAYERFOG  BIT(16) // Q2PRO extended
+#define PS_KEX_DAMAGE_BLEND BIT(16) // KEX
+#define PS_KEX_TEAM_ID      BIT(17) // KEX
 
 // r1q2 protocol specific extra flags
 #define EPS_GUNOFFSET       BIT(0)
@@ -349,7 +360,7 @@ static inline unsigned int max_configstrings_for_game(q2proto_game_api_t game)
 
 /** @} */
 
-/// Number of bits used by Q2PRO, Q2rePRO protocols for gunindex (remained is gunskin)
+/// Number of bits used by Q2PRO, Q2rePRO, KEX protocols for gunindex (remainder is gunskin)
 #define Q2PRO_GUNINDEX_BITS     13
 /// Mask to extract gunindex
 #define Q2PRO_GUNINDEX_MASK     (BIT(13) - 1)

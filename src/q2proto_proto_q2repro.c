@@ -58,39 +58,6 @@ const char *q2proto_q2repro_connect_tail(const q2proto_connect_t *connect)
 // CLIENT: PARSE MESSAGES FROM SERVER
 //
 
-// Q2rePRO-specific encodings for some values
-#define READ_CHECKED_VIEWOFFSET_COMP(SOURCE, IO_ARG, TARGET, COMP)              \
-    do                                                                          \
-    {                                                                           \
-        int16_t o;                                                              \
-        READ_CHECKED(SOURCE, (IO_ARG), o, i16);                                 \
-        q2proto_var_small_offsets_set_q2repro_viewoffset_comp(TARGET, COMP, o); \
-    } while (0)
-
-static inline q2proto_error_t read_short_viewoffset(uintptr_t io_arg, q2proto_var_small_offsets_t* offs)
-{
-    READ_CHECKED_VIEWOFFSET_COMP(client_read, io_arg, offs, 0);
-    READ_CHECKED_VIEWOFFSET_COMP(client_read, io_arg, offs, 1);
-    READ_CHECKED_VIEWOFFSET_COMP(client_read, io_arg, offs, 2);
-    return Q2P_ERR_SUCCESS;
-}
-
-#define READ_CHECKED_KICK_ANGLES_COMP(SOURCE, IO_ARG, TARGET, COMP)             \
-    do                                                                          \
-    {                                                                           \
-        int16_t a;                                                              \
-        READ_CHECKED(SOURCE, (IO_ARG), a, i16);                                 \
-        q2proto_var_small_angles_set_q2repro_kick_angles_comp(TARGET, COMP, a); \
-    } while (0)
-
-static inline q2proto_error_t read_short_kick_angles(uintptr_t io_arg, q2proto_var_small_angles_t* angles)
-{
-    READ_CHECKED_KICK_ANGLES_COMP(client_read, io_arg, angles, 0);
-    READ_CHECKED_KICK_ANGLES_COMP(client_read, io_arg, angles, 1);
-    READ_CHECKED_KICK_ANGLES_COMP(client_read, io_arg, angles, 2);
-    return Q2P_ERR_SUCCESS;
-}
-
 #define READ_CHECKED_GUNOFFSET_COMP(SOURCE, IO_ARG, TARGET, COMP)              \
     do                                                                         \
     {                                                                          \
@@ -204,13 +171,7 @@ q2proto_error_t q2proto_q2repro_continue_serverdata(q2proto_clientcontext_t *con
 static q2proto_error_t q2repro_client_read_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata);
 static q2proto_error_t q2repro_client_read_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, uint64_t bits, q2proto_entity_state_delta_t *entity_state);
 static q2proto_error_t q2repro_client_read_baseline(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_spawnbaseline_t *spawnbaseline);
-static q2proto_error_t q2repro_client_read_muzzleflash3(uintptr_t io_arg, q2proto_svc_muzzleflash_t *muzzleflash);
 static q2proto_error_t q2repro_client_read_frame(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_frame_t *frame);
-static q2proto_error_t q2repro_client_read_damage(uintptr_t io_arg, q2proto_svc_damage_t *damage);
-static q2proto_error_t q2repro_client_read_fog(uintptr_t io_arg, q2proto_svc_fog_t *fog);
-static q2proto_error_t q2repro_client_read_poi(uintptr_t io_arg, q2proto_svc_poi_t *poi);
-static q2proto_error_t q2repro_client_read_help_path(uintptr_t io_arg, q2proto_svc_help_path_t *help_path);
-static q2proto_error_t q2repro_client_read_achievement(uintptr_t io_arg, q2proto_svc_achievement_t *achievement);
 static q2proto_error_t q2repro_client_read_zdownload(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_download_t *download);
 static q2proto_error_t q2repro_client_read_begin_gamestate(q2proto_clientcontext_t *context, uintptr_t raw_io_arg, q2proto_svc_message_t *svc_message);
 static q2proto_error_t q2repro_client_read_begin_configstream(q2proto_clientcontext_t *context, uintptr_t raw_io_arg, q2proto_svc_message_t *svc_message);
@@ -344,7 +305,7 @@ static q2proto_error_t q2repro_client_read(q2proto_clientcontext_t *context, uin
 
     case svc_rr_muzzleflash3:
         svc_message->type = Q2P_SVC_MUZZLEFLASH2;
-        return q2repro_client_read_muzzleflash3(io_arg, &svc_message->muzzleflash);
+        return q2proto_q2repro_client_read_muzzleflash3(io_arg, &svc_message->muzzleflash);
 
     case svc_download:
         svc_message->type = Q2P_SVC_DOWNLOAD;
@@ -364,23 +325,23 @@ static q2proto_error_t q2repro_client_read(q2proto_clientcontext_t *context, uin
 
     case svc_rr_damage:
         svc_message->type = Q2P_SVC_DAMAGE;
-        return q2repro_client_read_damage(io_arg, &svc_message->damage);
+        return q2proto_q2repro_client_read_damage(io_arg, &svc_message->damage);
 
     case svc_rr_fog:
         svc_message->type = Q2P_SVC_FOG;
-        return q2repro_client_read_fog(io_arg, &svc_message->fog);
+        return q2proto_q2repro_client_read_fog(io_arg, &svc_message->fog);
 
     case svc_rr_poi:
         svc_message->type = Q2P_SVC_POI;
-        return q2repro_client_read_poi(io_arg, &svc_message->poi);
+        return q2proto_q2repro_client_read_poi(io_arg, &svc_message->poi);
 
     case svc_rr_help_path:
         svc_message->type = Q2P_SVC_HELP_PATH;
-        return q2repro_client_read_help_path(io_arg, &svc_message->help_path);
+        return q2proto_q2repro_client_read_help_path(io_arg, &svc_message->help_path);
 
     case svc_rr_achievement:
         svc_message->type = Q2P_SVC_ACHIEVEMENT;
-        return q2repro_client_read_achievement(io_arg, &svc_message->achievement);
+        return q2proto_q2repro_client_read_achievement(io_arg, &svc_message->achievement);
 
     case svc_q2repro_zpacket:
         CHECKED(client_read, io_arg, r1q2_client_read_zpacket(context, io_arg, svc_message));
@@ -726,7 +687,7 @@ static q2proto_error_t q2repro_client_read_playerstate(q2proto_clientcontext_t *
     // parse the rest of the player_state_t
     //
     if (delta_bits_check(flags, PS_VIEWOFFSET, &playerstate->delta_bits, Q2P_PSD_VIEWOFFSET))
-        CHECKED(client_read, io_arg, read_short_viewoffset(io_arg, &playerstate->viewoffset));
+        CHECKED(client_read, io_arg, read_viewoffsets_q2repro(io_arg, &playerstate->viewoffset));
 
     playerstate->viewangles.delta_bits = 0;
     if (flags & PS_VIEWANGLES)
@@ -742,7 +703,7 @@ static q2proto_error_t q2repro_client_read_playerstate(q2proto_clientcontext_t *
     }
 
     if (delta_bits_check(flags, PS_KICKANGLES, &playerstate->delta_bits, Q2P_PSD_KICKANGLES))
-        CHECKED(client_read, io_arg, read_short_kick_angles(io_arg, &playerstate->kick_angles));
+        CHECKED(client_read, io_arg, read_kickangles_q2repro(io_arg, &playerstate->kick_angles));
 
     if (delta_bits_check(flags, PS_WEAPONINDEX, &playerstate->delta_bits, Q2P_PSD_GUNINDEX))
     {
@@ -806,7 +767,7 @@ static q2proto_error_t q2repro_client_read_playerstate(q2proto_clientcontext_t *
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t q2repro_client_read_muzzleflash3(uintptr_t io_arg, q2proto_svc_muzzleflash_t *muzzleflash)
+q2proto_error_t q2proto_q2repro_client_read_muzzleflash3(uintptr_t io_arg, q2proto_svc_muzzleflash_t *muzzleflash)
 {
     READ_CHECKED(client_read, io_arg, muzzleflash->entity, i16);
     READ_CHECKED(client_read, io_arg, muzzleflash->weapon, u16);
@@ -850,7 +811,7 @@ static q2proto_error_t q2repro_client_read_frame(q2proto_clientcontext_t *contex
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t q2repro_client_read_damage(uintptr_t io_arg, q2proto_svc_damage_t *damage)
+q2proto_error_t q2proto_q2repro_client_read_damage(uintptr_t io_arg, q2proto_svc_damage_t *damage)
 {
     READ_CHECKED(client_read, io_arg, damage->count, u8);
     for (unsigned int i = 0; i < damage->count; i++)
@@ -883,7 +844,7 @@ static inline bool fog_color_bits_check(unsigned int bits, unsigned int check, u
     return false;
 }
 
-static q2proto_error_t q2repro_client_read_fog(uintptr_t io_arg, q2proto_svc_fog_t *fog)
+q2proto_error_t q2proto_q2repro_client_read_fog(uintptr_t io_arg, q2proto_svc_fog_t *fog)
 {
     unsigned int bits;
     READ_CHECKED(client_read, io_arg, bits, u8);
@@ -954,7 +915,7 @@ static q2proto_error_t q2repro_client_read_fog(uintptr_t io_arg, q2proto_svc_fog
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t q2repro_client_read_poi(uintptr_t io_arg, q2proto_svc_poi_t *poi)
+q2proto_error_t q2proto_q2repro_client_read_poi(uintptr_t io_arg, q2proto_svc_poi_t *poi)
 {
     READ_CHECKED(client_read, io_arg, poi->key, u16);
     READ_CHECKED(client_read, io_arg, poi->time, u16);
@@ -966,7 +927,7 @@ static q2proto_error_t q2repro_client_read_poi(uintptr_t io_arg, q2proto_svc_poi
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t q2repro_client_read_help_path(uintptr_t io_arg, q2proto_svc_help_path_t *help_path)
+q2proto_error_t q2proto_q2repro_client_read_help_path(uintptr_t io_arg, q2proto_svc_help_path_t *help_path)
 {
     uint8_t start;
     READ_CHECKED(client_read, io_arg, start, u8);
@@ -978,7 +939,7 @@ static q2proto_error_t q2repro_client_read_help_path(uintptr_t io_arg, q2proto_s
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t q2repro_client_read_achievement(uintptr_t io_arg, q2proto_svc_achievement_t *achievement)
+q2proto_error_t q2proto_q2repro_client_read_achievement(uintptr_t io_arg, q2proto_svc_achievement_t *achievement)
 {
     READ_CHECKED(client_read, io_arg, achievement->id, string);
 
@@ -1726,7 +1687,6 @@ static q2proto_error_t q2repro_server_write_spawnbaseline(q2proto_servercontext_
 static q2proto_error_t q2repro_server_write_download(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_download_t *download);
 static q2proto_error_t q2repro_server_write_frame(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_frame_t *frame);
 static q2proto_error_t q2repro_server_write_frame_entity_delta(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_frame_entity_delta_t *frame_entity_delta);
-static q2proto_error_t q2repro_server_write_fog(uintptr_t io_arg, const q2proto_svc_fog_t *fog);
 
 static q2proto_error_t q2repro_server_write(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message)
 {
@@ -1777,7 +1737,7 @@ static q2proto_error_t q2repro_server_write(q2proto_servercontext_t *context, ui
 
     case Q2P_SVC_FOG:
         // Although typically written by the game, this is useful when writing demos
-        return q2repro_server_write_fog(io_arg, &svc_message->fog);
+        return q2proto_q2repro_server_write_fog(io_arg, &svc_message->fog);
 
     default:
         break;
@@ -2284,7 +2244,7 @@ static q2proto_error_t q2repro_server_write_frame_entity_delta(q2proto_servercon
     return q2proto_q2repro_server_write_entity_state_delta(context, io_arg, frame_entity_delta->newnum, &frame_entity_delta->entity_delta);
 }
 
-static q2proto_error_t q2repro_server_write_fog(uintptr_t io_arg, const q2proto_svc_fog_t *fog)
+q2proto_error_t q2proto_q2repro_server_write_fog(uintptr_t io_arg, const q2proto_svc_fog_t *fog)
 {
     WRITE_CHECKED(server_write, io_arg, u8, svc_rr_fog);
 

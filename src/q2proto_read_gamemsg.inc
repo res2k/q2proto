@@ -216,7 +216,7 @@ READ_TEMP_ENTITY_DECL q2proto_error_t READ_TEMP_ENTITY_NAME(uintptr_t io_arg, q2
 READ_SOUND_DECL q2proto_error_t READ_SOUND_NAME(uintptr_t io_arg, q2proto_svc_sound_t *sound)
 {
     READ_CHECKED(client_read, io_arg, sound->flags, u8);
-    if (sound->flags & SND_INDEX16)
+    if (sound->flags & SND_Q2PRO_INDEX16)
         READ_CHECKED(client_read, io_arg, sound->index, u16);
     else
         READ_CHECKED(client_read, io_arg, sound->index, u8);

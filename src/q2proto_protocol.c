@@ -47,6 +47,10 @@ int q2proto_get_protocol_netver(q2proto_protocol_t protocol)
         return PROTOCOL_Q2PRO_DEMO_EXT_PLAYERFOG;
     case Q2P_PROTOCOL_Q2REPRO:
         return PROTOCOL_Q2REPRO;
+    case Q2P_PROTOCOL_KEX_DEMOS:
+        return PROTOCOL_KEX_DEMOS;
+    case Q2P_PROTOCOL_KEX:
+        return PROTOCOL_KEX;
     }
 
     return 0;
@@ -72,6 +76,10 @@ q2proto_protocol_t q2proto_protocol_from_netver(int version)
         return Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG;
     case PROTOCOL_Q2REPRO:
         return Q2P_PROTOCOL_Q2REPRO;
+    case PROTOCOL_KEX_DEMOS:
+        return Q2P_PROTOCOL_KEX_DEMOS;
+    case PROTOCOL_KEX:
+        return Q2P_PROTOCOL_KEX;
     }
 
     return Q2P_PROTOCOL_INVALID;
