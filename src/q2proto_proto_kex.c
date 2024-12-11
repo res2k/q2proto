@@ -311,7 +311,7 @@ static q2proto_error_t kex_client_read_serverdata(q2proto_clientcontext_t *conte
     int32_t protocol;
     READ_CHECKED(client_read, io_arg, protocol, i32);
 
-    if (protocol < PROTOCOL_Q2PRO_DEMO_EXT || protocol > PROTOCOL_Q2PRO_DEMO_EXT_PLAYERFOG)
+    if (protocol < PROTOCOL_KEX_DEMOS || protocol > PROTOCOL_KEX)
         return HANDLE_ERROR(client_read, io_arg, Q2P_ERR_BAD_DATA, "unexpected protocol %d", protocol);
 
     serverdata->protocol = protocol;
