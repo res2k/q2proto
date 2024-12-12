@@ -1581,7 +1581,7 @@ static q2proto_error_t kex_server_write_frame_entity_delta(q2proto_servercontext
         q2proto_get_entity_bit(context->kex_demo_edict_nonzero_solid, frame_entity_delta->newnum));
 }
 
-#define WRITE_GAMESTATE_FUNCTION_NAME kex_server_write_gamestate
+#define WRITE_GAMESTATE_FUNCTION_NAME kex_server_write_gamestate_mono
 #define WRITE_GAMESTATE_BASELINE_SIZE \
     (1    /* command byte */          \
      + 7  /* bits & number */         \
@@ -1606,5 +1606,117 @@ static q2proto_error_t kex_server_write_frame_entity_delta(q2proto_servercontext
 #include "q2proto_write_gamestate.inc"
 
 #undef WRITE_GAMESTATE_FUNCTION_NAME
-#undef WRITE_GAMESTATE_BASELINE_SIZE
 #undef WRITE_GAMESTATE_BASELINE
+
+#if Q2PROTO_COMPRESSION_DEFLATE
+    #define BLAST_PACKET_SIZE     (1 /* command */ + 4 /* sizes */)
+    /* Minimal space in packet needed for blast packet
+     * (minimal packet size + some slack for compressed data) */
+    #define MIN_BLAST_PACKET_SIZE (BLAST_PACKET_SIZE + 16 /* slack */)
+
+static q2proto_error_t kex_blast_begin(q2proto_servercontext_t *context, q2protoio_deflate_args_t *deflate_args,
+                                       uintptr_t io_arg, uintptr_t *new_io_arg)
+{
+    size_t max_deflated = q2protoio_write_available(io_arg);
+    if (max_deflated < MIN_BLAST_PACKET_SIZE)
+        return Q2P_ERR_NOT_ENOUGH_PACKET_SPACE;
+    max_deflated -= BLAST_PACKET_SIZE;
+    q2proto_error_t deflate_err = q2protoio_deflate_begin(deflate_args, max_deflated, Q2P_INFL_DEFL_HEADER, new_io_arg);
+    return deflate_err;
+}
+
+static q2proto_error_t kex_blast_end(uintptr_t io_arg, uintptr_t new_io_arg, uint8_t command)
+{
+    const void *data;
+    size_t uncompressed_len = 0, compressed_len = 0;
+    q2proto_error_t err = q2protoio_deflate_get_data(new_io_arg, &uncompressed_len, &data, &compressed_len);
+    if (err != Q2P_ERR_SUCCESS)
+        goto error;
+
+    WRITE_CHECKED(server_write, io_arg, u8, command);
+    WRITE_CHECKED(server_write, io_arg, u16, compressed_len);
+    WRITE_CHECKED(server_write, io_arg, u16, uncompressed_len);
+    WRITE_CHECKED(server_write, io_arg, raw, data, compressed_len, NULL);
+
+    return q2protoio_deflate_end(new_io_arg);
+
+error:
+    q2protoio_deflate_end(new_io_arg);
+    return err;
+}
+
+static q2proto_error_t kex_server_write_gamestate_blast(q2proto_servercontext_t *context,
+                                                        q2protoio_deflate_args_t *deflate_args, uintptr_t io_arg,
+                                                        const q2proto_gamestate_t *gamestate)
+{
+    uintptr_t deflate_io_arg;
+    if (context->gamestate_pos < gamestate->num_configstrings) {
+        q2proto_error_t compress_err = kex_blast_begin(context, deflate_args, io_arg, &deflate_io_arg);
+        if (compress_err != Q2P_ERR_SUCCESS)
+            return compress_err;
+
+        // Write configstrings
+        while (context->gamestate_pos < gamestate->num_configstrings) {
+            const q2proto_svc_configstring_t *cfgstr = gamestate->configstrings + context->gamestate_pos;
+            size_t configstring_size = 2 /* index */ + cfgstr->value.len + 1 /* string */;
+            if (q2protoio_write_available(deflate_io_arg) < configstring_size) {
+                q2proto_error_t result = kex_blast_end(io_arg, deflate_io_arg, svc_rr_configblast);
+                if (result == Q2P_ERR_SUCCESS)
+                    result = Q2P_ERR_NOT_ENOUGH_PACKET_SPACE;
+                return result;
+            }
+
+            WRITE_CHECKED(server_write, deflate_io_arg, u16, cfgstr->index);
+            WRITE_CHECKED(server_write, deflate_io_arg, string, &cfgstr->value);
+            context->gamestate_pos++;
+        }
+        q2proto_error_t result = kex_blast_end(io_arg, deflate_io_arg, svc_rr_configblast);
+        if (result != Q2P_ERR_SUCCESS)
+            return result;
+    }
+
+    if (context->gamestate_pos - gamestate->num_configstrings < gamestate->num_spawnbaselines) {
+        q2proto_error_t compress_err = kex_blast_begin(context, deflate_args, io_arg, &deflate_io_arg);
+        if (compress_err != Q2P_ERR_SUCCESS)
+            return compress_err;
+
+        // Write spawn baselines
+        size_t baseline_num;
+        while ((baseline_num = context->gamestate_pos - gamestate->num_configstrings) < gamestate->num_spawnbaselines) {
+            const q2proto_svc_spawnbaseline_t *baseline = gamestate->spawnbaselines + baseline_num;
+            if (q2protoio_write_available(deflate_io_arg) < WRITE_GAMESTATE_BASELINE_SIZE) {
+                q2proto_error_t result = kex_blast_end(io_arg, deflate_io_arg, svc_rr_spawnbaselineblast);
+                if (result == Q2P_ERR_SUCCESS)
+                    result = Q2P_ERR_NOT_ENOUGH_PACKET_SPACE;
+                return result;
+            }
+
+            CHECKED(server_write, deflate_io_arg,
+                    kex_server_write_entity_state_delta(context, deflate_io_arg, baseline->entnum,
+                                                        &baseline->delta_state, false));
+            context->gamestate_pos++;
+        }
+        q2proto_error_t result = kex_blast_end(io_arg, deflate_io_arg, svc_rr_spawnbaselineblast);
+        if (result != Q2P_ERR_SUCCESS)
+            return result;
+    }
+
+    // Game state written successfully, reset state
+    context->gamestate_pos = 0;
+
+    return Q2P_ERR_SUCCESS;
+}
+#endif
+
+static q2proto_error_t kex_server_write_gamestate(q2proto_servercontext_t *context,
+                                                  q2protoio_deflate_args_t *deflate_args, uintptr_t io_arg,
+                                                  const q2proto_gamestate_t *gamestate)
+{
+#if Q2PROTO_COMPRESSION_DEFLATE
+    if (deflate_args)
+        return kex_server_write_gamestate_blast(context, deflate_args, io_arg, gamestate);
+#endif
+    return kex_server_write_gamestate_mono(context, deflate_args, io_arg, gamestate);
+}
+
+#undef WRITE_GAMESTATE_BASELINE_SIZE
