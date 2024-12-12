@@ -313,8 +313,8 @@ enum common_clc_cmds {
      + 8 /* model indices */                \
      + 2 /* frame */                        \
      + 4 /* skin */                         \
-     + 4 /* effects */                      \
-     + 8 /* renderfx + morefx */            \
+     + 8 /* effects  + morefx */            \
+     + 4 /* renderfx */                     \
      + 9 /* origin */                       \
      + 6 /* angles */                       \
      + 9 /* old_origin */                   \
