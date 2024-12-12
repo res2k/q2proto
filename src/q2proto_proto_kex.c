@@ -1581,8 +1581,26 @@ static q2proto_error_t kex_server_write_frame_entity_delta(q2proto_servercontext
         q2proto_get_entity_bit(context->kex_demo_edict_nonzero_solid, frame_entity_delta->newnum));
 }
 
-#define WRITE_GAMESTATE_FUNCTION_NAME     kex_server_write_gamestate
-#define WRITE_GAMESTATE_BASELINE_SIZE     Q2PRO_WRITE_GAMESTATE_BASELINE_SIZE
+#define WRITE_GAMESTATE_FUNCTION_NAME kex_server_write_gamestate
+#define WRITE_GAMESTATE_BASELINE_SIZE \
+    (1    /* command byte */          \
+     + 7  /* bits & number */         \
+     + 8  /* model indices */         \
+     + 2  /* frame */                 \
+     + 4  /* skin */                  \
+     + 8  /* effects  + morefx */     \
+     + 4  /* renderfx */              \
+     + 12 /* origin */                \
+     + 12 /* angles */                \
+     + 12 /* old_origin */            \
+     + 2  /* sound */                 \
+     + 1  /* loop volume */           \
+     + 1  /* loop attenuation */      \
+     + 1  /* event */                 \
+     + 4  /* solid */                 \
+     + 1  /* alpha */                 \
+     + 1  /* scale */                 \
+    )
 #define WRITE_GAMESTATE_BASELINE(C, I, S) kex_server_write_spawnbaseline(C, I, S)
 
 #include "q2proto_write_gamestate.inc"
