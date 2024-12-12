@@ -28,26 +28,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stdlib.h>
 
 // Pick "best" accepted protocol from a comma-separated list of protocol versions. Ignore unsupported/invalid versions.
-static void parse_challenge_protocol(q2proto_string_t protos_str, const q2proto_protocol_t *accepted_protocols, size_t num_accepted_protocols, q2proto_challenge_t *parsed_challenge)
+static void parse_challenge_protocol(q2proto_string_t protos_str, const q2proto_protocol_t *accepted_protocols,
+                                     size_t num_accepted_protocols, q2proto_challenge_t *parsed_challenge)
 {
     size_t best_protocol_idx = SIZE_MAX;
     q2proto_protocol_t best_protocol = Q2P_PROTOCOL_INVALID;
 
     q2proto_string_t proto_num_token;
-    while(next_token(&proto_num_token, &protos_str, ','))
-    {
+    while (next_token(&proto_num_token, &protos_str, ',')) {
         errno = 0;
         long proto_value = q2pstol(&proto_num_token, 10);
         if (errno != 0)
             continue;
 
-        for (size_t i = 0; i < num_accepted_protocols; i++)
-        {
+        for (size_t i = 0; i < num_accepted_protocols; i++) {
             q2proto_protocol_t p = accepted_protocols[i];
-            if(q2proto_get_protocol_netver(p) == proto_value)
-            {
-                if (i < best_protocol_idx)
-                {
+            if (q2proto_get_protocol_netver(p) == proto_value) {
+                if (i < best_protocol_idx) {
                     best_protocol_idx = i;
                     best_protocol = p;
                 }
@@ -59,7 +56,8 @@ static void parse_challenge_protocol(q2proto_string_t protos_str, const q2proto_
         parsed_challenge->server_protocol = best_protocol;
 }
 
-q2proto_error_t q2proto_parse_challenge(const char *challenge_args, const q2proto_protocol_t *accepted_protocols, size_t num_accepted_protocols, q2proto_challenge_t *parsed_challenge)
+q2proto_error_t q2proto_parse_challenge(const char *challenge_args, const q2proto_protocol_t *accepted_protocols,
+                                        size_t num_accepted_protocols, q2proto_challenge_t *parsed_challenge)
 {
     q2proto_string_t challenge_str = q2proto_make_string(challenge_args);
 
@@ -77,10 +75,8 @@ q2proto_error_t q2proto_parse_challenge(const char *challenge_args, const q2prot
     parsed_challenge->server_protocol = Q2P_PROTOCOL_INVALID;
 
     // No "p=" args means vanilla protocol. See if it's in the list of accepted protocols.
-    for (size_t i = 0; i < num_accepted_protocols; i++)
-    {
-        if (accepted_protocols[i] == Q2P_PROTOCOL_VANILLA)
-        {
+    for (size_t i = 0; i < num_accepted_protocols; i++) {
+        if (accepted_protocols[i] == Q2P_PROTOCOL_VANILLA) {
             parsed_challenge->server_protocol = Q2P_PROTOCOL_INVALID;
             break;
         }
@@ -88,11 +84,10 @@ q2proto_error_t q2proto_parse_challenge(const char *challenge_args, const q2prot
 
     // Parse challenge args
     q2proto_string_t challenge_arg;
-    while (next_token(&challenge_arg, &challenge_str, ' '))
-    {
-        if(strncmp(challenge_arg.str, "p=", 2) == 0)
-        {
-            parse_challenge_protocol(q2ps_substr(&challenge_arg, 2), accepted_protocols, num_accepted_protocols, parsed_challenge);
+    while (next_token(&challenge_arg, &challenge_str, ' ')) {
+        if (strncmp(challenge_arg.str, "p=", 2) == 0) {
+            parse_challenge_protocol(q2ps_substr(&challenge_arg, 2), accepted_protocols, num_accepted_protocols,
+                                     parsed_challenge);
         }
     }
 
@@ -101,8 +96,7 @@ q2proto_error_t q2proto_parse_challenge(const char *challenge_args, const q2prot
 
 q2proto_error_t q2proto_complete_connect(q2proto_connect_t *connect)
 {
-    switch(connect->protocol)
-    {
+    switch (connect->protocol) {
     case Q2P_PROTOCOL_INVALID:
     case Q2P_PROTOCOL_OLD_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
@@ -127,53 +121,49 @@ q2proto_error_t q2proto_complete_connect(q2proto_connect_t *connect)
     return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
 }
 
-q2proto_error_t q2proto_get_connect_arguments(char *args_str, size_t size, size_t* need_size, const q2proto_connect_t *connect)
+q2proto_error_t q2proto_get_connect_arguments(char *args_str, size_t size, size_t *need_size,
+                                              const q2proto_connect_t *connect)
 {
     int result = Q2P_ERR_SUCCESS;
     size_t buf_needed = 0;
 
-#define SET_ERROR(err)  if(result == Q2P_ERR_SUCCESS) result = err
+#define SET_ERROR(err)             \
+    if (result == Q2P_ERR_SUCCESS) \
+    result = err
 
     int net_protocol = q2proto_get_protocol_netver(connect->protocol);
-    if (net_protocol == 0)
-    {
+    if (net_protocol == 0) {
         SET_ERROR(Q2P_ERR_PROTOCOL_NOT_SUPPORTED);
         net_protocol = 9999; // to take up realistic amount of buffer space
     }
 
 #define ADD_FORMAT_IMPL(...)                                   \
-    do                                                         \
-    {                                                          \
+    do {                                                       \
         size_t buf_remaining = size;                           \
         int fmt_result = q2proto_snprintf_update(__VA_ARGS__); \
-        if (fmt_result < 0)                                    \
-        {                                                      \
+        if (fmt_result < 0) {                                  \
             SET_ERROR(Q2P_ERR_BAD_DATA);                       \
             break;                                             \
         }                                                      \
         buf_needed += fmt_result;                              \
-        if (fmt_result >= buf_remaining)                       \
-        {                                                      \
+        if (fmt_result >= buf_remaining) {                     \
             SET_ERROR(Q2P_ERR_BUFFER_TOO_SMALL);               \
         }                                                      \
     } while (0)
 #if defined(_MSC_VER)
     #define ADD_FORMAT(FMT, ...) ADD_FORMAT_IMPL(&args_str, &size, (FMT), ##__VA_ARGS__)
 #else
-    #define ADD_FORMAT(FMT, ...) ADD_FORMAT_IMPL(&args_str, &size, (FMT) __VA_OPT__(,) __VA_ARGS__)
+    #define ADD_FORMAT(FMT, ...) ADD_FORMAT_IMPL(&args_str, &size, (FMT)__VA_OPT__(, ) __VA_ARGS__)
 #endif
 
     // Common part
     ADD_FORMAT("%d %d %d \"", net_protocol, connect->qport, connect->challenge);
     {
         size_t userinfo_len = q2pslcpy(args_str, size, &connect->userinfo);
-        if (userinfo_len >= size)
-        {
+        if (userinfo_len >= size) {
             SET_ERROR(Q2P_ERR_BUFFER_TOO_SMALL);
             size = 0;
-        }
-        else
-        {
+        } else {
             buf_needed += userinfo_len;
             size -= userinfo_len;
             args_str += userinfo_len;
@@ -181,8 +171,7 @@ q2proto_error_t q2proto_get_connect_arguments(char *args_str, size_t size, size_
     }
 
     const char *tail = NULL;
-    switch(connect->protocol)
-    {
+    switch (connect->protocol) {
     case Q2P_PROTOCOL_INVALID:
     case Q2P_PROTOCOL_OLD_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
@@ -208,12 +197,9 @@ q2proto_error_t q2proto_get_connect_arguments(char *args_str, size_t size, size_
         break;
     }
 
-    if (tail)
-    {
+    if (tail) {
         ADD_FORMAT("\" %s", tail);
-    }
-    else
-    {
+    } else {
         ADD_FORMAT("\"");
     }
 
@@ -226,10 +212,12 @@ q2proto_error_t q2proto_get_connect_arguments(char *args_str, size_t size, size_
     return result;
 }
 
-static q2proto_error_t default_client_packet_parse(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
-static q2proto_error_t default_client_send(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message);
+static q2proto_error_t default_client_packet_parse(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                                   q2proto_svc_message_t *svc_message);
+static q2proto_error_t default_client_send(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                           const q2proto_clc_message_t *clc_message);
 
-q2proto_error_t q2proto_init_clientcontext(q2proto_clientcontext_t* context)
+q2proto_error_t q2proto_init_clientcontext(q2proto_clientcontext_t *context)
 {
     memset(context, 0, sizeof(*context));
 
@@ -239,18 +227,20 @@ q2proto_error_t q2proto_init_clientcontext(q2proto_clientcontext_t* context)
     return Q2P_ERR_SUCCESS;
 }
 
-q2proto_error_t q2proto_client_read(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message)
+q2proto_error_t q2proto_client_read(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                    q2proto_svc_message_t *svc_message)
 {
     return context->client_read(context, io_arg, svc_message);
 }
 
-static MAYBE_UNUSED const char* default_server_cmd_string(int command)
+static MAYBE_UNUSED const char *default_server_cmd_string(int command)
 {
     const char *str = q2proto_debug_common_svc_string(command);
     return str ? str : q2proto_va("%d", command);
 }
 
-static q2proto_error_t default_client_packet_parse(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message)
+static q2proto_error_t default_client_packet_parse(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                                   q2proto_svc_message_t *svc_message)
 {
     memset(svc_message, 0, sizeof(*svc_message));
 
@@ -260,16 +250,15 @@ static q2proto_error_t default_client_packet_parse(q2proto_clientcontext_t *cont
     if (command_read == 0)
         return Q2P_ERR_NO_MORE_INPUT;
 
-    uint8_t command = *(const uint8_t*)command_ptr;
+    uint8_t command = *(const uint8_t *)command_ptr;
     SHOWNET(io_arg, 1, -1, "%s", default_server_cmd_string(command));
-    if (command == svc_stufftext)
-    {
+    if (command == svc_stufftext) {
         svc_message->type = Q2P_SVC_STUFFTEXT;
         q2proto_common_client_read_stufftext(io_arg, &svc_message->stufftext);
         return Q2P_ERR_SUCCESS;
-    }
-    else if (command != svc_serverdata)
-        return HANDLE_ERROR(client_read, io_arg, Q2P_ERR_EXPECTED_SERVERDATA, "expected svc_serverdata, got %d", command);
+    } else if (command != svc_serverdata)
+        return HANDLE_ERROR(client_read, io_arg, Q2P_ERR_EXPECTED_SERVERDATA, "expected svc_serverdata, got %d",
+                            command);
 
     svc_message->type = Q2P_SVC_SERVERDATA;
 
@@ -277,8 +266,7 @@ static q2proto_error_t default_client_packet_parse(q2proto_clientcontext_t *cont
     READ_CHECKED(client_read, io_arg, protocol, i32);
 
     svc_message->serverdata.protocol = protocol;
-    switch (protocol)
-    {
+    switch (protocol) {
     default:
         // Allow a range of versions to support old demos
         if (protocol >= PROTOCOL_OLD_DEMO && protocol <= PROTOCOL_VANILLA)
@@ -305,32 +293,36 @@ static q2proto_error_t default_client_packet_parse(q2proto_clientcontext_t *cont
 q2proto_error_t q2proto_client_download_reset(q2proto_clientcontext_t *context)
 {
 #if Q2PROTO_COMPRESSION_DEFLATE
-    if (context->has_zdownload_inflate_io_arg)
-    {
-        CHECKED_IO(client_read, context->zdownload_inflate_io_arg, q2protoio_inflate_end(context->zdownload_inflate_io_arg), "finishing inflate");
+    if (context->has_zdownload_inflate_io_arg) {
+        CHECKED_IO(client_read, context->zdownload_inflate_io_arg,
+                   q2protoio_inflate_end(context->zdownload_inflate_io_arg), "finishing inflate");
         context->has_zdownload_inflate_io_arg = false;
     }
 #endif
     return Q2P_ERR_SUCCESS;
 }
 
-q2proto_error_t q2proto_client_write(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message)
+q2proto_error_t q2proto_client_write(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                     const q2proto_clc_message_t *clc_message)
 {
     q2proto_clientcontext_t *ctx_internal = (q2proto_clientcontext_t *)context;
     return ctx_internal->client_write(ctx_internal, io_arg, clc_message);
 }
 
-uint32_t q2proto_client_pack_solid(q2proto_clientcontext_t *context, const q2proto_vec3_t mins, const q2proto_vec3_t maxs)
+uint32_t q2proto_client_pack_solid(q2proto_clientcontext_t *context, const q2proto_vec3_t mins,
+                                   const q2proto_vec3_t maxs)
 {
     return context->pack_solid(context, mins, maxs);
 }
 
-void q2proto_client_unpack_solid(q2proto_clientcontext_t *context, uint32_t solid, q2proto_vec3_t mins, q2proto_vec3_t maxs)
+void q2proto_client_unpack_solid(q2proto_clientcontext_t *context, uint32_t solid, q2proto_vec3_t mins,
+                                 q2proto_vec3_t maxs)
 {
     context->unpack_solid(context, solid, mins, maxs);
 }
 
-static q2proto_error_t default_client_send(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message)
+static q2proto_error_t default_client_send(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                           const q2proto_clc_message_t *clc_message)
 {
     // stringcmds are sent before serverdata is received, handle this
     if (clc_message->type != Q2P_CLC_STRINGCMD)

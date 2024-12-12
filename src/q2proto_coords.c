@@ -25,15 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <assert.h>
 #include <limits.h>
 
-static inline int8_t clip_int8(int a)
-{
-    return ((a + 0x80U) & ~0xFF) ? (a >> 31) ^ 0x7F : a;
-}
+static inline int8_t clip_int8(int a) { return ((a + 0x80U) & ~0xFF) ? (a >> 31) ^ 0x7F : a; }
 
-static inline int16_t clip_int16(int a)
-{
-    return ((a + 0x8000U) & ~0xFFFF) ? (a >> 31) ^ 0x7FFF : a;
-}
+static inline int16_t clip_int16(int a) { return ((a + 0x8000U) & ~0xFFFF) ? (a >> 31) ^ 0x7FFF : a; }
 
 void q2proto_var_coords_set_float_comp(q2proto_var_coords_t *coord, int comp, float f)
 {
@@ -68,7 +62,7 @@ void q2proto_var_coords_set_short_unscaled_comp(q2proto_var_coords_t *coord, int
 
 float q2proto_var_coords_get_float_comp(const q2proto_var_coords_t *coord, int comp)
 {
-    if(coord->float_bits & BIT(comp))
+    if (coord->float_bits & BIT(comp))
         return coord->comps[comp].f;
     else
         return _q2proto_valenc_int2coord(coord->comps[comp].i);
@@ -76,7 +70,7 @@ float q2proto_var_coords_get_float_comp(const q2proto_var_coords_t *coord, int c
 
 int32_t q2proto_var_coords_get_int_comp(const q2proto_var_coords_t *coord, int comp)
 {
-    if(coord->float_bits & BIT(comp))
+    if (coord->float_bits & BIT(comp))
         return _q2proto_valenc_coord2int(coord->comps[comp].f);
     else
         return coord->comps[comp].i;
@@ -120,7 +114,7 @@ void q2proto_var_coord_set_int_unscaled(q2proto_var_coord_t *coord, int32_t i)
 
 float q2proto_var_coord_get_float(const q2proto_var_coord_t *coord)
 {
-    if(coord->type != 0)
+    if (coord->type != 0)
         return coord->val.f;
     else
         return _q2proto_valenc_int2coord(coord->val.i);
@@ -128,7 +122,7 @@ float q2proto_var_coord_get_float(const q2proto_var_coord_t *coord)
 
 int32_t q2proto_var_coord_get_int(const q2proto_var_coord_t *coord)
 {
-    if(coord->type != 0)
+    if (coord->type != 0)
         return _q2proto_valenc_coord2int(coord->val.f);
     else
         return coord->val.i;
@@ -139,8 +133,7 @@ int32_t q2proto_var_coord_get_int_unscaled(const q2proto_var_coord_t *coord)
     return q2proto_var_coord_get_int(coord) / 8;
 }
 
-typedef enum
-{
+typedef enum {
     VAR_ANGLES_TYPE_SHORT = 0,
     VAR_ANGLES_TYPE_CHAR = 1,
     VAR_ANGLES_TYPE_FLOAT = 2,
@@ -177,8 +170,7 @@ static inline var_angles_type_t get_var_angles_comp_type(const q2proto_var_angle
 
 float q2proto_var_angles_get_float_comp(const q2proto_var_angles_t *angle, int comp)
 {
-    switch(get_var_angles_comp_type(angle, comp))
-    {
+    switch (get_var_angles_comp_type(angle, comp)) {
     case VAR_ANGLES_TYPE_SHORT:
         return _q2proto_valenc_short2angle(angle->comps[comp].s);
     case VAR_ANGLES_TYPE_CHAR:
@@ -191,8 +183,7 @@ float q2proto_var_angles_get_float_comp(const q2proto_var_angles_t *angle, int c
 
 int16_t q2proto_var_angles_get_short_comp(const q2proto_var_angles_t *angle, int comp)
 {
-    switch(get_var_angles_comp_type(angle, comp))
-    {
+    switch (get_var_angles_comp_type(angle, comp)) {
     case VAR_ANGLES_TYPE_SHORT:
         return angle->comps[comp].s;
     case VAR_ANGLES_TYPE_CHAR:
@@ -205,8 +196,7 @@ int16_t q2proto_var_angles_get_short_comp(const q2proto_var_angles_t *angle, int
 
 int8_t q2proto_var_angles_get_char_comp(const q2proto_var_angles_t *angle, int comp)
 {
-    switch(get_var_angles_comp_type(angle, comp))
-    {
+    switch (get_var_angles_comp_type(angle, comp)) {
     case VAR_ANGLES_TYPE_SHORT:
         return angle->comps[comp].s >> 8;
     case VAR_ANGLES_TYPE_CHAR:
@@ -217,8 +207,7 @@ int8_t q2proto_var_angles_get_char_comp(const q2proto_var_angles_t *angle, int c
     return 0;
 }
 
-typedef enum
-{
+typedef enum {
     VAR_SMALL_OFFSETS_TYPE_FLOAT = 0,
     VAR_SMALL_OFFSETS_TYPE_CHAR = 1,
     VAR_SMALL_OFFSETS_TYPE_Q2REPRO_VIEWOFFSET = 2,
@@ -227,13 +216,16 @@ typedef enum
     _VAR_SMALL_OFFSETS_TYPE_MAX
 } var_small_offsets_type_t;
 
-#define VAR_SMALL_OFFSETS_TYPE_BITS  2
-#define VAR_SMALL_OFFSETS_TYPE_MASK  (BIT(VAR_SMALL_OFFSETS_TYPE_BITS) - 1)
+#define VAR_SMALL_OFFSETS_TYPE_BITS 2
+#define VAR_SMALL_OFFSETS_TYPE_MASK (BIT(VAR_SMALL_OFFSETS_TYPE_BITS) - 1)
 
-static inline void set_var_small_offsets_comp_type(q2proto_var_small_offsets_t *coord, int comp, var_small_offsets_type_t type)
+static inline void set_var_small_offsets_comp_type(q2proto_var_small_offsets_t *coord, int comp,
+                                                   var_small_offsets_type_t type)
 {
-    static_assert(sizeof(coord->type_bits) * CHAR_BIT >= 3 * VAR_SMALL_OFFSETS_TYPE_BITS, "VAR_SMALL_OFFSETS_TYPE_BITS is too large");
-    static_assert((_VAR_SMALL_OFFSETS_TYPE_MAX - 1) <= VAR_SMALL_OFFSETS_TYPE_MASK, "VAR_SMALL_OFFSETS_TYPE_MASK is too small");
+    static_assert(sizeof(coord->type_bits) * CHAR_BIT >= 3 * VAR_SMALL_OFFSETS_TYPE_BITS,
+                  "VAR_SMALL_OFFSETS_TYPE_BITS is too large");
+    static_assert((_VAR_SMALL_OFFSETS_TYPE_MAX - 1) <= VAR_SMALL_OFFSETS_TYPE_MASK,
+                  "VAR_SMALL_OFFSETS_TYPE_MASK is too small");
     coord->type_bits &= ~(VAR_SMALL_OFFSETS_TYPE_MASK << (comp * VAR_SMALL_OFFSETS_TYPE_BITS));
     coord->type_bits |= type << (comp * VAR_SMALL_OFFSETS_TYPE_BITS);
 }
@@ -262,15 +254,15 @@ void q2proto_var_small_offsets_set_q2repro_gunoffset_comp(q2proto_var_small_offs
     set_var_small_offsets_comp_type(coord, comp, VAR_SMALL_OFFSETS_TYPE_Q2REPRO_GUNOFFSET);
 }
 
-static inline var_small_offsets_type_t get_var_small_offsets_comp_type(const q2proto_var_small_offsets_t *coord, int comp)
+static inline var_small_offsets_type_t get_var_small_offsets_comp_type(const q2proto_var_small_offsets_t *coord,
+                                                                       int comp)
 {
     return (coord->type_bits >> (comp * VAR_SMALL_OFFSETS_TYPE_BITS)) & VAR_SMALL_OFFSETS_TYPE_MASK;
 }
 
 float q2proto_var_small_offsets_get_float_comp(const q2proto_var_small_offsets_t *coord, int comp)
 {
-    switch(get_var_small_offsets_comp_type(coord, comp))
-    {
+    switch (get_var_small_offsets_comp_type(coord, comp)) {
     case VAR_SMALL_OFFSETS_TYPE_FLOAT:
         return coord->comps[comp].f;
     case VAR_SMALL_OFFSETS_TYPE_CHAR:
@@ -288,8 +280,7 @@ float q2proto_var_small_offsets_get_float_comp(const q2proto_var_small_offsets_t
 
 int8_t q2proto_var_small_offsets_get_char_comp(const q2proto_var_small_offsets_t *coord, int comp)
 {
-    switch(get_var_small_offsets_comp_type(coord, comp))
-    {
+    switch (get_var_small_offsets_comp_type(coord, comp)) {
     case VAR_SMALL_OFFSETS_TYPE_FLOAT:
         return _q2proto_valenc_smalloffset2char(coord->comps[comp].f);
     case VAR_SMALL_OFFSETS_TYPE_CHAR:
@@ -307,8 +298,7 @@ int8_t q2proto_var_small_offsets_get_char_comp(const q2proto_var_small_offsets_t
 
 int16_t q2proto_var_small_offsets_get_q2repro_viewoffset_comp(const q2proto_var_small_offsets_t *coord, int comp)
 {
-    switch(get_var_small_offsets_comp_type(coord, comp))
-    {
+    switch (get_var_small_offsets_comp_type(coord, comp)) {
     case VAR_SMALL_OFFSETS_TYPE_FLOAT:
         return _q2proto_valenc_q2repro_viewoffset2short(coord->comps[comp].f);
     case VAR_SMALL_OFFSETS_TYPE_CHAR:
@@ -326,8 +316,7 @@ int16_t q2proto_var_small_offsets_get_q2repro_viewoffset_comp(const q2proto_var_
 
 int16_t q2proto_var_small_offsets_get_q2repro_gunoffset_comp(const q2proto_var_small_offsets_t *coord, int comp)
 {
-    switch(get_var_small_offsets_comp_type(coord, comp))
-    {
+    switch (get_var_small_offsets_comp_type(coord, comp)) {
     case VAR_SMALL_OFFSETS_TYPE_FLOAT:
         return _q2proto_valenc_q2repro_gunoffset2short(coord->comps[comp].f);
     case VAR_SMALL_OFFSETS_TYPE_CHAR:
@@ -343,8 +332,7 @@ int16_t q2proto_var_small_offsets_get_q2repro_gunoffset_comp(const q2proto_var_s
     return 0;
 }
 
-typedef enum
-{
+typedef enum {
     VAR_SMALL_ANGLES_TYPE_FLOAT = 0,
     VAR_SMALL_ANGLES_TYPE_CHAR = 1,
     VAR_SMALL_ANGLES_TYPE_Q2REPRO_KICK_ANGLE = 2,
@@ -353,13 +341,16 @@ typedef enum
     _VAR_SMALL_ANGLES_TYPE_MAX
 } var_small_angles_type_t;
 
-#define VAR_SMALL_ANGLES_TYPE_BITS  2
-#define VAR_SMALL_ANGLES_TYPE_MASK  (BIT(VAR_SMALL_ANGLES_TYPE_BITS) - 1)
+#define VAR_SMALL_ANGLES_TYPE_BITS 2
+#define VAR_SMALL_ANGLES_TYPE_MASK (BIT(VAR_SMALL_ANGLES_TYPE_BITS) - 1)
 
-static inline void set_var_small_angles_comp_type(q2proto_var_small_angles_t *coord, int comp, var_small_angles_type_t type)
+static inline void set_var_small_angles_comp_type(q2proto_var_small_angles_t *coord, int comp,
+                                                  var_small_angles_type_t type)
 {
-    static_assert(sizeof(coord->type_bits) * CHAR_BIT >= 3 * VAR_SMALL_ANGLES_TYPE_BITS, "VAR_SMALL_ANGLES_TYPE_BITS is too large");
-    static_assert((_VAR_SMALL_ANGLES_TYPE_MAX - 1) <= VAR_SMALL_ANGLES_TYPE_MASK, "VAR_SMALL_ANGLES_TYPE_MASK is too small");
+    static_assert(sizeof(coord->type_bits) * CHAR_BIT >= 3 * VAR_SMALL_ANGLES_TYPE_BITS,
+                  "VAR_SMALL_ANGLES_TYPE_BITS is too large");
+    static_assert((_VAR_SMALL_ANGLES_TYPE_MAX - 1) <= VAR_SMALL_ANGLES_TYPE_MASK,
+                  "VAR_SMALL_ANGLES_TYPE_MASK is too small");
     coord->type_bits &= ~(VAR_SMALL_ANGLES_TYPE_MASK << (comp * VAR_SMALL_ANGLES_TYPE_BITS));
     coord->type_bits |= type << (comp * VAR_SMALL_ANGLES_TYPE_BITS);
 }
@@ -395,8 +386,7 @@ static inline var_small_angles_type_t get_var_small_angles_comp_type(const q2pro
 
 float q2proto_var_small_angles_get_float_comp(const q2proto_var_small_angles_t *angle, int comp)
 {
-    switch(get_var_small_angles_comp_type(angle, comp))
-    {
+    switch (get_var_small_angles_comp_type(angle, comp)) {
     case VAR_SMALL_ANGLES_TYPE_FLOAT:
         return angle->comps[comp].f;
     case VAR_SMALL_ANGLES_TYPE_CHAR:
@@ -414,8 +404,7 @@ float q2proto_var_small_angles_get_float_comp(const q2proto_var_small_angles_t *
 
 int8_t q2proto_var_small_angles_get_char_comp(const q2proto_var_small_angles_t *angle, int comp)
 {
-    switch(get_var_small_angles_comp_type(angle, comp))
-    {
+    switch (get_var_small_angles_comp_type(angle, comp)) {
     case VAR_SMALL_ANGLES_TYPE_FLOAT:
         return _q2proto_valenc_smallangle2char(angle->comps[comp].f);
     case VAR_SMALL_ANGLES_TYPE_CHAR:
@@ -433,8 +422,7 @@ int8_t q2proto_var_small_angles_get_char_comp(const q2proto_var_small_angles_t *
 
 int16_t q2proto_var_small_angles_get_q2repro_kick_angles_comp(const q2proto_var_small_angles_t *angle, int comp)
 {
-    switch(get_var_small_angles_comp_type(angle, comp))
-    {
+    switch (get_var_small_angles_comp_type(angle, comp)) {
     case VAR_SMALL_ANGLES_TYPE_FLOAT:
         return _q2proto_valenc_q2repro_kick_angle2short(angle->comps[comp].f);
     case VAR_SMALL_ANGLES_TYPE_CHAR:
@@ -452,8 +440,7 @@ int16_t q2proto_var_small_angles_get_q2repro_kick_angles_comp(const q2proto_var_
 
 int16_t q2proto_var_small_angles_get_q2repro_gunangles_comp(const q2proto_var_small_angles_t *angle, int comp)
 {
-    switch(get_var_small_angles_comp_type(angle, comp))
-    {
+    switch (get_var_small_angles_comp_type(angle, comp)) {
     case VAR_SMALL_ANGLES_TYPE_FLOAT:
         return _q2proto_valenc_q2repro_gunangle2short(angle->comps[comp].f);
     case VAR_SMALL_ANGLES_TYPE_CHAR:
@@ -483,7 +470,7 @@ void q2proto_var_color_set_byte_comp(q2proto_var_color_t *blend, int comp, uint8
 
 float q2proto_var_color_get_float_comp(const q2proto_var_color_t *blend, int comp)
 {
-    if(blend->float_bits & BIT(comp))
+    if (blend->float_bits & BIT(comp))
         return blend->comps[comp].f;
     else
         return _q2proto_valenc_byte2color(blend->comps[comp].c);
@@ -491,14 +478,13 @@ float q2proto_var_color_get_float_comp(const q2proto_var_color_t *blend, int com
 
 uint8_t q2proto_var_color_get_byte_comp(const q2proto_var_color_t *blend, int comp)
 {
-    if(blend->float_bits & BIT(comp))
+    if (blend->float_bits & BIT(comp))
         return _q2proto_valenc_color2byte(blend->comps[comp].f);
     else
         return blend->comps[comp].c;
 }
 
-typedef enum
-{
+typedef enum {
     VAR_FRACTION_TYPE_WORD = 0,
     VAR_FRACTION_TYPE_BYTE = 1,
     VAR_FRACTION_TYPE_FLOAT = 2,
@@ -524,8 +510,7 @@ void q2proto_var_fraction_set_byte(q2proto_var_fraction_t *frac, uint8_t b)
 
 float q2proto_var_fraction_get_float(const q2proto_var_fraction_t *frac)
 {
-    switch(frac->type)
-    {
+    switch (frac->type) {
     case VAR_FRACTION_TYPE_WORD:
         return frac->val.w / 65535.f;
     case VAR_FRACTION_TYPE_BYTE:
@@ -538,8 +523,7 @@ float q2proto_var_fraction_get_float(const q2proto_var_fraction_t *frac)
 
 uint16_t q2proto_var_fraction_get_word(const q2proto_var_fraction_t *frac)
 {
-    switch(frac->type)
-    {
+    switch (frac->type) {
     case VAR_FRACTION_TYPE_WORD:
         return frac->val.w;
     case VAR_FRACTION_TYPE_BYTE:
@@ -552,8 +536,7 @@ uint16_t q2proto_var_fraction_get_word(const q2proto_var_fraction_t *frac)
 
 uint8_t q2proto_var_fraction_get_byte(const q2proto_var_fraction_t *frac)
 {
-    switch(frac->type)
-    {
+    switch (frac->type) {
     case VAR_FRACTION_TYPE_WORD:
         return frac->val.w >> 8;
     case VAR_FRACTION_TYPE_BYTE:

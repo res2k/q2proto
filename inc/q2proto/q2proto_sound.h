@@ -30,8 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /**\name Sound messages
  * @{ */
 /// Sound parameters, as typically stored internally by engines
-typedef struct q2proto_sound_s
-{
+typedef struct q2proto_sound_s {
     bool has_entity_channel;
     bool has_position;
     int index;

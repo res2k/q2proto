@@ -26,8 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 int q2proto_get_protocol_netver(q2proto_protocol_t protocol)
 {
-    switch(protocol)
-    {
+    switch (protocol) {
     case Q2P_PROTOCOL_INVALID:
     case Q2P_NUM_PROTOCOLS:
         break;
@@ -58,8 +57,7 @@ int q2proto_get_protocol_netver(q2proto_protocol_t protocol)
 
 q2proto_protocol_t q2proto_protocol_from_netver(int version)
 {
-    switch(version)
-    {
+    switch (version) {
     case PROTOCOL_OLD_DEMO:
         return Q2P_PROTOCOL_OLD_DEMO;
     case PROTOCOL_VANILLA:
@@ -87,8 +85,7 @@ q2proto_protocol_t q2proto_protocol_from_netver(int version)
 
 static inline unsigned int get_proto_mask_for_game(q2proto_game_api_t game)
 {
-    switch(game)
-    {
+    switch (game) {
     case Q2PROTO_GAME_VANILLA:
         return BIT(Q2P_PROTOCOL_VANILLA) | BIT(Q2P_PROTOCOL_R1Q2) | BIT(Q2P_PROTOCOL_Q2PRO);
     case Q2PROTO_GAME_Q2PRO_EXTENDED:
@@ -102,20 +99,19 @@ static inline unsigned int get_proto_mask_for_game(q2proto_game_api_t game)
     return 0;
 }
 
-size_t q2proto_get_protocols_for_gametypes(q2proto_protocol_t *protocols, size_t num_protocols, const q2proto_game_api_t *games, size_t num_games)
+size_t q2proto_get_protocols_for_gametypes(q2proto_protocol_t *protocols, size_t num_protocols,
+                                           const q2proto_game_api_t *games, size_t num_games)
 {
     unsigned int proto_mask = 0;
-    for (size_t i = 0; i < num_games; i++)
-    {
+    for (size_t i = 0; i < num_games; i++) {
         proto_mask |= get_proto_mask_for_game(games[i]);
     }
 
     size_t n = 0;
-    for (int i = Q2P_NUM_PROTOCOLS; i-- > 0;)
-    {
-        if ((proto_mask & BIT(i)) == 0) continue;
-        if (num_protocols > 0)
-        {
+    for (int i = Q2P_NUM_PROTOCOLS; i-- > 0;) {
+        if ((proto_mask & BIT(i)) == 0)
+            continue;
+        if (num_protocols > 0) {
             *protocols++ = (q2proto_protocol_t)i;
             --num_protocols;
             n++;
@@ -124,11 +120,11 @@ size_t q2proto_get_protocols_for_gametypes(q2proto_protocol_t *protocols, size_t
     return n;
 }
 
-q2proto_multicast_protocol_t q2proto_get_multicast_protocol(q2proto_protocol_t *protocols, size_t num_protocols, q2proto_game_api_t game_api)
+q2proto_multicast_protocol_t q2proto_get_multicast_protocol(q2proto_protocol_t *protocols, size_t num_protocols,
+                                                            q2proto_game_api_t game_api)
 {
     unsigned int proto_bits = 0;
-    for (size_t i = 0; i < num_protocols; i++)
-    {
+    for (size_t i = 0; i < num_protocols; i++) {
         proto_bits |= BIT(protocols[i]);
     }
 
@@ -138,8 +134,7 @@ q2proto_multicast_protocol_t q2proto_get_multicast_protocol(q2proto_protocol_t *
     if ((proto_bits & protocols_supported) == 0 || (proto_bits & protocols_unsupported) != 0)
         goto fail;
 
-    switch(game_api)
-    {
+    switch (game_api) {
     case Q2PROTO_GAME_VANILLA:
     case Q2PROTO_GAME_Q2PRO_EXTENDED:
         return Q2P_PROTOCOL_MULTICAST_SHORT;

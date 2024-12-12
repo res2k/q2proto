@@ -20,9 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Dummy q2protodbg_shownet_check, q2protodbg_shownet functions definition to make linking work
 
-bool q2protodbg_shownet_check(uintptr_t io_arg, int level)
-{
-    return false;
-}
+bool q2protodbg_shownet_check(uintptr_t io_arg, int level) { return false; }
 
-void q2protodbg_shownet(uintptr_t io_arg, int level, int offset, const char *msg, ...) { }
+void q2protodbg_shownet(uintptr_t io_arg, int level, int offset, const char *msg, ...) {}

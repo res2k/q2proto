@@ -21,14 +21,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "q2proto_internal_defs.h"
 
-void q2proto_download_common_begin(q2proto_servercontext_t *context, size_t total_size, q2proto_server_download_state_t* state)
+void q2proto_download_common_begin(q2proto_servercontext_t *context, size_t total_size,
+                                   q2proto_server_download_state_t *state)
 {
     memset(state, 0, sizeof(*state));
     state->context = context;
     state->total_size = total_size;
 }
 
-q2proto_error_t q2proto_download_common_complete_struct(q2proto_server_download_state_t *state, size_t download_remaining, q2proto_svc_download_t *svc_download)
+q2proto_error_t q2proto_download_common_complete_struct(q2proto_server_download_state_t *state,
+                                                        size_t download_remaining, q2proto_svc_download_t *svc_download)
 {
     state->transferred = state->total_size - download_remaining;
     svc_download->percent = ((100 * state->transferred) / state->total_size);
@@ -36,9 +38,11 @@ q2proto_error_t q2proto_download_common_complete_struct(q2proto_server_download_
     return state->transferred == state->total_size ? Q2P_ERR_DOWNLOAD_COMPLETE : Q2P_ERR_SUCCESS;
 }
 
-q2proto_error_t q2proto_download_common_data(q2proto_server_download_state_t *state, const uint8_t **data, size_t *remaining, size_t packet_remaining, q2proto_svc_download_t *svc_download)
+q2proto_error_t q2proto_download_common_data(q2proto_server_download_state_t *state, const uint8_t **data,
+                                             size_t *remaining, size_t packet_remaining,
+                                             q2proto_svc_download_t *svc_download)
 {
-    if(packet_remaining < 4)
+    if (packet_remaining < 4)
         return Q2P_ERR_NOT_ENOUGH_PACKET_SPACE;
 
     size_t download_size = packet_remaining - 4;
@@ -54,7 +58,8 @@ q2proto_error_t q2proto_download_common_data(q2proto_server_download_state_t *st
     return q2proto_download_common_complete_struct(state, *remaining, svc_download);
 }
 
-q2proto_error_t q2proto_download_common_finish(q2proto_server_download_state_t *state, q2proto_svc_download_t *svc_download)
+q2proto_error_t q2proto_download_common_finish(q2proto_server_download_state_t *state,
+                                               q2proto_svc_download_t *svc_download)
 {
     memset(svc_download, 0, sizeof(*svc_download));
     svc_download->percent = 100;
@@ -62,7 +67,8 @@ q2proto_error_t q2proto_download_common_finish(q2proto_server_download_state_t *
     return Q2P_ERR_SUCCESS;
 }
 
-q2proto_error_t q2proto_download_common_abort(q2proto_server_download_state_t *state, q2proto_svc_download_t *svc_download)
+q2proto_error_t q2proto_download_common_abort(q2proto_server_download_state_t *state,
+                                              q2proto_svc_download_t *svc_download)
 {
     memset(svc_download, 0, sizeof(*svc_download));
     svc_download->percent = (state && state->total_size) ? (100 * state->transferred) / state->total_size : 0;

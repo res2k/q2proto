@@ -28,14 +28,12 @@ void q2proto_sound_decode_message(const q2proto_svc_sound_t *sound_msg, q2proto_
     memset(sound_data, 0, sizeof(*sound_data));
 
     sound_data->index = sound_msg->index;
-    if (sound_msg->flags & SND_ENT)
-    {
+    if (sound_msg->flags & SND_ENT) {
         sound_data->has_entity_channel = true;
         sound_data->entity = sound_msg->entity;
         sound_data->channel = sound_msg->channel;
     }
-    if (sound_msg->flags & SND_POS)
-    {
+    if (sound_msg->flags & SND_POS) {
         sound_data->has_position = true;
         q2proto_var_coords_get_float(&sound_msg->pos, sound_data->pos);
     }
@@ -60,42 +58,36 @@ void q2proto_sound_encode_message(const q2proto_sound_t *sound_data, q2proto_svc
     sound_msg->index = sound_data->index;
     if (sound_msg->index > 255)
         sound_msg->flags |= SND_Q2PRO_INDEX16;
-    if (sound_data->has_entity_channel)
-    {
+    if (sound_data->has_entity_channel) {
         sound_msg->entity = sound_data->entity;
         sound_msg->channel = sound_data->channel;
         sound_msg->flags |= SND_ENT;
     }
-    if (sound_data->has_position)
-    {
+    if (sound_data->has_position) {
         q2proto_var_coords_set_float(&sound_msg->pos, sound_data->pos);
         sound_msg->flags |= SND_POS;
     }
     int volume = (int)(sound_data->volume * 255);
     uint8_t volume_enc = (uint8_t)CLAMP(volume, 0, 255);
-    if (volume_enc != SOUND_DEFAULT_VOLUME)
-    {
+    if (volume_enc != SOUND_DEFAULT_VOLUME) {
         sound_msg->volume = volume_enc;
         sound_msg->flags |= SND_VOLUME;
     }
     int attn = (int)(sound_data->attenuation * 64);
     uint8_t attn_enc = (uint8_t)CLAMP(attn, 0, 255);
-    if (attn_enc != SOUND_DEFAULT_ATTENUATION)
-    {
+    if (attn_enc != SOUND_DEFAULT_ATTENUATION) {
         sound_msg->attenuation = attn_enc;
         sound_msg->flags |= SND_ATTENUATION;
     }
     int time = (int)(sound_data->timeofs * 1000);
     uint8_t time_enc = (uint8_t)CLAMP(time, 0, 255);
-    if (time_enc != 0)
-    {
+    if (time_enc != 0) {
         sound_msg->timeofs = time_enc;
         sound_msg->flags |= SND_OFFSET;
     }
-
 }
 
-#define ATTN_LOOP_NONE  -1
+#define ATTN_LOOP_NONE -1
 
 float q2proto_sound_decode_loop_attenuation(uint8_t protocol_loop_attenuation)
 {

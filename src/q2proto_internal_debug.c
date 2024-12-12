@@ -29,27 +29,26 @@ const char *q2proto_debug_common_svc_string(int command)
     case X:  \
         return #X;
 
-    switch(command)
-    {
-    S(svc_muzzleflash)
-    S(svc_muzzleflash2)
-    S(svc_temp_entity)
-    S(svc_layout)
-    S(svc_inventory)
-    S(svc_nop)
-    S(svc_disconnect)
-    S(svc_reconnect)
-    S(svc_sound)
-    S(svc_print)
-    S(svc_stufftext)
-    S(svc_serverdata)
-    S(svc_configstring)
-    S(svc_spawnbaseline)
-    S(svc_centerprint)
-    S(svc_download)
-    S(svc_playerinfo)
-    S(svc_packetentities)
-    S(svc_frame)
+    switch (command) {
+        S(svc_muzzleflash)
+        S(svc_muzzleflash2)
+        S(svc_temp_entity)
+        S(svc_layout)
+        S(svc_inventory)
+        S(svc_nop)
+        S(svc_disconnect)
+        S(svc_reconnect)
+        S(svc_sound)
+        S(svc_print)
+        S(svc_stufftext)
+        S(svc_serverdata)
+        S(svc_configstring)
+        S(svc_spawnbaseline)
+        S(svc_centerprint)
+        S(svc_download)
+        S(svc_playerinfo)
+        S(svc_packetentities)
+        S(svc_frame)
     }
 
 #undef S
@@ -57,22 +56,21 @@ const char *q2proto_debug_common_svc_string(int command)
     return NULL;
 }
 
-#define SHOWBITS(DESCR)                                             \
-    do { \
+#define SHOWBITS(DESCR)                                         \
+    do {                                                        \
         if (!first)                                             \
             q2proto_snprintf_update(&buf, &size, " %s", DESCR); \
         else                                                    \
             q2proto_snprintf_update(&buf, &size, "%s", DESCR);  \
         first = false;                                          \
-    }while(0)
+    } while (0)
 
 void q2proto_debug_common_entity_delta_bits_to_str(char *buf, size_t size, uint64_t bits)
 {
     bool first = true;
 
 #define S(b, s)         \
-    if (bits & U_##b)   \
-    {                   \
+    if (bits & U_##b) { \
         SHOWBITS(s);    \
         bits &= ~U_##b; \
     }
@@ -139,8 +137,7 @@ void q2proto_debug_common_entity_delta_bits_to_str(char *buf, size_t size, uint6
     // Bits to ignore
     bits &= ~(U_NUMBER16 | U_MOREBITS1 | U_MOREBITS2 | U_MOREBITS3 | U_MOREBITS4 | U_ANGLE16);
 
-    if (bits != 0 || first)
-    {
+    if (bits != 0 || first) {
         if (!first)
             q2proto_snprintf_update(&buf, &size, " 0x%llx", bits);
         else
@@ -153,31 +150,29 @@ void q2proto_debug_common_player_delta_bits_to_str(char *buf, size_t size, uint3
     bool first = true;
 
 #define S(b, s)          \
-    if (bits & PS_##b)   \
-    {                    \
+    if (bits & PS_##b) { \
         SHOWBITS(s);     \
         bits &= ~PS_##b; \
     }
 
-    S(M_TYPE,           "pm_type");
-    S(M_ORIGIN,         "pm_origin");
-    S(M_VELOCITY,       "pm_velocity");
-    S(M_TIME,           "pm_time");
-    S(M_FLAGS,          "pm_flags");
-    S(M_GRAVITY,        "pm_gravity");
-    S(M_DELTA_ANGLES,   "pm_delta_angles");
-    S(VIEWOFFSET,       "viewoffset");
-    S(VIEWANGLES,       "viewangles");
-    S(KICKANGLES,       "kick_angles");
-    S(WEAPONINDEX,      "gunindex");
-    S(WEAPONFRAME,      "gunframe");
-    S(BLEND,            "blend");
-    S(FOV,              "fov");
-    S(RDFLAGS,          "rdflags");
+    S(M_TYPE, "pm_type");
+    S(M_ORIGIN, "pm_origin");
+    S(M_VELOCITY, "pm_velocity");
+    S(M_TIME, "pm_time");
+    S(M_FLAGS, "pm_flags");
+    S(M_GRAVITY, "pm_gravity");
+    S(M_DELTA_ANGLES, "pm_delta_angles");
+    S(VIEWOFFSET, "viewoffset");
+    S(VIEWANGLES, "viewangles");
+    S(KICKANGLES, "kick_angles");
+    S(WEAPONINDEX, "gunindex");
+    S(WEAPONFRAME, "gunframe");
+    S(BLEND, "blend");
+    S(FOV, "fov");
+    S(RDFLAGS, "rdflags");
 #undef S
 
-    if (bits != 0 || first)
-    {
+    if (bits != 0 || first) {
         if (!first)
             q2proto_snprintf_update(&buf, &size, " 0x%x", bits);
         else
@@ -189,25 +184,23 @@ void q2proto_debug_common_player_delta_extrabits_to_str(char *buf, size_t size, 
 {
     bool first = true;
 
-#define S(b, s)          \
-    if (bits & EPS_##b)   \
-    {                    \
-        SHOWBITS(s);     \
+#define S(b, s)           \
+    if (bits & EPS_##b) { \
+        SHOWBITS(s);      \
         bits &= ~EPS_##b; \
     }
 
-    S(GUNOFFSET,        "gunoffset");
-    S(GUNANGLES,        "gunangles");
-    S(GUNRATE,          "gunrate")
-    S(M_VELOCITY2,      "pm_velocity2");
-    S(M_ORIGIN2,        "pm_origin2");
-    S(VIEWANGLE2,       "viewangle2");
-    S(STATS,            "stats");
-    S(CLIENTNUM,        "clientnum");
+    S(GUNOFFSET, "gunoffset");
+    S(GUNANGLES, "gunangles");
+    S(GUNRATE, "gunrate")
+    S(M_VELOCITY2, "pm_velocity2");
+    S(M_ORIGIN2, "pm_origin2");
+    S(VIEWANGLE2, "viewangle2");
+    S(STATS, "stats");
+    S(CLIENTNUM, "clientnum");
 #undef S
 
-    if (bits != 0 || first)
-    {
+    if (bits != 0 || first) {
         if (!first)
             q2proto_snprintf_update(&buf, &size, " 0x%x", bits);
         else
@@ -216,4 +209,3 @@ void q2proto_debug_common_player_delta_extrabits_to_str(char *buf, size_t size, 
 }
 
 #undef SHOWBITS
-

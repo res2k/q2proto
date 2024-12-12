@@ -26,9 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_internal_io.h"
 #include "q2proto_internal_protocol.h"
 
-#define READ_GAME_POSITION      read_short_coord
-#define READ_SOUND_NAME         q2proto_common_client_read_sound_short
-#define READ_TEMP_ENTITY_NAME   q2proto_common_client_read_temp_entity_short
+#define READ_GAME_POSITION    read_short_coord
+#define READ_SOUND_NAME       q2proto_common_client_read_sound_short
+#define READ_TEMP_ENTITY_NAME q2proto_common_client_read_temp_entity_short
 
 #include "q2proto_read_gamemsg.inc"
 
@@ -36,9 +36,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #undef READ_SOUND_NAME
 #undef READ_GAME_POSITION
 
-#define READ_GAME_POSITION          read_float_coord
-#define READ_SOUND_NAME             q2proto_common_client_read_sound_float
-#define READ_TEMP_ENTITY_NAME       q2proto_common_client_read_temp_entity_float
+#define READ_GAME_POSITION    read_float_coord
+#define READ_SOUND_NAME       q2proto_common_client_read_sound_float
+#define READ_TEMP_ENTITY_NAME q2proto_common_client_read_temp_entity_float
 
 #include "q2proto_read_gamemsg.inc"
 
@@ -52,23 +52,19 @@ q2proto_error_t q2proto_common_client_read_entity_bits(uintptr_t io_arg, uint64_
     READ_CHECKED(client_read, io_arg, total, u8);
 
     uint64_t b;
-    if (total & U_MOREBITS1)
-    {
+    if (total & U_MOREBITS1) {
         READ_CHECKED(client_read, io_arg, b, u8);
         total |= b << 8;
     }
-    if (total & U_MOREBITS2)
-    {
+    if (total & U_MOREBITS2) {
         READ_CHECKED(client_read, io_arg, b, u8);
         total |= b << 16;
     }
-    if (total & U_MOREBITS3)
-    {
+    if (total & U_MOREBITS3) {
         READ_CHECKED(client_read, io_arg, b, u8);
         total |= b << 24;
     }
-    if (total & U_MOREBITS4)
-    {
+    if (total & U_MOREBITS4) {
         READ_CHECKED(client_read, io_arg, b, u8);
         total |= b << 32;
     }
@@ -86,13 +82,13 @@ q2proto_error_t q2proto_common_client_read_entity_bits(uintptr_t io_arg, uint64_
 int q2proto_common_entity_bits_size(uint64_t bits)
 {
     int bits_size = 0;
-    if(bits & U_MOREBITS4)
+    if (bits & U_MOREBITS4)
         bits_size = 5;
-    else if(bits & U_MOREBITS3)
+    else if (bits & U_MOREBITS3)
         bits_size = 4;
-    else if(bits & U_MOREBITS2)
+    else if (bits & U_MOREBITS2)
         bits_size = 3;
-    else if(bits & U_MOREBITS1)
+    else if (bits & U_MOREBITS1)
         bits_size = 2;
     else
         bits_size = 1;
@@ -115,10 +111,14 @@ q2proto_error_t q2proto_common_server_write_entity_bits(uintptr_t io_arg, uint64
         bits |= U_MOREBITS1;
 
     WRITE_CHECKED(server_write, io_arg, u8, bits & 0xff);
-    if (bits & U_MOREBITS1) WRITE_CHECKED(server_write, io_arg, u8, (bits >>  8) & 0xff);
-    if (bits & U_MOREBITS2) WRITE_CHECKED(server_write, io_arg, u8, (bits >> 16) & 0xff);
-    if (bits & U_MOREBITS3) WRITE_CHECKED(server_write, io_arg, u8, (bits >> 24) & 0xff);
-    if (bits & U_MOREBITS4) WRITE_CHECKED(server_write, io_arg, u8, (bits >> 32) & 0xff);
+    if (bits & U_MOREBITS1)
+        WRITE_CHECKED(server_write, io_arg, u8, (bits >> 8) & 0xff);
+    if (bits & U_MOREBITS2)
+        WRITE_CHECKED(server_write, io_arg, u8, (bits >> 16) & 0xff);
+    if (bits & U_MOREBITS3)
+        WRITE_CHECKED(server_write, io_arg, u8, (bits >> 24) & 0xff);
+    if (bits & U_MOREBITS4)
+        WRITE_CHECKED(server_write, io_arg, u8, (bits >> 32) & 0xff);
 
     if (bits & U_NUMBER16)
         WRITE_CHECKED(server_write, io_arg, u16, entnum);
@@ -128,7 +128,8 @@ q2proto_error_t q2proto_common_server_write_entity_bits(uintptr_t io_arg, uint64
     return Q2P_ERR_SUCCESS;
 }
 
-q2proto_error_t q2proto_common_client_read_muzzleflash(uintptr_t io_arg, q2proto_svc_muzzleflash_t *muzzleflash, uint16_t silenced_mask)
+q2proto_error_t q2proto_common_client_read_muzzleflash(uintptr_t io_arg, q2proto_svc_muzzleflash_t *muzzleflash,
+                                                       uint16_t silenced_mask)
 {
     READ_CHECKED(client_read, io_arg, muzzleflash->entity, i16);
     READ_CHECKED(client_read, io_arg, muzzleflash->weapon, u8);
@@ -146,8 +147,7 @@ q2proto_error_t q2proto_common_client_read_layout(uintptr_t io_arg, q2proto_svc_
 
 q2proto_error_t q2proto_common_client_read_inventory(uintptr_t io_arg, q2proto_svc_inventory_t *inventory)
 {
-    for (int i = 0; i < Q2PROTO_INVENTORY_ITEMS; i++)
-    {
+    for (int i = 0; i < Q2PROTO_INVENTORY_ITEMS; i++) {
         READ_CHECKED(client_read, io_arg, inventory->inventory[i], i16);
     }
 
@@ -193,10 +193,10 @@ q2proto_error_t q2proto_common_client_read_download(uintptr_t io_arg, q2proto_sv
     return Q2P_ERR_SUCCESS;
 }
 
-#define NUMVERTEXNORMALS    162
+#define NUMVERTEXNORMALS 162
 
 static const q2proto_vec3_t bytedirs[NUMVERTEXNORMALS] = {
-    #include "anorms.h"
+#include "anorms.h"
 };
 
 q2proto_error_t q2proto_common_client_read_packed_direction(uintptr_t io_arg, float dir[3])
@@ -234,7 +234,8 @@ q2proto_error_t q2proto_common_server_write_reconnect(uintptr_t io_arg)
     return Q2P_ERR_SUCCESS;
 }
 
-q2proto_error_t q2proto_common_server_write_sound(q2proto_multicast_protocol_t multicast_proto, uintptr_t io_arg, const q2proto_svc_sound_t *sound)
+q2proto_error_t q2proto_common_server_write_sound(q2proto_multicast_protocol_t multicast_proto, uintptr_t io_arg,
+                                                  const q2proto_svc_sound_t *sound)
 {
     WRITE_CHECKED(server_write, io_arg, u8, svc_sound);
     WRITE_CHECKED(server_write, io_arg, u8, sound->flags);
@@ -253,8 +254,7 @@ q2proto_error_t q2proto_common_server_write_sound(q2proto_multicast_protocol_t m
     if (sound->flags & SND_ENT)
         WRITE_CHECKED(server_write, io_arg, u16, (sound->entity << 3) | (sound->channel & 0x7));
 
-    if (sound->flags & SND_POS)
-    {
+    if (sound->flags & SND_POS) {
         float pos[3];
         q2proto_var_coords_get_float(&sound->pos, pos);
         q2proto_server_write_pos(multicast_proto, io_arg, pos);
@@ -278,7 +278,8 @@ q2proto_error_t q2proto_common_server_write_stufftext(uintptr_t io_arg, const q2
     return Q2P_ERR_SUCCESS;
 }
 
-q2proto_error_t q2proto_common_server_write_configstring(uintptr_t io_arg, const q2proto_svc_configstring_t *configstring)
+q2proto_error_t q2proto_common_server_write_configstring(uintptr_t io_arg,
+                                                         const q2proto_svc_configstring_t *configstring)
 {
     WRITE_CHECKED(server_write, io_arg, u8, svc_configstring);
     WRITE_CHECKED(server_write, io_arg, u16, configstring->index);

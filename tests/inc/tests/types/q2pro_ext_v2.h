@@ -29,33 +29,32 @@ typedef float vec4_t[4];
 
 // Based on Q2PRO entity state + extension
 typedef struct {
-    int     number;         // edict index
+    int number; // edict index
 
-    vec3_t  origin;
-    vec3_t  angles;
-    vec3_t  old_origin;     // for lerping
-    int     modelindex;
-    int     modelindex2, modelindex3, modelindex4;  // weapons, CTF flags, etc
-    int     frame;
-    int     skinnum;
-    uint64_t        effects;        // PGM - we're filling it, so it needs to be unsigned
-    int     renderfx;
-    int     solid;          // for client side prediction, 8*(bits 0-4) is x/y radius
-                            // 8*(bits 5-9) is z down distance, 8(bits10-15) is z up
-                            // gi.linkentity sets this properly
-    int     sound;          // for looping sounds, to guarantee shutoff
-    int     event;          // impulse events -- muzzle flashes, footsteps, etc
-                            // events only go out for a single frame, they
-                            // are automatically cleared each frame
+    vec3_t origin;
+    vec3_t angles;
+    vec3_t old_origin; // for lerping
+    int modelindex;
+    int modelindex2, modelindex3, modelindex4; // weapons, CTF flags, etc
+    int frame;
+    int skinnum;
+    uint64_t effects; // PGM - we're filling it, so it needs to be unsigned
+    int renderfx;
+    int solid; // for client side prediction, 8*(bits 0-4) is x/y radius
+               // 8*(bits 5-9) is z down distance, 8(bits10-15) is z up
+               // gi.linkentity sets this properly
+    int sound; // for looping sounds, to guarantee shutoff
+    int event; // impulse events -- muzzle flashes, footsteps, etc
+               // events only go out for a single frame, they
+               // are automatically cleared each frame
 
-    float       alpha;
-    float       scale;
-    float       loop_volume;
-    float       loop_attenuation;
+    float alpha;
+    float scale;
+    float loop_volume;
+    float loop_attenuation;
 } q2pro_ext_v2_entity_state_t;
 
-typedef enum
-{
+typedef enum {
     // can accelerate and turn
     PM_NORMAL,
     PM_SPECTATOR,
@@ -67,15 +66,15 @@ typedef enum
 
 // Q2PRO "new" player pmove
 typedef struct {
-    q2pro_ext_v2_pmtype_t    pm_type;
+    q2pro_ext_v2_pmtype_t pm_type;
 
-    int32_t     origin[3];      // 19.3
-    int32_t     velocity[3];    // 19.3
-    uint16_t    pm_flags;       // ducked, jump_held, etc
-    uint16_t    pm_time;        // in msec
-    int16_t     gravity;
-    int16_t     delta_angles[3];    // add to command angles to get view direction
-                                    // changed by spawns, rotating objects, and teleporters
+    int32_t origin[3];   // 19.3
+    int32_t velocity[3]; // 19.3
+    uint16_t pm_flags;   // ducked, jump_held, etc
+    uint16_t pm_time;    // in msec
+    int16_t gravity;
+    int16_t delta_angles[3]; // add to command angles to get view direction
+                             // changed by spawns, rotating objects, and teleporters
 } q2pro_ext_v2_pmove_state_new_t;
 
 typedef struct {
@@ -95,37 +94,37 @@ typedef struct {
 
 // Slightly modified Q2PRO "new" player state
 typedef struct {
-    q2pro_ext_v2_pmove_state_new_t   pmove;  // for prediction
+    q2pro_ext_v2_pmove_state_new_t pmove; // for prediction
 
     // these fields do not need to be communicated bit-precise
 
-    vec3_t      viewangles;     // for fixed views
-    vec3_t      viewoffset;     // add to pmovestate->origin
-    vec3_t      kick_angles;    // add to view direction to get render angles
-                                // set by weapon kicks, pain effects, etc
+    vec3_t viewangles;  // for fixed views
+    vec3_t viewoffset;  // add to pmovestate->origin
+    vec3_t kick_angles; // add to view direction to get render angles
+                        // set by weapon kicks, pain effects, etc
 
-    vec3_t      gunangles;
-    vec3_t      gunoffset;
-    int         gunindex;
-    int         gunskin;
-    int         gunframe;
-    int         reserved_1;
-    int         reserved_2;
+    vec3_t gunangles;
+    vec3_t gunoffset;
+    int gunindex;
+    int gunskin;
+    int gunframe;
+    int reserved_1;
+    int reserved_2;
 
-    vec4_t      blend;          // rgba full screen effect
-    vec4_t      damage_blend;
+    vec4_t blend; // rgba full screen effect
+    vec4_t damage_blend;
 
-    q2pro_ext_v2_player_fog_t        fog;
-    q2pro_ext_v2_player_heightfog_t  heightfog;
+    q2pro_ext_v2_player_fog_t fog;
+    q2pro_ext_v2_player_heightfog_t heightfog;
 
-    float       fov;            // horizontal field of view
+    float fov; // horizontal field of view
 
-    int         rdflags;        // refdef flags
+    int rdflags; // refdef flags
 
-    int         reserved_3;
-    int         reserved_4;
+    int reserved_3;
+    int reserved_4;
 
-    int16_t     stats[64];   // fast status bar updates
+    int16_t stats[64]; // fast status bar updates
 } q2pro_ext_v2_player_state_t;
 
 #endif // TESTS_TYPES_Q2PRO_EXT_V2_H_

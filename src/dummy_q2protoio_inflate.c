@@ -20,7 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Dummy q2protoio_inflate_* function definitions to make linking work
 
-q2proto_error_t q2protoio_inflate_begin(uintptr_t io_arg, q2proto_inflate_deflate_header_mode_t header_mode, uintptr_t* inflate_io_arg)
+q2proto_error_t q2protoio_inflate_begin(uintptr_t io_arg, q2proto_inflate_deflate_header_mode_t header_mode,
+                                        uintptr_t *inflate_io_arg)
 {
     *inflate_io_arg = io_arg;
     return Q2P_ERR_NOT_IMPLEMENTED;
@@ -36,7 +37,4 @@ q2proto_error_t q2protoio_inflate_stream_ended(uintptr_t inflate_io_arg, bool *s
     return Q2P_ERR_NOT_IMPLEMENTED;
 }
 
-q2proto_error_t q2protoio_inflate_end(uintptr_t inflate_io_arg)
-{
-    return Q2P_ERR_NOT_IMPLEMENTED;
-}
+q2proto_error_t q2protoio_inflate_end(uintptr_t inflate_io_arg) { return Q2P_ERR_NOT_IMPLEMENTED; }

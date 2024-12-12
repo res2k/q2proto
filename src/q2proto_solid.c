@@ -48,9 +48,9 @@ void q2proto_unpack_solid_16(uint16_t solid, q2proto_vec3_t mins, q2proto_vec3_t
     mins[0] = (float)-x;
     mins[1] = (float)-x;
     mins[2] = (float)-zd;
-    maxs[0] =  (float)x;
-    maxs[1] =  (float)x;
-    maxs[2] =  (float)zu;
+    maxs[0] = (float)x;
+    maxs[1] = (float)x;
+    maxs[2] = (float)zu;
 }
 
 // Assumes x/y are equal and symmetric. Z does not have to be symmetric, and z maxs can be negative.
@@ -76,9 +76,9 @@ void q2proto_unpack_solid_32_r1q2(uint32_t solid, q2proto_vec3_t mins, q2proto_v
     mins[0] = (float)-x;
     mins[1] = (float)-x;
     mins[2] = (float)-zd;
-    maxs[0] =  (float)x;
-    maxs[1] =  (float)x;
-    maxs[2] =  (float)zu;
+    maxs[0] = (float)x;
+    maxs[1] = (float)x;
+    maxs[2] = (float)zu;
 }
 
 // Assumes x/y are equal. Z does not have to be symmetric, and z maxs can be negative.
@@ -107,7 +107,7 @@ void q2proto_unpack_solid_32_q2pro_v2(uint32_t solid, q2proto_vec3_t mins, q2pro
     mins[0] = (float)-x;
     mins[1] = (float)-y;
     mins[2] = (float)-zd;
-    maxs[0] =  (float)x;
-    maxs[1] =  (float)y;
-    maxs[2] =  (float)zu;
+    maxs[0] = (float)x;
+    maxs[1] = (float)y;
+    maxs[2] = (float)zu;
 }

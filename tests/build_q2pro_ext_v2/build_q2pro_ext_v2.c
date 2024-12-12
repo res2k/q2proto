@@ -27,17 +27,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 typedef q2proto_vec3_t vec3_t;
 
-#define Q2P_PACK_ENTITY_FUNCTION_NAME   PackEntity
-#define Q2P_PACK_ENTITY_TYPE            q2pro_ext_v2_entity_state_t*
+#define Q2P_PACK_ENTITY_FUNCTION_NAME PackEntity
+#define Q2P_PACK_ENTITY_TYPE          q2pro_ext_v2_entity_state_t *
 
 #include "q2proto/q2proto_packing_entitystate_impl.inc"
 
-#define Q2P_PACK_PLAYER_FUNCTION_NAME   PackPlayer
-#define Q2P_PACK_PLAYER_TYPE            q2pro_ext_v2_player_state_t*
+#define Q2P_PACK_PLAYER_FUNCTION_NAME PackPlayer
+#define Q2P_PACK_PLAYER_TYPE          q2pro_ext_v2_player_state_t *
 
 #include "q2proto/q2proto_packing_playerstate_impl.inc"
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     q2proto_clientcontext_t client_context;
     q2proto_init_clientcontext(&client_context);

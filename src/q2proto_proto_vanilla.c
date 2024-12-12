@@ -28,13 +28,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // CLIENT: PARSE MESSAGES FROM SERVER
 //
 
-static q2proto_error_t vanilla_client_read(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message);
-static q2proto_error_t vanilla_client_next_frame_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_frame_entity_delta_t *frame_entity_delta);
-static q2proto_error_t vanilla_client_write(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message);
-static uint32_t vanilla_pack_solid(q2proto_clientcontext_t *context, const q2proto_vec3_t mins, const q2proto_vec3_t maxs);
-static void vanilla_unpack_solid(q2proto_clientcontext_t *context, uint32_t solid, q2proto_vec3_t mins, q2proto_vec3_t maxs);
+static q2proto_error_t vanilla_client_read(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                           q2proto_svc_message_t *svc_message);
+static q2proto_error_t vanilla_client_next_frame_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                                              q2proto_svc_frame_entity_delta_t *frame_entity_delta);
+static q2proto_error_t vanilla_client_write(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                            const q2proto_clc_message_t *clc_message);
+static uint32_t vanilla_pack_solid(q2proto_clientcontext_t *context, const q2proto_vec3_t mins,
+                                   const q2proto_vec3_t maxs);
+static void vanilla_unpack_solid(q2proto_clientcontext_t *context, uint32_t solid, q2proto_vec3_t mins,
+                                 q2proto_vec3_t maxs);
 
-q2proto_error_t q2proto_vanilla_continue_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata)
+q2proto_error_t q2proto_vanilla_continue_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                                    q2proto_svc_serverdata_t *serverdata)
 {
     context->pack_solid = vanilla_pack_solid;
     context->unpack_solid = vanilla_unpack_solid;
@@ -54,18 +60,22 @@ q2proto_error_t q2proto_vanilla_continue_serverdata(q2proto_clientcontext_t *con
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t vanilla_client_read_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata);
-static q2proto_error_t vanilla_client_read_entity_delta(uintptr_t io_arg, uint64_t bits, q2proto_entity_state_delta_t *entity_state);
+static q2proto_error_t vanilla_client_read_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                                      q2proto_svc_serverdata_t *serverdata);
+static q2proto_error_t vanilla_client_read_entity_delta(uintptr_t io_arg, uint64_t bits,
+                                                        q2proto_entity_state_delta_t *entity_state);
 static q2proto_error_t vanilla_client_read_baseline(uintptr_t io_arg, q2proto_svc_spawnbaseline_t *spawnbaseline);
-static q2proto_error_t vanilla_client_read_frame(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_frame_t *frame);
+static q2proto_error_t vanilla_client_read_frame(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                                 q2proto_svc_frame_t *frame);
 
-static MAYBE_UNUSED const char* vanilla_server_cmd_string(int command)
+static MAYBE_UNUSED const char *vanilla_server_cmd_string(int command)
 {
     const char *str = q2proto_debug_common_svc_string(command);
     return str ? str : q2proto_va("%d", command);
 }
 
-static q2proto_error_t vanilla_client_read(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message)
+static q2proto_error_t vanilla_client_read(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                           q2proto_svc_message_t *svc_message)
 {
     memset(svc_message, 0, sizeof(*svc_message));
 
@@ -75,11 +85,10 @@ static q2proto_error_t vanilla_client_read(q2proto_clientcontext_t *context, uin
     if (command_read == 0)
         return Q2P_ERR_NO_MORE_INPUT;
 
-    uint8_t command = *(const uint8_t*)command_ptr;
+    uint8_t command = *(const uint8_t *)command_ptr;
     SHOWNET(io_arg, 1, -1, "%s", vanilla_server_cmd_string(command));
 
-    switch (command)
-    {
+    switch (command) {
     case svc_nop:
         svc_message->type = Q2P_SVC_NOP;
         return Q2P_ERR_SUCCESS;
@@ -122,7 +131,8 @@ static q2proto_error_t vanilla_client_read(q2proto_clientcontext_t *context, uin
 
     case svc_temp_entity:
         svc_message->type = Q2P_SVC_TEMP_ENTITY;
-        return q2proto_common_client_read_temp_entity_short(io_arg, context->features.server_game_api, &svc_message->temp_entity);
+        return q2proto_common_client_read_temp_entity_short(io_arg, context->features.server_game_api,
+                                                            &svc_message->temp_entity);
 
     case svc_muzzleflash:
         svc_message->type = Q2P_SVC_MUZZLEFLASH;
@@ -152,27 +162,27 @@ static q2proto_error_t vanilla_client_read(q2proto_clientcontext_t *context, uin
     return HANDLE_ERROR(client_read, io_arg, Q2P_ERR_BAD_COMMAND, "%s: bad server command %d", __func__, command);
 }
 
-static q2proto_error_t vanilla_client_read_delta_entities(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_message_t *svc_message)
+static q2proto_error_t vanilla_client_read_delta_entities(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                                          q2proto_svc_message_t *svc_message)
 {
     memset(svc_message, 0, sizeof(*svc_message));
 
     svc_message->type = Q2P_SVC_FRAME_ENTITY_DELTA;
     q2proto_error_t err = vanilla_client_next_frame_entity_delta(context, io_arg, &svc_message->frame_entity_delta);
-    if (err != Q2P_ERR_SUCCESS)
-    {
+    if (err != Q2P_ERR_SUCCESS) {
         // FIXME: May be insufficient, might need some explicit way to reset parsing...
         context->client_read = vanilla_client_read;
         return err;
     }
 
-    if (svc_message->frame_entity_delta.newnum == 0)
-    {
+    if (svc_message->frame_entity_delta.newnum == 0) {
         context->client_read = vanilla_client_read;
     }
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t vanilla_client_next_frame_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_frame_entity_delta_t *frame_entity_delta)
+static q2proto_error_t vanilla_client_next_frame_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                                              q2proto_svc_frame_entity_delta_t *frame_entity_delta)
 {
     memset(frame_entity_delta, 0, sizeof(*frame_entity_delta));
 
@@ -183,13 +193,11 @@ static q2proto_error_t vanilla_client_next_frame_entity_delta(q2proto_clientcont
 
     q2proto_debug_shownet_entity_delta_bits(io_arg, "   delta:", frame_entity_delta->newnum, bits);
 
-    if (frame_entity_delta->newnum == 0)
-    {
+    if (frame_entity_delta->newnum == 0) {
         return Q2P_ERR_SUCCESS;
     }
 
-    if (bits & U_REMOVE)
-    {
+    if (bits & U_REMOVE) {
         frame_entity_delta->remove = true;
         return Q2P_ERR_SUCCESS;
     }
@@ -197,7 +205,8 @@ static q2proto_error_t vanilla_client_next_frame_entity_delta(q2proto_clientcont
     return vanilla_client_read_entity_delta(io_arg, bits, &frame_entity_delta->entity_delta);
 }
 
-static q2proto_error_t vanilla_client_read_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata)
+static q2proto_error_t vanilla_client_read_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                                      q2proto_svc_serverdata_t *serverdata)
 {
     int32_t protocol;
     READ_CHECKED(client_read, io_arg, protocol, i32);
@@ -210,7 +219,8 @@ static q2proto_error_t vanilla_client_read_serverdata(q2proto_clientcontext_t *c
     return q2proto_vanilla_continue_serverdata(context, io_arg, serverdata);
 }
 
-static q2proto_error_t vanilla_client_read_entity_delta(uintptr_t io_arg, uint64_t bits, q2proto_entity_state_delta_t *entity_state)
+static q2proto_error_t vanilla_client_read_entity_delta(uintptr_t io_arg, uint64_t bits,
+                                                        q2proto_entity_state_delta_t *entity_state)
 {
     if (delta_bits_check(bits, U_MODEL, &entity_state->delta_bits, Q2P_ESD_MODELINDEX))
         READ_CHECKED(client_read, io_arg, entity_state->modelindex, u8);
@@ -226,8 +236,7 @@ static q2proto_error_t vanilla_client_read_entity_delta(uintptr_t io_arg, uint64
     else if (delta_bits_check(bits, U_FRAME16, &entity_state->delta_bits, Q2P_ESD_FRAME))
         READ_CHECKED(client_read, io_arg, entity_state->frame, u16);
 
-    if (delta_bits_check(bits, U_SKIN32, &entity_state->delta_bits, Q2P_ESD_SKINNUM))
-    {
+    if (delta_bits_check(bits, U_SKIN32, &entity_state->delta_bits, Q2P_ESD_SKINNUM)) {
         if ((bits & U_SKIN32) == U_SKIN32) // used for laser colors
             READ_CHECKED(client_read, io_arg, entity_state->skinnum, u32);
         else if (bits & U_SKIN16)
@@ -236,8 +245,7 @@ static q2proto_error_t vanilla_client_read_entity_delta(uintptr_t io_arg, uint64
             READ_CHECKED(client_read, io_arg, entity_state->skinnum, u8);
     }
 
-    if (delta_bits_check(bits, U_EFFECTS32, &entity_state->delta_bits, Q2P_ESD_EFFECTS))
-    {
+    if (delta_bits_check(bits, U_EFFECTS32, &entity_state->delta_bits, Q2P_ESD_EFFECTS)) {
         if ((bits & U_EFFECTS32) == U_EFFECTS32)
             READ_CHECKED(client_read, io_arg, entity_state->effects, u32);
         else if (bits & U_EFFECTS16)
@@ -246,8 +254,7 @@ static q2proto_error_t vanilla_client_read_entity_delta(uintptr_t io_arg, uint64
             READ_CHECKED(client_read, io_arg, entity_state->effects, u8);
     }
 
-    if (delta_bits_check(bits, U_RENDERFX32, &entity_state->delta_bits, Q2P_ESD_RENDERFX))
-    {
+    if (delta_bits_check(bits, U_RENDERFX32, &entity_state->delta_bits, Q2P_ESD_RENDERFX)) {
         if ((bits & U_RENDERFX32) == U_RENDERFX32)
             READ_CHECKED(client_read, io_arg, entity_state->renderfx, u32);
         else if (bits & U_RENDERFX16)
@@ -257,35 +264,29 @@ static q2proto_error_t vanilla_client_read_entity_delta(uintptr_t io_arg, uint64
     }
 
     entity_state->origin.read.value.delta_bits = 0;
-    if (bits & U_ORIGIN1)
-    {
+    if (bits & U_ORIGIN1) {
         READ_CHECKED_VAR_COORDS_COMP_16(client_read, io_arg, &entity_state->origin.read.value.values, 0);
         entity_state->origin.read.value.delta_bits |= BIT(0);
     }
-    if (bits & U_ORIGIN2)
-    {
+    if (bits & U_ORIGIN2) {
         READ_CHECKED_VAR_COORDS_COMP_16(client_read, io_arg, &entity_state->origin.read.value.values, 1);
         entity_state->origin.read.value.delta_bits |= BIT(1);
     }
-    if (bits & U_ORIGIN3)
-    {
+    if (bits & U_ORIGIN3) {
         READ_CHECKED_VAR_COORDS_COMP_16(client_read, io_arg, &entity_state->origin.read.value.values, 2);
         entity_state->origin.read.value.delta_bits |= BIT(2);
     }
 
     entity_state->angle.delta_bits = 0;
-    if (bits & U_ANGLE1)
-    {
+    if (bits & U_ANGLE1) {
         READ_CHECKED_VAR_ANGLES_COMP_8(client_read, io_arg, &entity_state->angle.values, 0);
         entity_state->angle.delta_bits |= BIT(0);
     }
-    if (bits & U_ANGLE2)
-    {
+    if (bits & U_ANGLE2) {
         READ_CHECKED_VAR_ANGLES_COMP_8(client_read, io_arg, &entity_state->angle.values, 1);
         entity_state->angle.delta_bits |= BIT(1);
     }
-    if (bits & U_ANGLE3)
-    {
+    if (bits & U_ANGLE3) {
         READ_CHECKED_VAR_ANGLES_COMP_8(client_read, io_arg, &entity_state->angle.values, 2);
         entity_state->angle.delta_bits |= BIT(2);
     }
@@ -334,14 +335,12 @@ static q2proto_error_t vanilla_client_read_playerstate(uintptr_t io_arg, q2proto
     if (delta_bits_check(flags, PS_M_TYPE, &playerstate->delta_bits, Q2P_PSD_PM_TYPE))
         READ_CHECKED(client_read, io_arg, playerstate->pm_type, u8);
 
-    if(flags & PS_M_ORIGIN)
-    {
+    if (flags & PS_M_ORIGIN) {
         CHECKED(client_read, io_arg, read_var_coords_short(io_arg, &playerstate->pm_origin.read.value.values));
         playerstate->pm_origin.read.value.delta_bits = 0x7;
     }
 
-    if(flags & PS_M_VELOCITY)
-    {
+    if (flags & PS_M_VELOCITY) {
         CHECKED(client_read, io_arg, read_var_coords_short(io_arg, &playerstate->pm_velocity.read.value.values));
         playerstate->pm_velocity.read.value.delta_bits = 0x7;
     }
@@ -364,8 +363,7 @@ static q2proto_error_t vanilla_client_read_playerstate(uintptr_t io_arg, q2proto
     if (delta_bits_check(flags, PS_VIEWOFFSET, &playerstate->delta_bits, Q2P_PSD_VIEWOFFSET))
         CHECKED(client_read, io_arg, read_var_small_offsets(io_arg, &playerstate->viewoffset));
 
-    if(flags & PS_VIEWANGLES)
-    {
+    if (flags & PS_VIEWANGLES) {
         CHECKED(client_read, io_arg, read_var_angles16(io_arg, &playerstate->viewangles.values));
         playerstate->viewangles.delta_bits = 0x7;
     }
@@ -376,8 +374,7 @@ static q2proto_error_t vanilla_client_read_playerstate(uintptr_t io_arg, q2proto
     if (delta_bits_check(flags, PS_WEAPONINDEX, &playerstate->delta_bits, Q2P_PSD_GUNINDEX))
         READ_CHECKED(client_read, io_arg, playerstate->gunindex, u8);
 
-    if (delta_bits_check(flags, PS_WEAPONFRAME, &playerstate->delta_bits, Q2P_PSD_GUNFRAME))
-    {
+    if (delta_bits_check(flags, PS_WEAPONFRAME, &playerstate->delta_bits, Q2P_PSD_GUNFRAME)) {
         READ_CHECKED(client_read, io_arg, playerstate->gunframe, u8);
         CHECKED(client_read, io_arg, read_var_small_offsets(io_arg, &playerstate->gunoffset.values));
         playerstate->gunoffset.delta_bits = BIT(0) | BIT(1) | BIT(2);
@@ -385,8 +382,7 @@ static q2proto_error_t vanilla_client_read_playerstate(uintptr_t io_arg, q2proto
         playerstate->gunangles.delta_bits = BIT(0) | BIT(1) | BIT(2);
     }
 
-    if (flags & PS_BLEND)
-    {
+    if (flags & PS_BLEND) {
         CHECKED(client_read, io_arg, read_var_color(io_arg, &playerstate->blend.values));
         playerstate->blend.delta_bits = 0xf;
     }
@@ -406,7 +402,8 @@ static q2proto_error_t vanilla_client_read_playerstate(uintptr_t io_arg, q2proto
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t vanilla_client_read_frame(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_frame_t* frame)
+static q2proto_error_t vanilla_client_read_frame(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                                 q2proto_svc_frame_t *frame)
 {
     READ_CHECKED(client_read, io_arg, frame->serverframe, i32);
     READ_CHECKED(client_read, io_arg, frame->deltaframe, i32);
@@ -430,7 +427,8 @@ static q2proto_error_t vanilla_client_read_frame(q2proto_clientcontext_t *contex
     // read packet entities
     READ_CHECKED(client_read, io_arg, cmd, u8);
     if (cmd != svc_packetentities)
-        return HANDLE_ERROR(client_read, io_arg, Q2P_ERR_BAD_DATA, "%s: expected packetentities, got %d", __func__, cmd);
+        return HANDLE_ERROR(client_read, io_arg, Q2P_ERR_BAD_DATA, "%s: expected packetentities, got %d", __func__,
+                            cmd);
     context->client_read = vanilla_client_read_delta_entities;
     SHOWNET(io_arg, 2, -1, "packetentities");
 
@@ -441,12 +439,13 @@ static q2proto_error_t vanilla_client_read_frame(q2proto_clientcontext_t *contex
 // CLIENT: SEND MESSAGES TO SERVER
 //
 
-static q2proto_error_t vanilla_client_write_move(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_move_t *move);
+static q2proto_error_t vanilla_client_write_move(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                                 const q2proto_clc_move_t *move);
 
-static q2proto_error_t vanilla_client_write(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_message_t *clc_message)
+static q2proto_error_t vanilla_client_write(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                            const q2proto_clc_message_t *clc_message)
 {
-    switch(clc_message->type)
-    {
+    switch (clc_message->type) {
     case Q2P_CLC_NOP:
         return q2proto_common_client_write_nop(io_arg);
 
@@ -513,7 +512,8 @@ static q2proto_error_t vanilla_client_write_move_delta(uintptr_t io_arg, const q
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t vanilla_client_write_move(q2proto_clientcontext_t *context, uintptr_t io_arg, const q2proto_clc_move_t *move)
+static q2proto_error_t vanilla_client_write_move(q2proto_clientcontext_t *context, uintptr_t io_arg,
+                                                 const q2proto_clc_move_t *move)
 {
     WRITE_CHECKED(client_write, io_arg, u8, clc_move);
 
@@ -523,25 +523,29 @@ static q2proto_error_t vanilla_client_write_move(q2proto_clientcontext_t *contex
 
     WRITE_CHECKED(client_write, io_arg, i32, move->lastframe);
 
-    for (int i = 0; i < 3; i++)
-    {
+    for (int i = 0; i < 3; i++) {
         CHECKED(client_write, io_arg, vanilla_client_write_move_delta(io_arg, &move->moves[i]));
     }
 
-    uint8_t *checksum_start = (uint8_t*)checksum_byte + 1;
+    uint8_t *checksum_start = (uint8_t *)checksum_byte + 1;
     uint8_t *checksum_end;
-    CHECKED_IO(client_write, io_arg, checksum_end = (uint8_t*)q2protoio_write_reserve_raw(io_arg, 0), "get checksum end");
+    CHECKED_IO(client_write, io_arg, checksum_end = (uint8_t *)q2protoio_write_reserve_raw(io_arg, 0),
+               "get checksum end");
 
-    CHECKED(client_write, io_arg, q2proto_block_sequence_crc_byte(checksum_start, checksum_end - checksum_start, move->sequence, (uint8_t *)checksum_byte));
+    CHECKED(client_write, io_arg,
+            q2proto_block_sequence_crc_byte(checksum_start, checksum_end - checksum_start, move->sequence,
+                                            (uint8_t *)checksum_byte));
     return Q2P_ERR_SUCCESS;
 }
 
-static uint32_t vanilla_pack_solid(q2proto_clientcontext_t *context, const q2proto_vec3_t mins, const q2proto_vec3_t maxs)
+static uint32_t vanilla_pack_solid(q2proto_clientcontext_t *context, const q2proto_vec3_t mins,
+                                   const q2proto_vec3_t maxs)
 {
     return q2proto_pack_solid_16(mins, maxs);
 }
 
-static void vanilla_unpack_solid(q2proto_clientcontext_t *context, uint32_t solid, q2proto_vec3_t mins, q2proto_vec3_t maxs)
+static void vanilla_unpack_solid(q2proto_clientcontext_t *context, uint32_t solid, q2proto_vec3_t mins,
+                                 q2proto_vec3_t maxs)
 {
     q2proto_unpack_solid_16(solid, mins, maxs);
 }
@@ -549,21 +553,31 @@ static void vanilla_unpack_solid(q2proto_clientcontext_t *context, uint32_t soli
 //
 // SERVER: INITIALIZATION
 //
-static q2proto_error_t vanilla_server_fill_serverdata(q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata);
-static void vanilla_server_make_entity_state_delta(q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, q2proto_entity_state_delta_t *delta);
-static void vanilla_server_make_player_state_delta(q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta);
-static q2proto_error_t vanilla_server_write(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message);
-static q2proto_error_t vanilla_server_write_gamestate(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate);
-static q2proto_error_t vanilla_server_read(q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_message_t *clc_message);
+static q2proto_error_t vanilla_server_fill_serverdata(q2proto_servercontext_t *context,
+                                                      q2proto_svc_serverdata_t *serverdata);
+static void vanilla_server_make_entity_state_delta(q2proto_servercontext_t *context,
+                                                   const q2proto_packed_entity_state_t *from,
+                                                   const q2proto_packed_entity_state_t *to, bool write_old_origin,
+                                                   q2proto_entity_state_delta_t *delta);
+static void vanilla_server_make_player_state_delta(q2proto_servercontext_t *context,
+                                                   const q2proto_packed_player_state_t *from,
+                                                   const q2proto_packed_player_state_t *to,
+                                                   q2proto_svc_playerstate_t *delta);
+static q2proto_error_t vanilla_server_write(q2proto_servercontext_t *context, uintptr_t io_arg,
+                                            const q2proto_svc_message_t *svc_message);
+static q2proto_error_t vanilla_server_write_gamestate(q2proto_servercontext_t *context,
+                                                      q2protoio_deflate_args_t *deflate_args, uintptr_t io_arg,
+                                                      const q2proto_gamestate_t *gamestate);
+static q2proto_error_t vanilla_server_read(q2proto_servercontext_t *context, uintptr_t io_arg,
+                                           q2proto_clc_message_t *clc_message);
 
-static const struct q2proto_download_funcs_s vanilla_download_funcs = {
-    .begin = NULL,
-    .data = q2proto_download_common_data,
-    .finish = q2proto_download_common_finish,
-    .abort = q2proto_download_common_abort
-};
+static const struct q2proto_download_funcs_s vanilla_download_funcs = {.begin = NULL,
+                                                                       .data = q2proto_download_common_data,
+                                                                       .finish = q2proto_download_common_finish,
+                                                                       .abort = q2proto_download_common_abort};
 
-q2proto_error_t q2proto_vanilla_init_servercontext(q2proto_servercontext_t *context, const q2proto_connect_t *connect_info)
+q2proto_error_t q2proto_vanilla_init_servercontext(q2proto_servercontext_t *context,
+                                                   const q2proto_connect_t *connect_info)
 {
     if (context->server_info->game_api != Q2PROTO_GAME_VANILLA)
         return Q2P_ERR_GAMETYPE_UNSUPPORTED;
@@ -578,32 +592,42 @@ q2proto_error_t q2proto_vanilla_init_servercontext(q2proto_servercontext_t *cont
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t vanilla_server_fill_serverdata(q2proto_servercontext_t *context, q2proto_svc_serverdata_t *serverdata)
+static q2proto_error_t vanilla_server_fill_serverdata(q2proto_servercontext_t *context,
+                                                      q2proto_svc_serverdata_t *serverdata)
 {
     serverdata->protocol = PROTOCOL_VANILLA;
     return Q2P_ERR_SUCCESS;
 }
 
-static void vanilla_server_make_entity_state_delta(q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, q2proto_entity_state_delta_t *delta)
+static void vanilla_server_make_entity_state_delta(q2proto_servercontext_t *context,
+                                                   const q2proto_packed_entity_state_t *from,
+                                                   const q2proto_packed_entity_state_t *to, bool write_old_origin,
+                                                   q2proto_entity_state_delta_t *delta)
 {
     q2proto_packing_make_entity_state_delta(from, to, write_old_origin, false, delta);
 }
 
-static void vanilla_server_make_player_state_delta(q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta)
+static void vanilla_server_make_player_state_delta(q2proto_servercontext_t *context,
+                                                   const q2proto_packed_player_state_t *from,
+                                                   const q2proto_packed_player_state_t *to,
+                                                   q2proto_svc_playerstate_t *delta)
 {
     q2proto_packing_make_player_state_delta(from, to, delta);
 }
 
 static q2proto_error_t vanilla_server_write_serverdata(uintptr_t io_arg, const q2proto_svc_serverdata_t *serverdata);
-static q2proto_error_t vanilla_server_write_spawnbaseline(uintptr_t io_arg, const q2proto_svc_spawnbaseline_t *spawnbaseline);
+static q2proto_error_t vanilla_server_write_spawnbaseline(uintptr_t io_arg,
+                                                          const q2proto_svc_spawnbaseline_t *spawnbaseline);
 static q2proto_error_t vanilla_server_write_download(uintptr_t io_arg, const q2proto_svc_download_t *download);
-static q2proto_error_t vanilla_server_write_frame(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_frame_t *frame);
-static q2proto_error_t vanilla_server_write_frame_entity_delta(uintptr_t io_arg, const q2proto_svc_frame_entity_delta_t *frame_entity_delta);
+static q2proto_error_t vanilla_server_write_frame(q2proto_servercontext_t *context, uintptr_t io_arg,
+                                                  const q2proto_svc_frame_t *frame);
+static q2proto_error_t vanilla_server_write_frame_entity_delta(
+    uintptr_t io_arg, const q2proto_svc_frame_entity_delta_t *frame_entity_delta);
 
-static q2proto_error_t vanilla_server_write(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message)
+static q2proto_error_t vanilla_server_write(q2proto_servercontext_t *context, uintptr_t io_arg,
+                                            const q2proto_svc_message_t *svc_message)
 {
-    switch(svc_message->type)
-    {
+    switch (svc_message->type) {
     case Q2P_SVC_NOP:
         return q2proto_common_server_write_nop(io_arg);
 
@@ -674,7 +698,8 @@ static q2proto_error_t vanilla_server_write_serverdata(uintptr_t io_arg, const q
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t vanilla_server_write_entity_state_delta(uintptr_t io_arg, uint16_t entnum, const q2proto_entity_state_delta_t *entity_state_delta)
+static q2proto_error_t vanilla_server_write_entity_state_delta(uintptr_t io_arg, uint16_t entnum,
+                                                               const q2proto_entity_state_delta_t *entity_state_delta)
 {
     uint32_t bits = 0;
 
@@ -696,9 +721,8 @@ static q2proto_error_t vanilla_server_write_entity_state_delta(uintptr_t io_arg,
     if (entity_state_delta->delta_bits & Q2P_ESD_SKINNUM)
         bits |= q2proto_common_choose_width_flags(entity_state_delta->skinnum, U_SKIN8, U_SKIN16, false);
 
-    if (entity_state_delta->delta_bits & Q2P_ESD_FRAME)
-    {
-        if(entity_state_delta->frame >= 256)
+    if (entity_state_delta->delta_bits & Q2P_ESD_FRAME) {
+        if (entity_state_delta->frame >= 256)
             bits |= U_FRAME16;
         else
             bits |= U_FRAME8;
@@ -727,13 +751,13 @@ static q2proto_error_t vanilla_server_write_entity_state_delta(uintptr_t io_arg,
     if (entity_state_delta->delta_bits & Q2P_ESD_MODELINDEX4)
         bits |= U_MODEL4;
 
-    if(entity_state_delta->delta_bits & Q2P_ESD_SOUND)
+    if (entity_state_delta->delta_bits & Q2P_ESD_SOUND)
         bits |= U_SOUND;
 
-    if(entity_state_delta->delta_bits & (Q2P_ESD_LOOP_ATTENUATION | Q2P_ESD_LOOP_VOLUME))
+    if (entity_state_delta->delta_bits & (Q2P_ESD_LOOP_ATTENUATION | Q2P_ESD_LOOP_VOLUME))
         return Q2P_ERR_BAD_DATA;
 
-    if(entity_state_delta->delta_bits & Q2P_ESD_OLD_ORIGIN)
+    if (entity_state_delta->delta_bits & Q2P_ESD_OLD_ORIGIN)
         bits |= U_OLDORIGIN;
 
     if (entity_state_delta->delta_bits & (Q2P_ESD_ALPHA | Q2P_ESD_SCALE))
@@ -743,26 +767,22 @@ static q2proto_error_t vanilla_server_write_entity_state_delta(uintptr_t io_arg,
 
     q2proto_common_server_write_entity_bits(io_arg, bits, entnum);
 
-    if (bits & U_MODEL)
-    {
+    if (bits & U_MODEL) {
         if (entity_state_delta->modelindex > 255)
             return Q2P_ERR_BAD_DATA;
         WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->modelindex);
     }
-    if (bits & U_MODEL2)
-    {
+    if (bits & U_MODEL2) {
         if (entity_state_delta->modelindex2 > 255)
             return Q2P_ERR_BAD_DATA;
         WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->modelindex2);
     }
-    if (bits & U_MODEL3)
-    {
+    if (bits & U_MODEL3) {
         if (entity_state_delta->modelindex3 > 255)
             return Q2P_ERR_BAD_DATA;
         WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->modelindex3);
     }
-    if (bits & U_MODEL4)
-    {
+    if (bits & U_MODEL4) {
         if (entity_state_delta->modelindex4 > 255)
             return Q2P_ERR_BAD_DATA;
         WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->modelindex4);
@@ -795,11 +815,14 @@ static q2proto_error_t vanilla_server_write_entity_state_delta(uintptr_t io_arg,
         WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->renderfx);
 
     if (bits & U_ORIGIN1)
-        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&entity_state_delta->origin.write.current, 0));
+        WRITE_CHECKED(server_write, io_arg, u16,
+                      q2proto_var_coords_get_int_comp(&entity_state_delta->origin.write.current, 0));
     if (bits & U_ORIGIN2)
-        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&entity_state_delta->origin.write.current, 1));
+        WRITE_CHECKED(server_write, io_arg, u16,
+                      q2proto_var_coords_get_int_comp(&entity_state_delta->origin.write.current, 1));
     if (bits & U_ORIGIN3)
-        WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&entity_state_delta->origin.write.current, 2));
+        WRITE_CHECKED(server_write, io_arg, u16,
+                      q2proto_var_coords_get_int_comp(&entity_state_delta->origin.write.current, 2));
 
     if (bits & U_ANGLE1)
         WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_angles_get_char_comp(&entity_state_delta->angle.values, 0));
@@ -808,15 +831,13 @@ static q2proto_error_t vanilla_server_write_entity_state_delta(uintptr_t io_arg,
     if (bits & U_ANGLE3)
         WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_angles_get_char_comp(&entity_state_delta->angle.values, 2));
 
-    if (bits & U_OLDORIGIN)
-    {
+    if (bits & U_OLDORIGIN) {
         WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&entity_state_delta->old_origin, 0));
         WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&entity_state_delta->old_origin, 1));
         WRITE_CHECKED(server_write, io_arg, u16, q2proto_var_coords_get_int_comp(&entity_state_delta->old_origin, 2));
     }
 
-    if (bits & U_SOUND)
-    {
+    if (bits & U_SOUND) {
         if (entity_state_delta->sound > 255)
             return Q2P_ERR_BAD_DATA;
         WRITE_CHECKED(server_write, io_arg, u8, entity_state_delta->sound);
@@ -830,10 +851,12 @@ static q2proto_error_t vanilla_server_write_entity_state_delta(uintptr_t io_arg,
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t vanilla_server_write_spawnbaseline(uintptr_t io_arg, const q2proto_svc_spawnbaseline_t *spawnbaseline)
+static q2proto_error_t vanilla_server_write_spawnbaseline(uintptr_t io_arg,
+                                                          const q2proto_svc_spawnbaseline_t *spawnbaseline)
 {
     WRITE_CHECKED(server_write, io_arg, u8, svc_spawnbaseline);
-    CHECKED(server_write, io_arg, vanilla_server_write_entity_state_delta(io_arg, spawnbaseline->entnum, &spawnbaseline->delta_state));
+    CHECKED(server_write, io_arg,
+            vanilla_server_write_entity_state_delta(io_arg, spawnbaseline->entnum, &spawnbaseline->delta_state));
     return Q2P_ERR_SUCCESS;
 }
 
@@ -842,10 +865,10 @@ static q2proto_error_t vanilla_server_write_download(uintptr_t io_arg, const q2p
     WRITE_CHECKED(server_write, io_arg, u8, svc_download);
     WRITE_CHECKED(server_write, io_arg, i16, download->size);
     WRITE_CHECKED(server_write, io_arg, u8, download->percent);
-    if (download->size > 0)
-    {
+    if (download->size > 0) {
         void *p;
-        CHECKED_IO(server_write, io_arg, p = q2protoio_write_reserve_raw(io_arg, download->size), "reserve download data");
+        CHECKED_IO(server_write, io_arg, p = q2protoio_write_reserve_raw(io_arg, download->size),
+                   "reserve download data");
         memcpy(p, download->data, download->size);
     }
     return Q2P_ERR_SUCCESS;
@@ -855,67 +878,64 @@ static q2proto_error_t vanilla_server_write_playerstate(uintptr_t io_arg, const 
 {
     uint16_t flags = 0;
 
-    if(playerstate->delta_bits & Q2P_PSD_PM_TYPE)
+    if (playerstate->delta_bits & Q2P_PSD_PM_TYPE)
         flags |= PS_M_TYPE;
-    if(q2proto_maybe_diff_coords_write_differs_int(&playerstate->pm_origin))
+    if (q2proto_maybe_diff_coords_write_differs_int(&playerstate->pm_origin))
         flags |= PS_M_ORIGIN;
-    if(q2proto_maybe_diff_coords_write_differs_int(&playerstate->pm_velocity))
+    if (q2proto_maybe_diff_coords_write_differs_int(&playerstate->pm_velocity))
         flags |= PS_M_VELOCITY;
-    if(playerstate->delta_bits & Q2P_PSD_PM_TIME)
-    {
+    if (playerstate->delta_bits & Q2P_PSD_PM_TIME) {
         flags |= PS_M_TIME;
         if (playerstate->pm_time > UINT8_MAX)
             return Q2P_ERR_BAD_DATA;
     }
-    if(playerstate->delta_bits & Q2P_PSD_PM_FLAGS)
-    {
+    if (playerstate->delta_bits & Q2P_PSD_PM_FLAGS) {
         flags |= PS_M_FLAGS;
         if (playerstate->pm_flags > UINT8_MAX)
             return Q2P_ERR_BAD_DATA;
     }
-    if(playerstate->delta_bits & Q2P_PSD_PM_GRAVITY)
+    if (playerstate->delta_bits & Q2P_PSD_PM_GRAVITY)
         flags |= PS_M_GRAVITY;
-    if(playerstate->delta_bits & Q2P_PSD_PM_DELTA_ANGLES)
+    if (playerstate->delta_bits & Q2P_PSD_PM_DELTA_ANGLES)
         flags |= PS_M_DELTA_ANGLES;
-    if(playerstate->delta_bits & Q2P_PSD_PM_VIEWHEIGHT)
+    if (playerstate->delta_bits & Q2P_PSD_PM_VIEWHEIGHT)
         return Q2P_ERR_BAD_DATA;
-    if(playerstate->delta_bits & Q2P_PSD_VIEWOFFSET)
+    if (playerstate->delta_bits & Q2P_PSD_VIEWOFFSET)
         flags |= PS_VIEWOFFSET;
-    if(playerstate->viewangles.delta_bits != 0)
+    if (playerstate->viewangles.delta_bits != 0)
         flags |= PS_VIEWANGLES;
-    if(playerstate->delta_bits & Q2P_PSD_KICKANGLES)
+    if (playerstate->delta_bits & Q2P_PSD_KICKANGLES)
         flags |= PS_KICKANGLES;
-    if(playerstate->blend.delta_bits != 0)
+    if (playerstate->blend.delta_bits != 0)
         flags |= PS_BLEND;
 #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
-    if(playerstate->damage_blend.delta_bits != 0)
+    if (playerstate->damage_blend.delta_bits != 0)
         return Q2P_ERR_BAD_DATA;
 #endif
-    if(playerstate->delta_bits & Q2P_PSD_FOV)
+    if (playerstate->delta_bits & Q2P_PSD_FOV)
         flags |= PS_FOV;
-    if(playerstate->delta_bits & Q2P_PSD_RDFLAGS)
+    if (playerstate->delta_bits & Q2P_PSD_RDFLAGS)
         flags |= PS_RDFLAGS;
-    if(playerstate->delta_bits & Q2P_PSD_GUNINDEX)
+    if (playerstate->delta_bits & Q2P_PSD_GUNINDEX)
         flags |= PS_WEAPONINDEX;
-    if(playerstate->delta_bits & Q2P_PSD_GUNSKIN)
+    if (playerstate->delta_bits & Q2P_PSD_GUNSKIN)
         return Q2P_ERR_BAD_DATA;
-    if((playerstate->delta_bits & Q2P_PSD_GUNFRAME) || (playerstate->gunoffset.delta_bits != 0) || (playerstate->gunangles.delta_bits != 0))
+    if ((playerstate->delta_bits & Q2P_PSD_GUNFRAME) || (playerstate->gunoffset.delta_bits != 0)
+        || (playerstate->gunangles.delta_bits != 0))
     {
         flags |= PS_WEAPONFRAME;
         if (playerstate->gunframe > UINT8_MAX)
             return Q2P_ERR_BAD_DATA;
     }
-    if(playerstate->delta_bits & Q2P_PSD_CLIENTNUM)
+    if (playerstate->delta_bits & Q2P_PSD_CLIENTNUM)
         return Q2P_ERR_BAD_DATA;
-    if(playerstate->statbits > UINT32_MAX)
+    if (playerstate->statbits > UINT32_MAX)
         return Q2P_ERR_BAD_DATA;
-    if(playerstate->delta_bits & Q2P_PSD_GUNRATE)
+    if (playerstate->delta_bits & Q2P_PSD_GUNRATE)
         return Q2P_ERR_BAD_DATA;
 #if Q2PROTO_PLAYER_STATE_FEATURES == Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
-    if(playerstate->fog.flags != 0
-        || playerstate->fog.global.color.delta_bits != 0
-        || playerstate->fog.height.start_color.delta_bits != 0
-        || playerstate->fog.height.end_color.delta_bits != 0)
+    if (playerstate->fog.flags != 0 || playerstate->fog.global.color.delta_bits != 0
+        || playerstate->fog.height.start_color.delta_bits != 0 || playerstate->fog.height.end_color.delta_bits != 0)
         return Q2P_ERR_BAD_DATA;
 #endif
 
@@ -943,54 +963,53 @@ static q2proto_error_t vanilla_server_write_playerstate(uintptr_t io_arg, const 
     if (flags & PS_M_GRAVITY)
         WRITE_CHECKED(server_write, io_arg, i16, playerstate->pm_gravity);
 
-    if (flags & PS_M_DELTA_ANGLES)
-    {
+    if (flags & PS_M_DELTA_ANGLES) {
         WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->pm_delta_angles, 0));
         WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->pm_delta_angles, 1));
         WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->pm_delta_angles, 2));
     }
 
-    if (flags & PS_VIEWOFFSET)
-    {
+    if (flags & PS_VIEWOFFSET) {
         WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offsets_get_char_comp(&playerstate->viewoffset, 0));
         WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offsets_get_char_comp(&playerstate->viewoffset, 1));
         WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offsets_get_char_comp(&playerstate->viewoffset, 2));
     }
 
-    if (flags & PS_VIEWANGLES)
-    {
+    if (flags & PS_VIEWANGLES) {
         WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->viewangles.values, 0));
         WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->viewangles.values, 1));
         WRITE_CHECKED(server_write, io_arg, i16, q2proto_var_angles_get_short_comp(&playerstate->viewangles.values, 2));
     }
 
-    if (flags & PS_KICKANGLES)
-    {
+    if (flags & PS_KICKANGLES) {
         WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->kick_angles, 0));
         WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->kick_angles, 1));
         WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->kick_angles, 2));
     }
 
-    if (flags & PS_WEAPONINDEX)
-    {
+    if (flags & PS_WEAPONINDEX) {
         if (playerstate->gunindex > 255)
             return Q2P_ERR_BAD_DATA;
         WRITE_CHECKED(server_write, io_arg, u8, playerstate->gunindex);
     }
 
-    if (flags & PS_WEAPONFRAME)
-    {
+    if (flags & PS_WEAPONFRAME) {
         WRITE_CHECKED(server_write, io_arg, u8, playerstate->gunframe);
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offsets_get_char_comp(&playerstate->gunoffset.values, 0));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offsets_get_char_comp(&playerstate->gunoffset.values, 1));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_offsets_get_char_comp(&playerstate->gunoffset.values, 2));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->gunangles.values, 0));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->gunangles.values, 1));
-        WRITE_CHECKED(server_write, io_arg, i8, q2proto_var_small_angles_get_char_comp(&playerstate->gunangles.values, 2));
+        WRITE_CHECKED(server_write, io_arg, i8,
+                      q2proto_var_small_offsets_get_char_comp(&playerstate->gunoffset.values, 0));
+        WRITE_CHECKED(server_write, io_arg, i8,
+                      q2proto_var_small_offsets_get_char_comp(&playerstate->gunoffset.values, 1));
+        WRITE_CHECKED(server_write, io_arg, i8,
+                      q2proto_var_small_offsets_get_char_comp(&playerstate->gunoffset.values, 2));
+        WRITE_CHECKED(server_write, io_arg, i8,
+                      q2proto_var_small_angles_get_char_comp(&playerstate->gunangles.values, 0));
+        WRITE_CHECKED(server_write, io_arg, i8,
+                      q2proto_var_small_angles_get_char_comp(&playerstate->gunangles.values, 1));
+        WRITE_CHECKED(server_write, io_arg, i8,
+                      q2proto_var_small_angles_get_char_comp(&playerstate->gunangles.values, 2));
     }
 
-    if (flags & PS_BLEND)
-    {
+    if (flags & PS_BLEND) {
         WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&playerstate->blend.values, 0));
         WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&playerstate->blend.values, 1));
         WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&playerstate->blend.values, 2));
@@ -1010,7 +1029,8 @@ static q2proto_error_t vanilla_server_write_playerstate(uintptr_t io_arg, const 
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t vanilla_server_write_frame(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_frame_t *frame)
+static q2proto_error_t vanilla_server_write_frame(q2proto_servercontext_t *context, uintptr_t io_arg,
+                                                  const q2proto_svc_frame_t *frame)
 {
     WRITE_CHECKED(server_write, io_arg, u8, svc_frame);
     WRITE_CHECKED(server_write, io_arg, i32, frame->serverframe);
@@ -1020,7 +1040,8 @@ static q2proto_error_t vanilla_server_write_frame(q2proto_servercontext_t *conte
     // write areabits
     WRITE_CHECKED(server_write, io_arg, u8, frame->areabits_len);
     void *areabits;
-    CHECKED_IO(server_write, io_arg, areabits = q2protoio_write_reserve_raw(io_arg, frame->areabits_len), "reserve areabits");
+    CHECKED_IO(server_write, io_arg, areabits = q2protoio_write_reserve_raw(io_arg, frame->areabits_len),
+               "reserve areabits");
     memcpy(areabits, frame->areabits, frame->areabits_len);
 
     CHECKED(server_write, io_arg, vanilla_server_write_playerstate(io_arg, &frame->playerstate));
@@ -1030,48 +1051,49 @@ static q2proto_error_t vanilla_server_write_frame(q2proto_servercontext_t *conte
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t vanilla_server_write_frame_entity_delta(uintptr_t io_arg, const q2proto_svc_frame_entity_delta_t *frame_entity_delta)
+static q2proto_error_t vanilla_server_write_frame_entity_delta(
+    uintptr_t io_arg, const q2proto_svc_frame_entity_delta_t *frame_entity_delta)
 {
-    if (frame_entity_delta->remove)
-    {
+    if (frame_entity_delta->remove) {
         q2proto_common_server_write_entity_bits(io_arg, U_REMOVE, frame_entity_delta->newnum);
         return Q2P_ERR_SUCCESS;
     }
 
-    if (frame_entity_delta->newnum == 0)
-    {
+    if (frame_entity_delta->newnum == 0) {
         // special case: packetentities "terminator"
         WRITE_CHECKED(server_write, io_arg, u8, 0); // bits
         WRITE_CHECKED(server_write, io_arg, u8, 0); // entnum
         return Q2P_ERR_SUCCESS;
     }
 
-    return vanilla_server_write_entity_state_delta(io_arg, frame_entity_delta->newnum, &frame_entity_delta->entity_delta);
+    return vanilla_server_write_entity_state_delta(io_arg, frame_entity_delta->newnum,
+                                                   &frame_entity_delta->entity_delta);
 }
 
-#define WRITE_GAMESTATE_FUNCTION_NAME   vanilla_server_write_gamestate
-#define WRITE_GAMESTATE_BASELINE_SIZE ( \
-      1 /* command byte */              \
-    + 6 /* bits & number */             \
-    + 4 /* model indices */             \
-    + 2 /* frame */                     \
-    + 4 /* skin */                      \
-    + 4 /* effects */                   \
-    + 4 /* renderfx */                  \
-    + 6 /* origin */                    \
-    + 3 /* angles */                    \
-    + 6 /* old_origin */                \
-    + 1 /* sound */                     \
-    + 1 /* event */                     \
-    + 2 /* solid */                     \
-)
-#define WRITE_GAMESTATE_BASELINE(C, I, S)   vanilla_server_write_spawnbaseline(I, S)
+#define WRITE_GAMESTATE_FUNCTION_NAME vanilla_server_write_gamestate
+#define WRITE_GAMESTATE_BASELINE_SIZE \
+    (1   /* command byte */           \
+     + 6 /* bits & number */          \
+     + 4 /* model indices */          \
+     + 2 /* frame */                  \
+     + 4 /* skin */                   \
+     + 4 /* effects */                \
+     + 4 /* renderfx */               \
+     + 6 /* origin */                 \
+     + 3 /* angles */                 \
+     + 6 /* old_origin */             \
+     + 1 /* sound */                  \
+     + 1 /* event */                  \
+     + 2 /* solid */                  \
+    )
+#define WRITE_GAMESTATE_BASELINE(C, I, S) vanilla_server_write_spawnbaseline(I, S)
 
 #include "q2proto_write_gamestate.inc"
 
 static q2proto_error_t vanilla_server_read_move(uintptr_t io_arg, q2proto_clc_move_t *move);
 
-static q2proto_error_t vanilla_server_read(q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_message_t *clc_message)
+static q2proto_error_t vanilla_server_read(q2proto_servercontext_t *context, uintptr_t io_arg,
+                                           q2proto_clc_message_t *clc_message)
 {
     memset(clc_message, 0, sizeof(*clc_message));
 
@@ -1083,8 +1105,7 @@ static q2proto_error_t vanilla_server_read(q2proto_servercontext_t *context, uin
 
     uint8_t command = *(const uint8_t *)command_ptr;
 
-    switch(command)
-    {
+    switch (command) {
     case clc_nop:
         clc_message->type = Q2P_CLC_NOP;
         return Q2P_ERR_SUCCESS;
@@ -1141,8 +1162,7 @@ static q2proto_error_t vanilla_server_read_move(uintptr_t io_arg, q2proto_clc_mo
 
     READ_CHECKED(server_read, io_arg, move->lastframe, i32);
 
-    for (int i = 0; i < 3; i++)
-    {
+    for (int i = 0; i < 3; i++) {
         CHECKED(server_read, io_arg, vanilla_server_read_move_delta(io_arg, &move->moves[i]));
     }
 

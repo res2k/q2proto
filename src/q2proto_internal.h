@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto/q2proto.h"
 
 #include "q2proto_internal_common.h"
-#include "q2proto_internal_defs.h"
 #include "q2proto_internal_debug.h"
+#include "q2proto_internal_defs.h"
 #include "q2proto_internal_download.h"
 #include "q2proto_internal_entity_bits.h"
 #include "q2proto_internal_fmt.h"

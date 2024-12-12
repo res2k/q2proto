@@ -20,7 +20,4 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Dummy q2protoio_get_error function definition to make linking work
 
-q2proto_error_t q2protoio_get_error(uintptr_t io_arg)
-{
-    return Q2P_ERR_NOT_IMPLEMENTED;
-}
+q2proto_error_t q2protoio_get_error(uintptr_t io_arg) { return Q2P_ERR_NOT_IMPLEMENTED; }

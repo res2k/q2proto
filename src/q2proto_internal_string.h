@@ -25,12 +25,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto/q2proto_string.h"
 
 #if defined(_MSC_VER) || defined(__MINGW32__)
-#include <malloc.h>
-#if !defined(alloca)
-#define alloca _alloca
-#endif
+    #include <malloc.h>
+    #if !defined(alloca)
+        #define alloca _alloca
+    #endif
 #elif !defined(__FreeBSD__)
-#include <alloca.h>
+    #include <alloca.h>
 #endif
 
 #include <errno.h>
@@ -38,7 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 static const q2proto_string_t empty_q2proto_string = {};
 
-static inline q2proto_string_t q2ps_substr(const q2proto_string_t* str, size_t offset)
+static inline q2proto_string_t q2ps_substr(const q2proto_string_t *str, size_t offset)
 {
     offset = offset > str->len ? str->len : offset;
     q2proto_string_t result = {.str = str->str + offset, .len = str->len - offset};
@@ -46,12 +46,11 @@ static inline q2proto_string_t q2ps_substr(const q2proto_string_t* str, size_t o
 }
 
 // strchr() for q2proto_string_t
-static inline const char* q2pschr(const q2proto_string_t* str, char ch)
+static inline const char *q2pschr(const q2proto_string_t *str, char ch)
 {
     const char *p = str->str;
     const char *end = p + str->len;
-    while (p < end)
-    {
+    while (p < end) {
         if (*p == ch)
             return p;
         ++p;
@@ -60,7 +59,7 @@ static inline const char* q2pschr(const q2proto_string_t* str, char ch)
 }
 
 // strtol() for q2proto_string_t
-static inline long q2pstol(const q2proto_string_t* str, int base)
+static inline long q2pstol(const q2proto_string_t *str, int base)
 {
     char *buf = alloca(str->len + 1);
     memcpy(buf, str->str, str->len);
@@ -74,19 +73,16 @@ static inline long q2pstol(const q2proto_string_t* str, int base)
     return result;
 }
 
-static inline bool next_token(q2proto_string_t* token, q2proto_string_t* str, char sep)
+static inline bool next_token(q2proto_string_t *token, q2proto_string_t *str, char sep)
 {
     if (str->len == 0)
         return false;
 
     const char *token_end = q2pschr(str, sep);
-    if (token_end == NULL)
-    {
+    if (token_end == NULL) {
         *token = *str;
         *str = empty_q2proto_string;
-    }
-    else
-    {
+    } else {
         token->str = str->str;
         token->len = token_end - token->str;
         const char *str_end = str->str + str->len;

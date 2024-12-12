@@ -20,25 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 // Dummy q2protoio_read_* function definitions to make linking work
 
-uint8_t q2protoio_read_u8(uintptr_t io_arg)
-{
-    return (uint8_t)-1;
-}
+uint8_t q2protoio_read_u8(uintptr_t io_arg) { return (uint8_t)-1; }
 
-uint16_t q2protoio_read_u16(uintptr_t io_arg)
-{
-    return (uint16_t)-1;
-}
+uint16_t q2protoio_read_u16(uintptr_t io_arg) { return (uint16_t)-1; }
 
-uint32_t q2protoio_read_u32(uintptr_t io_arg)
-{
-    return (uint32_t)-1;
-}
+uint32_t q2protoio_read_u32(uintptr_t io_arg) { return (uint32_t)-1; }
 
-uint64_t q2protoio_read_u64(uintptr_t io_arg)
-{
-    return (uint64_t)-1;
-}
+uint64_t q2protoio_read_u64(uintptr_t io_arg) { return (uint64_t)-1; }
 
 q2proto_string_t q2protoio_read_string(uintptr_t io_arg)
 {
@@ -46,12 +34,6 @@ q2proto_string_t q2protoio_read_string(uintptr_t io_arg)
     return s;
 }
 
-const void* q2protoio_read_raw(uintptr_t io_arg, size_t size, size_t* readcount)
-{
-    return NULL;
-}
+const void *q2protoio_read_raw(uintptr_t io_arg, size_t size, size_t *readcount) { return NULL; }
 
-size_t q2protoio_read_available(uintptr_t io_arg)
-{
-    return 0;
-}
+size_t q2protoio_read_available(uintptr_t io_arg) { return 0; }

@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * Will not do anything sensible!
  */
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     do_vanilla_things();
     do_repro_things();

@@ -61,10 +61,7 @@ static inline int _q2proto_valenc_clamped_mul(float x, int scale, int min, int m
 }
 
 // Decode coordinate from integer
-static inline float _q2proto_valenc_int2coord(int32_t x)
-{
-    return x * 0.125f;
-}
+static inline float _q2proto_valenc_int2coord(int32_t x) { return x * 0.125f; }
 
 // Encode coordinate to integer
 static inline int32_t _q2proto_valenc_coord2int(float x)
@@ -73,34 +70,19 @@ static inline int32_t _q2proto_valenc_coord2int(float x)
 }
 
 // Decode angle (in degrees) from 16-bit integer
-static inline float _q2proto_valenc_short2angle(int16_t x)
-{
-    return x * (360.0f / 65536);
-}
+static inline float _q2proto_valenc_short2angle(int16_t x) { return x * (360.0f / 65536); }
 
 // Encode angle (in degrees) to 16-bit integer
-static inline int16_t _q2proto_valenc_angle2short(float x)
-{
-    return (int)(x * 65536 / 360) & 65535;
-}
+static inline int16_t _q2proto_valenc_angle2short(float x) { return (int)(x * 65536 / 360) & 65535; }
 
 // Decode angle (in degrees) from 8-bit integer
-static inline float _q2proto_valenc_char2angle(int8_t x)
-{
-    return x * (360.0f / 256);
-}
+static inline float _q2proto_valenc_char2angle(int8_t x) { return x * (360.0f / 256); }
 
 // Encode angle (in degrees) to 8-bit integer
-static inline int8_t _q2proto_valenc_angle2char(float x)
-{
-    return (int)(x * 256 / 360) & 255;
-}
+static inline int8_t _q2proto_valenc_angle2char(float x) { return (int)(x * 256 / 360) & 255; }
 
 // Decode a "small" coordinate from 8-bit integer
-static inline float _q2proto_valenc_char2smalloffset(int8_t x)
-{
-    return x * 0.25f;
-}
+static inline float _q2proto_valenc_char2smalloffset(int8_t x) { return x * 0.25f; }
 
 // Encode a "small" coordinate (-32...31.75) to 8-bit integer
 static inline int8_t _q2proto_valenc_smalloffset2char(float x)
@@ -109,10 +91,7 @@ static inline int8_t _q2proto_valenc_smalloffset2char(float x)
 }
 
 // Decode a "small" angle from 8-bit integer
-static inline float _q2proto_valenc_char2smallangle(int8_t x)
-{
-    return x * 0.25f;
-}
+static inline float _q2proto_valenc_char2smallangle(int8_t x) { return x * 0.25f; }
 
 // Encode a "small" angle (-32...31.75 degrees) to 8-bit integer
 static inline int8_t _q2proto_valenc_smallangle2char(float x)
@@ -121,16 +100,10 @@ static inline int8_t _q2proto_valenc_smallangle2char(float x)
 }
 
 // Decode a color component from unsigned 8-bit integer
-static inline float _q2proto_valenc_byte2color(uint8_t x)
-{
-    return x / 255.f;
-}
+static inline float _q2proto_valenc_byte2color(uint8_t x) { return x / 255.f; }
 
 // Encode a color component (0...1) to unsigned 8-bit integer
-static inline uint8_t _q2proto_valenc_color2byte(float x)
-{
-    return _q2proto_valenc_clamped_mul(x, 255, 0, UINT8_MAX);
-}
+static inline uint8_t _q2proto_valenc_color2byte(float x) { return _q2proto_valenc_clamped_mul(x, 255, 0, UINT8_MAX); }
 
 // Encode a Q2PRO extended/rerelease game entity alpha value to unsigned 8-bit integer
 static inline uint8_t _q2proto_valenc_entityalpha2byte(float x)
@@ -151,10 +124,7 @@ static inline uint8_t _q2proto_valenc_entityscale2byte(float x)
 }
 
 // Decode a viewoffset component for Q2rePRO, KEX protocols
-static inline float _q2proto_valenc_q2repro_short2viewoffset(int16_t x)
-{
-    return x / 16.f;
-}
+static inline float _q2proto_valenc_q2repro_short2viewoffset(int16_t x) { return x / 16.f; }
 
 // Encode a viewoffset component for Q2rePRO, KEX protocols
 static inline int16_t _q2proto_valenc_q2repro_viewoffset2short(float x)
@@ -163,10 +133,7 @@ static inline int16_t _q2proto_valenc_q2repro_viewoffset2short(float x)
 }
 
 // Decode a gunoffset component for Q2rePRO protocol
-static inline float _q2proto_valenc_q2repro_short2gunoffset(int16_t x)
-{
-    return x / 512.f;
-}
+static inline float _q2proto_valenc_q2repro_short2gunoffset(int16_t x) { return x / 512.f; }
 
 // Encode a gunoffset component for Q2rePRO protocol
 static inline int16_t _q2proto_valenc_q2repro_gunoffset2short(float x)
@@ -175,10 +142,7 @@ static inline int16_t _q2proto_valenc_q2repro_gunoffset2short(float x)
 }
 
 // Encode a kick_angles component for Q2rePRO, KEX protocols
-static inline float _q2proto_valenc_q2repro_short2kick_angle(int16_t x)
-{
-    return x / 1024.f;
-}
+static inline float _q2proto_valenc_q2repro_short2kick_angle(int16_t x) { return x / 1024.f; }
 
 // Encode a kick_angles component for Q2rePRO, KEX protocols
 static inline int16_t _q2proto_valenc_q2repro_kick_angle2short(float x)
@@ -187,10 +151,7 @@ static inline int16_t _q2proto_valenc_q2repro_kick_angle2short(float x)
 }
 
 // Decode a gunangles component for Q2rePRO protocol
-static inline float _q2proto_valenc_q2repro_short2gunangle(int16_t x)
-{
-    return x / 4096.f;
-}
+static inline float _q2proto_valenc_q2repro_short2gunangle(int16_t x) { return x / 4096.f; }
 
 // Encode a gunangles component for Q2rePRO protocol
 static inline int16_t _q2proto_valenc_q2repro_gunangle2short(float x)

@@ -20,11 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * write_gamestate function implementation
  */
 #ifndef Q2PROTO_BUILD
-#define Q2PROTO_BUILD
+    #define Q2PROTO_BUILD
 #endif // Q2PROTO_BUILD
 #include "q2proto/q2proto.h"
 
-static q2proto_error_t WRITE_GAMESTATE_FUNCTION_NAME(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate)
+static q2proto_error_t WRITE_GAMESTATE_FUNCTION_NAME(q2proto_servercontext_t *context,
+                                                     q2protoio_deflate_args_t *deflate_args, uintptr_t io_arg,
+                                                     const q2proto_gamestate_t *gamestate)
 {
 #if defined(WRITE_GAMESTATE_ENABLE_DEFLATE)
     q2proto_maybe_zpacket_t zpacket_state;
@@ -33,11 +35,10 @@ static q2proto_error_t WRITE_GAMESTATE_FUNCTION_NAME(q2proto_servercontext_t *co
 #endif // defined(WRITE_GAMESTATE_ENABLE_DEFLATE)
 
     // Write configstrings
-    while(context->gamestate_pos < gamestate->num_configstrings)
-    {
+    while (context->gamestate_pos < gamestate->num_configstrings) {
         const q2proto_svc_configstring_t *cfgstr = gamestate->configstrings + context->gamestate_pos;
         size_t configstring_size = 1 /* command */ + 2 /* index */ + cfgstr->value.len + 1 /* string */;
-        if(q2protoio_write_available(io_arg) < configstring_size)
+        if (q2protoio_write_available(io_arg) < configstring_size)
             goto not_enough_packet_space;
 
         q2proto_common_server_write_configstring(io_arg, cfgstr);
@@ -46,10 +47,9 @@ static q2proto_error_t WRITE_GAMESTATE_FUNCTION_NAME(q2proto_servercontext_t *co
 
     // Write spawn baselines
     size_t baseline_num;
-    while((baseline_num = context->gamestate_pos - gamestate->num_configstrings) < gamestate->num_spawnbaselines)
-    {
+    while ((baseline_num = context->gamestate_pos - gamestate->num_configstrings) < gamestate->num_spawnbaselines) {
         const q2proto_svc_spawnbaseline_t *baseline = gamestate->spawnbaselines + baseline_num;
-        if(q2protoio_write_available(io_arg) < WRITE_GAMESTATE_BASELINE_SIZE)
+        if (q2protoio_write_available(io_arg) < WRITE_GAMESTATE_BASELINE_SIZE)
             goto not_enough_packet_space;
 
         WRITE_GAMESTATE_BASELINE(context, io_arg, baseline);
@@ -69,6 +69,6 @@ not_enough_packet_space:
     q2proto_error_t zpacket_err = q2proto_maybe_zpacket_end(&zpacket_state, io_arg);
     if (zpacket_err != Q2P_ERR_SUCCESS)
         return zpacket_err;
-#endif //defined(WRITE_GAMESTATE_ENABLE_DEFLATE)
+#endif // defined(WRITE_GAMESTATE_ENABLE_DEFLATE)
     return Q2P_ERR_NOT_ENOUGH_PACKET_SPACE;
 }

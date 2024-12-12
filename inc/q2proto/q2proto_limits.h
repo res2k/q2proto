@@ -23,12 +23,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define Q2PROTO_LIMITS_H_
 
 /// Supported number of stats
-#define Q2PROTO_STATS           64
+#define Q2PROTO_STATS                 64
 /// Supported number of damage indicators. Same value as in rerelease game.
-#define Q2PROTO_MAX_DAMAGE_INDICATORS   4
+#define Q2PROTO_MAX_DAMAGE_INDICATORS 4
 /// Supported max number of entities
-#define Q2PROTO_MAX_ENTITIES            8192
+#define Q2PROTO_MAX_ENTITIES          8192
 /// Supported number of localization print arguments
-#define Q2PROTO_MAX_LOCALIZATION_ARGS   8
+#define Q2PROTO_MAX_LOCALIZATION_ARGS 8
 
 #endif // Q2PROTO_LIMITS_H_

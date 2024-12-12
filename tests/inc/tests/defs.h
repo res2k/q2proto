@@ -23,9 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define TESTS_DEFS_H_
 
 #if defined(__GNUC__)
-#define MAYBE_UNUSED    __attribute__ ((unused))
+    #define MAYBE_UNUSED __attribute__((unused))
 #else
-#define MAYBE_UNUSED
+    #define MAYBE_UNUSED
 #endif
 
 #endif // TESTS_DEFS_H_

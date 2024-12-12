@@ -61,7 +61,7 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_string_t q2protoio_read_string(uintptr_
  * If \a readcount is NULL, the \a size bytes must be read exactly. If less that that
  * is available treat it as an error.
  */
-Q2PROTO_EXTERNALLY_PROVIDED_DECL const void* q2protoio_read_raw(uintptr_t io_arg, size_t size, size_t* readcount);
+Q2PROTO_EXTERNALLY_PROVIDED_DECL const void *q2protoio_read_raw(uintptr_t io_arg, size_t size, size_t *readcount);
 
 /// Return how many bytes are still available to read.
 Q2PROTO_EXTERNALLY_PROVIDED_DECL size_t q2protoio_read_available(uintptr_t io_arg);
@@ -75,14 +75,15 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL void q2protoio_write_u32(uintptr_t io_arg, uint
 /// Write a 64-bit unsigned integer.
 Q2PROTO_EXTERNALLY_PROVIDED_DECL void q2protoio_write_u64(uintptr_t io_arg, uint64_t x);
 /// Reserve \a size bytes in the output buffer, return pointer to first byte
-Q2PROTO_EXTERNALLY_PROVIDED_DECL void* q2protoio_write_reserve_raw(uintptr_t io_arg, size_t size);
+Q2PROTO_EXTERNALLY_PROVIDED_DECL void *q2protoio_write_reserve_raw(uintptr_t io_arg, size_t size);
 /**
  * Write (up to) \a size bytes in the output buffer.
  * If \a written is \c NULL, will write exactly \a size bytes.
  * If \a written is not \c NULL, will write as much data, up to  \a size bytes,
  * as possible, with the amount of written bytes returned in \a written.
  */
-Q2PROTO_EXTERNALLY_PROVIDED_DECL void q2protoio_write_raw(uintptr_t io_arg, const void* data, size_t size, size_t *written);
+Q2PROTO_EXTERNALLY_PROVIDED_DECL void q2protoio_write_raw(uintptr_t io_arg, const void *data, size_t size,
+                                                          size_t *written);
 
 /**
  * Return a (conservative) limit on how many bytes can still be written to the output buffer.
@@ -96,8 +97,7 @@ typedef struct q2protoio_deflate_args_s q2protoio_deflate_args_t;
 
 #if Q2PROTO_COMPRESSION_DEFLATE
 /// Specify presence or absence of zlib header & footer (per RFC 1950) in deflated data.
-typedef enum q2proto_inflate_deflate_header_mode_e
-{
+typedef enum q2proto_inflate_deflate_header_mode_e {
     /// Header/footer should not be expected (inflate) resp emitted (deflate)
     Q2P_INFL_DEFL_RAW = 0,
     /// Header/footer should be expected (inflate) resp emitted (deflate)
@@ -120,7 +120,8 @@ typedef enum q2proto_inflate_deflate_header_mode_e
  * \param inflate_io_arg Receives I/O argument that will be used to retrieve the inflated data.
  * \returns Error code
  */
-Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_begin(uintptr_t io_arg, q2proto_inflate_deflate_header_mode_t header_mode, uintptr_t* inflate_io_arg);
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t
+q2protoio_inflate_begin(uintptr_t io_arg, q2proto_inflate_deflate_header_mode_t header_mode, uintptr_t *inflate_io_arg);
 /**
  * Inflate some data.
  * \param io_arg "I/O argument" to source compressed data from.
@@ -129,7 +130,8 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_begin(uintptr
  * \param stream_end Returns whether the compressed stream ended after inflation.
  * \returns Error code
  */
-Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_data(uintptr_t io_arg, uintptr_t inflate_io_arg, size_t compressed_size);
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_data(uintptr_t io_arg, uintptr_t inflate_io_arg,
+                                                                        size_t compressed_size);
 /**
  * Returns whether the stream of inflated data ended.
  * \param io_arg "I/O argument" to source compressed data from.
@@ -137,7 +139,8 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_data(uintptr_
  * \param stream_end Returns whether the compressed stream ended after inflation.
  * \returns Error code
  */
-Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_stream_ended(uintptr_t inflate_io_arg, bool *stream_end);
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_stream_ended(uintptr_t inflate_io_arg,
+                                                                                bool *stream_end);
 /**
  * End inflation.
  * \param inflate_io_arg "I/O argument" to obtain uncompressed data from. Provided by q2protoio_inflate_begin().
@@ -153,7 +156,9 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_end(uintptr_t
  * \param deflate_io_arg Receives an "I/O argument" used for deflation operation.
  * \returns Error code
  */
-Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_deflate_begin(q2protoio_deflate_args_t *deflate_args, size_t max_deflated, q2proto_inflate_deflate_header_mode_t header_mode, uintptr_t *deflate_io_arg);
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t
+q2protoio_deflate_begin(q2protoio_deflate_args_t *deflate_args, size_t max_deflated,
+                        q2proto_inflate_deflate_header_mode_t header_mode, uintptr_t *deflate_io_arg);
 /**
  * Retrieve deflated data.
  * This function should deflate the data previously written to the deflate "I/O argument".
@@ -167,7 +172,8 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_deflate_begin(q2proto
  * \param out_size Amount of output data written.
  * \returns Error code
  */
-Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_deflate_get_data(uintptr_t deflate_io_arg, size_t* in_size, const void **out, size_t *out_size);
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_deflate_get_data(uintptr_t deflate_io_arg, size_t *in_size,
+                                                                            const void **out, size_t *out_size);
 /**
  * End deflation.
  * \param deflate_handle "I/O argument" used for deflation operation.
@@ -203,7 +209,8 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL void q2protodbg_shownet(uintptr_t io_arg, int l
  * \param msg Format string with additional information.
  * \returns Error code to return from q2proto function. Typically just \a err.
  */
-Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoerr_client_read(uintptr_t io_arg, q2proto_error_t err, const char *msg, ...);
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoerr_client_read(uintptr_t io_arg, q2proto_error_t err,
+                                                                        const char *msg, ...);
 /**
  * Handle a "client write" error.
  * \param io_arg "I/O argument" as provided to q2proto function.
@@ -211,7 +218,8 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoerr_client_read(uintptr_
  * \param msg Format string with additional information.
  * \returns Error code to return from q2proto function. Typically just \a err.
  */
-Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoerr_client_write(uintptr_t io_arg, q2proto_error_t err, const char *msg, ...);
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoerr_client_write(uintptr_t io_arg, q2proto_error_t err,
+                                                                         const char *msg, ...);
 /**
  * Handle a "server write" error.
  * \param io_arg "I/O argument" as provided to q2proto function.
@@ -219,7 +227,8 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoerr_client_write(uintptr
  * \param msg Format string with additional information.
  * \returns Error code to return from q2proto function. Typically just \a err.
  */
-Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoerr_server_write(uintptr_t io_arg, q2proto_error_t err, const char *msg, ...);
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoerr_server_write(uintptr_t io_arg, q2proto_error_t err,
+                                                                         const char *msg, ...);
 /**
  * Handle a "server read" error.
  * \param io_arg "I/O argument" as provided to q2proto function.
@@ -227,7 +236,8 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoerr_server_write(uintptr
  * \param msg Format string with additional information.
  * \returns Error code to return from q2proto function. Typically just \a err.
  */
-Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoerr_server_read(uintptr_t io_arg, q2proto_error_t err, const char *msg, ...);
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoerr_server_read(uintptr_t io_arg, q2proto_error_t err,
+                                                                        const char *msg, ...);
 /** @} */
 #endif
 

@@ -40,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /**\def Q2PROTO_FEATURES_VANILLA
  * Possible values for Q2PROTO_PLAYER_STATE_FEATURES, Q2PROTO_ENTITY_STATE_FEATURES
  * to indicate vanilla game features. */
-#define Q2PROTO_FEATURES_VANILLA            0
+#define Q2PROTO_FEATURES_VANILLA           0
 /**\def Q2PROTO_FEATURES_Q2PRO_EXTENDED
  * Possible values for Q2PROTO_PLAYER_STATE_FEATURES, Q2PROTO_ENTITY_STATE_FEATURES
  * to indicate Q2PRO extended game features.
@@ -53,7 +53,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * - loop_volume
  * - scale
  */
-#define Q2PROTO_FEATURES_Q2PRO_EXTENDED     1
+#define Q2PROTO_FEATURES_Q2PRO_EXTENDED    1
 /**\def Q2PROTO_FEATURES_Q2PRO_EXTENDED
  * Possible values for Q2PROTO_PLAYER_STATE_FEATURES, Q2PROTO_ENTITY_STATE_FEATURES
  * to indicate Q2PRO extended game features.
@@ -66,14 +66,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * - loop_volume
  * - scale
  */
-#define Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2  2
+#define Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2 2
 /**\def Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
  * Possible values for Q2PROTO_PLAYER_STATE_FEATURES, Q2PROTO_ENTITY_STATE_FEATURES
  * to indicate Q2PRO extended game V2 features.
  * Additional player state fields:
  * - damage_blend
  */
-#define Q2PROTO_FEATURES_RERELEASE          3
+#define Q2PROTO_FEATURES_RERELEASE         3
 /**\def Q2PROTO_FEATURES_RERELEASE
  * Possible values for Q2PROTO_PLAYER_STATE_FEATURES, Q2PROTO_ENTITY_STATE_FEATURES
  * to indicate rerelease game features.
@@ -84,12 +84,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /**\def Q2PROTO_PLAYER_STATE_FEATURES
  * Features to be supported by player state structs. */
 #if !defined(Q2PROTO_PLAYER_STATE_FEATURES)
-    #define Q2PROTO_PLAYER_STATE_FEATURES  Q2PROTO_FEATURES_VANILLA
+    #define Q2PROTO_PLAYER_STATE_FEATURES Q2PROTO_FEATURES_VANILLA
 #endif
 /**\def Q2PROTO_ENTITY_STATE_FEATURES
  * Features to be supported by entity state structs. */
 #if !defined(Q2PROTO_ENTITY_STATE_FEATURES)
-    #define Q2PROTO_ENTITY_STATE_FEATURES  Q2PROTO_FEATURES_VANILLA
+    #define Q2PROTO_ENTITY_STATE_FEATURES Q2PROTO_FEATURES_VANILLA
 #endif
 /**\def Q2PROTO_RETURN_IO_ERROR_CODES
  * If defined to 1, errors from IO functions are checked and returned from calling functions.
@@ -98,7 +98,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * Defaults to 1.
  */
 #if !defined(Q2PROTO_RETURN_IO_ERROR_CODES)
-    #define Q2PROTO_RETURN_IO_ERROR_CODES  1
+    #define Q2PROTO_RETURN_IO_ERROR_CODES 1
 #endif
 /**\def Q2PROTO_ERROR_FEEDBACK
  * If defined to 1, calls error feedback functions in case of errors, which some additional information.
@@ -106,21 +106,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * Defaults to 0.
  */
 #if !defined(Q2PROTO_ERROR_FEEDBACK)
-    #define Q2PROTO_ERROR_FEEDBACK  0
+    #define Q2PROTO_ERROR_FEEDBACK 0
 #endif
 /**\def Q2PROTO_SHOWNET
  * If defined to 1, enabled 'shownet' feedback. Requires an externally defined function.
  * Defaults to 0.
  */
 #if !defined(Q2PROTO_SHOWNET)
-    #define Q2PROTO_SHOWNET  0
+    #define Q2PROTO_SHOWNET 0
 #endif
 /**\def Q2PROTO_EXTERNALLY_PROVIDED_DECL
  * Declaration for "externally provided" functions.
  * Can be used to eg make these functions \c static, when wrapping everything into a single source.
  */
 #if !defined(Q2PROTO_EXTERNALLY_PROVIDED_DECL)
-    #define Q2PROTO_EXTERNALLY_PROVIDED_DECL   extern
+    #define Q2PROTO_EXTERNALLY_PROVIDED_DECL extern
 #endif
 /**\def Q2PROTO_PUBLIC_API
  * Declaration for Q2PROTO public functions.
@@ -128,7 +128,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * or tweaking external visibility (\c dllimport, \c dllexport, \c "visibility" attribute and the likes).
  */
 #if !defined(Q2PROTO_PUBLIC_API)
-    #define Q2PROTO_PUBLIC_API  extern
+    #define Q2PROTO_PUBLIC_API extern
 #endif
 /**\def Q2PROTO_PRIVATE_API
  * Declaration for Q2PROTO private (internal) functions.
@@ -153,13 +153,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * outside q2proto.
  * Inside q2proto (when Q2PROTO_BUILD is defined) the un-obscured names are visible. */
 #if defined(Q2PROTO_BUILD)
-#define Q2PROTO_PRIVATE_API_MEMBER(NAME)                NAME
-#define Q2PROTO_PRIVATE_API_FUNC_PTR(RET, NAME, ...)    RET (*NAME)(__VA_ARGS__)
+    #define Q2PROTO_PRIVATE_API_MEMBER(NAME)             NAME
+    #define Q2PROTO_PRIVATE_API_FUNC_PTR(RET, NAME, ...) RET (*NAME)(__VA_ARGS__)
 #else
-#define _Q2PROTO_PRIVATE_API_MEMBER_CONCAT2(X, Y)       X ## Y
-#define _Q2PROTO_PRIVATE_API_MEMBER_CONCAT(X, Y)        _Q2PROTO_PRIVATE_API_MEMBER_CONCAT2(X, Y)
-#define Q2PROTO_PRIVATE_API_MEMBER(NAME)                _Q2PROTO_PRIVATE_API_MEMBER_CONCAT(_private_, __LINE__)
-#define Q2PROTO_PRIVATE_API_FUNC_PTR(RET, NAME, ...)    void* Q2PROTO_PRIVATE_API_MEMBER(NAME)
+    #define _Q2PROTO_PRIVATE_API_MEMBER_CONCAT2(X, Y)    X##Y
+    #define _Q2PROTO_PRIVATE_API_MEMBER_CONCAT(X, Y)     _Q2PROTO_PRIVATE_API_MEMBER_CONCAT2(X, Y)
+    #define Q2PROTO_PRIVATE_API_MEMBER(NAME)             _Q2PROTO_PRIVATE_API_MEMBER_CONCAT(_private_, __LINE__)
+    #define Q2PROTO_PRIVATE_API_FUNC_PTR(RET, NAME, ...) void *Q2PROTO_PRIVATE_API_MEMBER(NAME)
 #endif
 
 #endif // Q2PROTO_DEFS_H_

@@ -37,8 +37,7 @@ extern "C" {
 #define Q2PROTO_INVENTORY_ITEMS 256
 
 /// Flag bits for fields set in a q2proto_entity_state_delta_t structure
-enum q2proto_entity_state_delta_flags
-{
+enum q2proto_entity_state_delta_flags {
     /// 'modelindex' is set
     Q2P_ESD_MODELINDEX = 0x1,
     /// 'modelindex2' is set
@@ -373,8 +372,7 @@ typedef struct q2proto_rr_fog_height_s {
 } q2proto_rr_fog_height_t;
 
 /// Flag bits for fields set in a q2proto_svc_fog_t structure
-enum q2proto_fog_flags
-{
+enum q2proto_fog_flags {
     /// global 'density', 'skyfactor' are set
     Q2P_FOG_DENSITY_SKYFACTOR = 0x1,
     /// global 'time' is set
@@ -400,8 +398,7 @@ typedef struct q2proto_svc_fog_s {
 } q2proto_svc_fog_t;
 
 /// Flag bits for fields set in a q2proto_svc_playerstate_t structure
-enum q2proto_playerstate_delta_flags
-{
+enum q2proto_playerstate_delta_flags {
     /// 'pm_type' is set
     Q2P_PSD_PM_TYPE = 0x1,
     /// 'pm_time' is set
@@ -542,7 +539,7 @@ typedef struct q2proto_svc_playerstate_s {
  * pseudo-message.
  * Upon writing, the entity deltas have to be immediately written as a sequence of
  * Q2P_SVC_FRAME_ENTITY_DELTA pseudo-messages, and terminated by such a message with
-*  newnum == 0.
+ *  newnum == 0.
  */
 typedef struct q2proto_svc_frame_s {
     /// server frame
@@ -647,8 +644,7 @@ typedef struct q2proto_svc_locprint_s {
 } q2proto_svc_locprint_t;
 
 /// Types of message from server
-typedef enum q2proto_svc_message_type_e
-{
+typedef enum q2proto_svc_message_type_e {
     /// Invalid
     Q2P_SVC_INVALID,
     /// Muzzle flashes (player)
@@ -710,8 +706,7 @@ typedef enum q2proto_svc_message_type_e
     Q2P_SVC_ACHIEVEMENT,
     /// Rerelease localized print
     Q2P_SVC_LOCPRINT,
-}
-q2proto_svc_message_type_t;
+} q2proto_svc_message_type_t;
 
 /// A single message, received from the server
 typedef struct q2proto_svc_message_s {
@@ -721,8 +716,7 @@ typedef struct q2proto_svc_message_s {
      */
     q2proto_svc_message_type_t type;
 
-    union
-    {
+    union {
         /// Q2P_SVC_MUZZLEFLASH, Q2P_SVC_MUZZLEFLASH2 message
         q2proto_svc_muzzleflash_t muzzleflash;
         /// Q2P_SVC_MUZZLEFLASH2 message

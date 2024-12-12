@@ -32,8 +32,7 @@ extern "C" {
 #endif
 
 /// Types of message from client to server
-typedef enum q2proto_clc_message_type_e
-{
+typedef enum q2proto_clc_message_type_e {
     /// Invalid
     Q2P_CLC_INVALID,
     /// No-op
@@ -50,12 +49,10 @@ typedef enum q2proto_clc_message_type_e
     Q2P_CLC_SETTING,
     /// Userinfo delta (Q2PRO)
     Q2P_CLC_USERINFO_DELTA,
-}
-q2proto_clc_message_type_t;
+} q2proto_clc_message_type_t;
 
 /// Flag bits for fields set in q2proto_clc_move_delta_t structure
-enum q2proto_client_move_delta_flags
-{
+enum q2proto_client_move_delta_flags {
     /// 'angles[0]' is set
     Q2P_CMD_ANGLE0 = 0x1,
     /// 'angles[1]' is set
@@ -104,8 +101,8 @@ typedef struct q2proto_clc_move_s {
     int32_t sequence;
 } q2proto_clc_move_t;
 
-#define Q2PROTO_MAX_CLC_BATCH_MOVE_FRAMES     4
-#define Q2PROTO_MAX_CLC_BATCH_MOVE_CMDS       32
+#define Q2PROTO_MAX_CLC_BATCH_MOVE_FRAMES 4
+#define Q2PROTO_MAX_CLC_BATCH_MOVE_CMDS   32
 
 typedef struct q2proto_clc_batch_move_frame_s {
     /// Number of move commands
@@ -160,8 +157,7 @@ typedef struct q2proto_clc_message_s {
      */
     q2proto_clc_message_type_t type;
 
-    union
-    {
+    union {
         /// Q2P_CLC_MOVE message
         q2proto_clc_move_t move;
         /// Q2P_CLC_BATCH_MOVE message

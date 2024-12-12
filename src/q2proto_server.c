@@ -32,13 +32,13 @@ static int compare_ints(const void *a, const void *b)
     return (arg1 > arg2) - (arg1 < arg2);
 }
 
-q2proto_error_t q2proto_get_challenge_extras(char *buf, size_t buf_size, const q2proto_protocol_t *accepted_protocols, size_t num_accepted_protocols)
+q2proto_error_t q2proto_get_challenge_extras(char *buf, size_t buf_size, const q2proto_protocol_t *accepted_protocols,
+                                             size_t num_accepted_protocols)
 {
-    if(!buf || !buf_size)
+    if (!buf || !buf_size)
         return Q2P_ERR_INVALID_ARGUMENT;
 
-    if (!num_accepted_protocols)
-    {
+    if (!num_accepted_protocols) {
         // nothing to do...
         buf[0] = 0;
         return Q2P_ERR_SUCCESS;
@@ -47,15 +47,13 @@ q2proto_error_t q2proto_get_challenge_extras(char *buf, size_t buf_size, const q
     /* Sort protocol versions, lowest to highest.
      * (Not sure it's actually required, but it's the traditional way) */
     int *protocol_vers = (int *)alloca(num_accepted_protocols * sizeof(int));
-    for (size_t i = 0; i < num_accepted_protocols; i++)
-    {
+    for (size_t i = 0; i < num_accepted_protocols; i++) {
         protocol_vers[i] = q2proto_get_protocol_netver(accepted_protocols[i]);
     }
     qsort(protocol_vers, num_accepted_protocols, sizeof(int), compare_ints);
 
     q2proto_snprintf_update(&buf, &buf_size, "p=%d", protocol_vers[0]);
-    for (size_t i = 1; i < num_accepted_protocols; i++)
-    {
+    for (size_t i = 1; i < num_accepted_protocols; i++) {
         q2proto_snprintf_update(&buf, &buf_size, ",%d", protocol_vers[i]);
     }
     return Q2P_ERR_SUCCESS;
@@ -75,7 +73,9 @@ static q2proto_error_t next_connect_int(q2proto_string_t *connect_str, long *res
     return Q2P_ERR_SUCCESS;
 }
 
-q2proto_error_t q2proto_parse_connect(const char *connect_args, const q2proto_protocol_t *accepted_protocols, size_t num_accepted_protocols, const q2proto_server_info_t *server_info, q2proto_connect_t *parsed_connect)
+q2proto_error_t q2proto_parse_connect(const char *connect_args, const q2proto_protocol_t *accepted_protocols,
+                                      size_t num_accepted_protocols, const q2proto_server_info_t *server_info,
+                                      q2proto_connect_t *parsed_connect)
 {
     memset(parsed_connect, 0, sizeof(*parsed_connect));
 
@@ -90,10 +90,8 @@ q2proto_error_t q2proto_parse_connect(const char *connect_args, const q2proto_pr
 
     parsed_connect->protocol = q2proto_protocol_from_netver(protocol_value);
     bool proto_found = false;
-    for (size_t i = 0; i < num_accepted_protocols; i++)
-    {
-        if (accepted_protocols[i] == parsed_connect->protocol)
-        {
+    for (size_t i = 0; i < num_accepted_protocols; i++) {
+        if (accepted_protocols[i] == parsed_connect->protocol) {
             proto_found = true;
             break;
         }
@@ -117,8 +115,7 @@ q2proto_error_t q2proto_parse_connect(const char *connect_args, const q2proto_pr
         return Q2P_ERR_BAD_DATA;
 
     long packet_length_value = server_info->default_packet_length;
-    if (parsed_connect->protocol >= Q2P_PROTOCOL_R1Q2)
-    {
+    if (parsed_connect->protocol >= Q2P_PROTOCOL_R1Q2) {
         q2proto_string_t packet_length_token = {0};
         if (!next_token(&packet_length_token, &connect_str, ' '))
             return Q2P_ERR_BAD_DATA;
@@ -127,8 +124,7 @@ q2proto_error_t q2proto_parse_connect(const char *connect_args, const q2proto_pr
     }
     parsed_connect->packet_length = packet_length_value;
 
-    switch(parsed_connect->protocol)
-    {
+    switch (parsed_connect->protocol) {
     case Q2P_PROTOCOL_INVALID:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
     case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
@@ -151,14 +147,14 @@ q2proto_error_t q2proto_parse_connect(const char *connect_args, const q2proto_pr
     return Q2P_ERR_SUCCESS;
 }
 
-q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t* context, const q2proto_server_info_t *server_info, const q2proto_connect_t* connect_info)
+q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t *context, const q2proto_server_info_t *server_info,
+                                           const q2proto_connect_t *connect_info)
 {
     memset(context, 0, sizeof(*context));
     context->server_info = server_info;
     context->protocol = connect_info->protocol;
 
-    switch(connect_info->protocol)
-    {
+    switch (connect_info->protocol) {
     case Q2P_PROTOCOL_INVALID:
     case Q2P_PROTOCOL_OLD_DEMO:
     case Q2P_NUM_PROTOCOLS:
@@ -183,18 +179,19 @@ q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t* context, con
     return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
 }
 
-#define MIN_DEMO_PACKET     512 // from Q2PRO MIN_PACKETLEN
+#define MIN_DEMO_PACKET 512 // from Q2PRO MIN_PACKETLEN
 
-q2proto_error_t q2proto_init_servercontext_demo(q2proto_servercontext_t* context, const q2proto_server_info_t *server_info, size_t* max_msg_len)
+q2proto_error_t q2proto_init_servercontext_demo(q2proto_servercontext_t *context,
+                                                const q2proto_server_info_t *server_info, size_t *max_msg_len)
 {
     q2proto_connect_t connect_info;
     memset(&connect_info, 0, sizeof(connect_info));
 
-    size_t demo_packet_size = server_info->default_packet_length ? server_info->default_packet_length : 1390; // Default to Vanilla Q2 limit if none is given
+    size_t demo_packet_size = server_info->default_packet_length ? server_info->default_packet_length
+                                                                 : 1390; // Default to Vanilla Q2 limit if none is given
     demo_packet_size = MAX(server_info->default_packet_length, MIN_DEMO_PACKET); // ensure a minimal packet size
     connect_info.packet_length = demo_packet_size;
-    switch(server_info->game_api)
-    {
+    switch (server_info->game_api) {
     case Q2PROTO_GAME_VANILLA:
         connect_info.protocol = Q2P_PROTOCOL_VANILLA;
         *max_msg_len = demo_packet_size;
@@ -220,20 +217,23 @@ q2proto_error_t q2proto_server_fill_serverdata(q2proto_servercontext_t *context,
     return context->fill_serverdata(context, serverdata);
 }
 
-void q2proto_server_make_entity_state_delta(q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from, const q2proto_packed_entity_state_t *to, bool write_old_origin, q2proto_entity_state_delta_t *delta)
+void q2proto_server_make_entity_state_delta(q2proto_servercontext_t *context, const q2proto_packed_entity_state_t *from,
+                                            const q2proto_packed_entity_state_t *to, bool write_old_origin,
+                                            q2proto_entity_state_delta_t *delta)
 {
     context->make_entity_state_delta(context, from, to, write_old_origin, delta);
 }
 
-void q2proto_server_make_player_state_delta(q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from, const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta)
+void q2proto_server_make_player_state_delta(q2proto_servercontext_t *context, const q2proto_packed_player_state_t *from,
+                                            const q2proto_packed_player_state_t *to, q2proto_svc_playerstate_t *delta)
 {
     context->make_player_state_delta(context, from, to, delta);
 }
 
-q2proto_error_t q2proto_server_write_pos(q2proto_multicast_protocol_t multicast_proto, uintptr_t io_arg, const q2proto_vec3_t pos)
+q2proto_error_t q2proto_server_write_pos(q2proto_multicast_protocol_t multicast_proto, uintptr_t io_arg,
+                                         const q2proto_vec3_t pos)
 {
-    switch(multicast_proto)
-    {
+    switch (multicast_proto) {
     case Q2P_PROTOCOL_MULTICAST_INVALID:
         break;
     case Q2P_PROTOCOL_MULTICAST_SHORT:
@@ -256,17 +256,20 @@ q2proto_error_t q2proto_server_write_pos(q2proto_multicast_protocol_t multicast_
     return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
 }
 
-q2proto_error_t q2proto_server_write(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_message_t *svc_message)
+q2proto_error_t q2proto_server_write(q2proto_servercontext_t *context, uintptr_t io_arg,
+                                     const q2proto_svc_message_t *svc_message)
 {
     return context->server_write(context, io_arg, svc_message);
 }
 
-q2proto_error_t q2proto_server_write_gamestate(q2proto_servercontext_t *context, q2protoio_deflate_args_t* deflate_args, uintptr_t io_arg, const q2proto_gamestate_t *gamestate)
+q2proto_error_t q2proto_server_write_gamestate(q2proto_servercontext_t *context, q2protoio_deflate_args_t *deflate_args,
+                                               uintptr_t io_arg, const q2proto_gamestate_t *gamestate)
 {
     return context->server_write_gamestate(context, deflate_args, io_arg, gamestate);
 }
 
-q2proto_error_t q2proto_server_write_zpacket(q2proto_servercontext_t *context, q2protoio_deflate_args_t *deflate_args, uintptr_t io_arg, const void *packet_data, size_t packet_len)
+q2proto_error_t q2proto_server_write_zpacket(q2proto_servercontext_t *context, q2protoio_deflate_args_t *deflate_args,
+                                             uintptr_t io_arg, const void *packet_data, size_t packet_len)
 {
 #if Q2PROTO_COMPRESSION_DEFLATE
     if (!context->features.enable_deflate)
@@ -279,15 +282,16 @@ q2proto_error_t q2proto_server_write_zpacket(q2proto_servercontext_t *context, q
 
     size_t deflate_io_arg;
     size_t max_deflated = q2protoio_write_available(io_arg);
-    CHECKED(server_write, io_arg, q2protoio_deflate_begin(deflate_args, max_deflated, Q2P_INFL_DEFL_RAW, &deflate_io_arg));
+    CHECKED(server_write, io_arg,
+            q2protoio_deflate_begin(deflate_args, max_deflated, Q2P_INFL_DEFL_RAW, &deflate_io_arg));
     WRITE_CHECKED(server_write, deflate_io_arg, raw, packet_data, packet_len, NULL);
     const void *compressed_data;
     size_t uncompressed_len, compressed_len;
-    CHECKED(server_write, io_arg, q2protoio_deflate_get_data(deflate_io_arg, &uncompressed_len, &compressed_data, &compressed_len));
+    CHECKED(server_write, io_arg,
+            q2protoio_deflate_get_data(deflate_io_arg, &uncompressed_len, &compressed_data, &compressed_len));
 
     // Data didn't compress very well. No point to wrap it.
-    if (compressed_len > uncompressed_len + 5)
-    {
+    if (compressed_len > uncompressed_len + 5) {
         q2protoio_deflate_end(deflate_io_arg);
         return Q2P_ERR_ALREADY_COMPRESSED;
     }
@@ -306,7 +310,10 @@ q2proto_error_t q2proto_server_write_zpacket(q2proto_servercontext_t *context, q
 #endif
 }
 
-q2proto_error_t q2proto_server_download_begin(q2proto_servercontext_t *context, size_t total_size, q2proto_download_compress_t compress, q2protoio_deflate_args_t* deflate_args, q2proto_server_download_state_t* state)
+q2proto_error_t q2proto_server_download_begin(q2proto_servercontext_t *context, size_t total_size,
+                                              q2proto_download_compress_t compress,
+                                              q2protoio_deflate_args_t *deflate_args,
+                                              q2proto_server_download_state_t *state)
 {
     q2proto_download_common_begin(context, total_size, state);
     if (context->download_funcs->begin)
@@ -315,31 +322,34 @@ q2proto_error_t q2proto_server_download_begin(q2proto_servercontext_t *context, 
         return Q2P_ERR_SUCCESS;
 }
 
-void q2proto_server_download_end(q2proto_server_download_state_t* state)
+void q2proto_server_download_end(q2proto_server_download_state_t *state)
 {
     if (!state)
         return;
 
 #if Q2PROTO_COMPRESSION_DEFLATE
-    if (state->deflate_io_valid)
-    {
+    if (state->deflate_io_valid) {
         q2protoio_deflate_end(state->deflate_io);
         state->deflate_io_valid = false;
     }
 #endif
 }
 
-q2proto_error_t q2proto_server_download_data(q2proto_server_download_state_t *state, const uint8_t **data, size_t *remaining, size_t packet_remaining, q2proto_svc_download_t *svc_download)
+q2proto_error_t q2proto_server_download_data(q2proto_server_download_state_t *state, const uint8_t **data,
+                                             size_t *remaining, size_t packet_remaining,
+                                             q2proto_svc_download_t *svc_download)
 {
     return state->context->download_funcs->data(state, data, remaining, packet_remaining, svc_download);
 }
 
-q2proto_error_t q2proto_server_download_finish(q2proto_server_download_state_t *state, q2proto_svc_download_t *svc_download)
+q2proto_error_t q2proto_server_download_finish(q2proto_server_download_state_t *state,
+                                               q2proto_svc_download_t *svc_download)
 {
     return state->context->download_funcs->finish(state, svc_download);
 }
 
-q2proto_error_t q2proto_server_download_abort(q2proto_server_download_state_t *state, q2proto_svc_download_t *svc_download)
+q2proto_error_t q2proto_server_download_abort(q2proto_server_download_state_t *state,
+                                              q2proto_svc_download_t *svc_download)
 {
     // Allow generating a "download abort" message even w/o state or context
     if (state && state->context)
@@ -348,13 +358,15 @@ q2proto_error_t q2proto_server_download_abort(q2proto_server_download_state_t *s
         return q2proto_download_common_abort(state, svc_download);
 }
 
-void q2proto_server_download_get_progress(const q2proto_server_download_state_t *state, size_t *completed, size_t *total)
+void q2proto_server_download_get_progress(const q2proto_server_download_state_t *state, size_t *completed,
+                                          size_t *total)
 {
     *completed = state->transferred;
     *total = state->total_size;
 }
 
-q2proto_error_t q2proto_server_read(q2proto_servercontext_t *context, uintptr_t io_arg, q2proto_clc_message_t *clc_message)
+q2proto_error_t q2proto_server_read(q2proto_servercontext_t *context, uintptr_t io_arg,
+                                    q2proto_clc_message_t *clc_message)
 {
     return context->server_read(context, io_arg, clc_message);
 }

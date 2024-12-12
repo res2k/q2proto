@@ -23,28 +23,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_internal_protocol.h"
 
 // Minimum size of a zpacket
-#define SVC_ZPACKET_SIZE    5
+#define SVC_ZPACKET_SIZE  5
 /* Minimal space in packet need to enable compression
  * (minimal zpacket size + some slack for compressed data,
  * to avoid generating an empty zpacket) */
-#define MIN_COMPRESS_SIZE   SVC_ZPACKET_SIZE + 16
+#define MIN_COMPRESS_SIZE SVC_ZPACKET_SIZE + 16
 
-q2proto_error_t q2proto_maybe_zpacket_begin(q2proto_servercontext_t *context, q2protoio_deflate_args_t *deflate_args, uintptr_t io_arg, q2proto_maybe_zpacket_t *state, uintptr_t *new_io_arg)
+q2proto_error_t q2proto_maybe_zpacket_begin(q2proto_servercontext_t *context, q2protoio_deflate_args_t *deflate_args,
+                                            uintptr_t io_arg, q2proto_maybe_zpacket_t *state, uintptr_t *new_io_arg)
 {
     *new_io_arg = io_arg; // safe default
 #if Q2PROTO_COMPRESSION_DEFLATE
     memset(state, 0, sizeof(*state));
     state->original_io_arg = io_arg;
     state->zpacket_cmd = context->zpacket_cmd;
-    if (deflate_args && context->features.enable_deflate)
-    {
+    if (deflate_args && context->features.enable_deflate) {
         size_t max_deflated = q2protoio_write_available(io_arg);
         if (max_deflated < MIN_COMPRESS_SIZE)
             return Q2P_ERR_NOT_ENOUGH_PACKET_SPACE;
         max_deflated -= SVC_ZPACKET_SIZE;
-        q2proto_error_t deflate_err = q2protoio_deflate_begin(deflate_args, max_deflated, Q2P_INFL_DEFL_RAW, new_io_arg);
-        if (deflate_err == Q2P_ERR_SUCCESS)
-        {
+        q2proto_error_t deflate_err =
+            q2protoio_deflate_begin(deflate_args, max_deflated, Q2P_INFL_DEFL_RAW, new_io_arg);
+        if (deflate_err == Q2P_ERR_SUCCESS) {
             state->deflate_enabled = true;
             return Q2P_ERR_SUCCESS;
         }

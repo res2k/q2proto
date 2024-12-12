@@ -24,8 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 size_t q2pslcpy(char *dest, size_t dest_size, const q2proto_string_t *src)
 {
-    char* d = dest;
-    const char* s = src->str;
+    char *d = dest;
+    const char *s = src->str;
     size_t dst_n = dest_size;
     size_t src_n = src->len;
 

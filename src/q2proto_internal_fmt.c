@@ -43,7 +43,7 @@ const char *q2proto_va(const char *fmt, ...)
     return s;
 }
 
-int q2proto_snprintf_update(char **buf, size_t *buf_size, const char* format, ...)
+int q2proto_snprintf_update(char **buf, size_t *buf_size, const char *format, ...)
 {
     int result;
     va_list argptr;

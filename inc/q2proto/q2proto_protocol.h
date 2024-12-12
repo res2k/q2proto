@@ -66,7 +66,8 @@ Q2PROTO_PUBLIC_API int q2proto_get_protocol_netver(q2proto_protocol_t protocol);
 Q2PROTO_PUBLIC_API q2proto_protocol_t q2proto_protocol_from_netver(int version);
 
 /// Get array with protocols, suitable for given game types
-Q2PROTO_PUBLIC_API size_t q2proto_get_protocols_for_gametypes(q2proto_protocol_t *protocols, size_t num_protocols, const q2proto_game_api_t *games, size_t num_games);
+Q2PROTO_PUBLIC_API size_t q2proto_get_protocols_for_gametypes(q2proto_protocol_t *protocols, size_t num_protocols,
+                                                              const q2proto_game_api_t *games, size_t num_games);
 
 /**
  * Multicast protocol.
@@ -76,8 +77,7 @@ Q2PROTO_PUBLIC_API size_t q2proto_get_protocols_for_gametypes(q2proto_protocol_t
  * A "multicast protocol" shouldn't be picked manually, instead use q2proto_get_multicast_protocol()
  * to get a suitable value for the protocol(s) you offer.
  */
-typedef enum q2proto_multicast_protocol_e
-{
+typedef enum q2proto_multicast_protocol_e {
     /// Invalid protocol
     Q2P_PROTOCOL_MULTICAST_INVALID = 0,
     /// Multicast uses "short" positions
@@ -89,7 +89,9 @@ typedef enum q2proto_multicast_protocol_e
 } q2proto_multicast_protocol_t;
 
 /// Get suitable multicast protocol for accepted protocol(s) and game type.
-Q2PROTO_PUBLIC_API q2proto_multicast_protocol_t q2proto_get_multicast_protocol(q2proto_protocol_t *protocols, size_t num_protocols, q2proto_game_api_t game_api);
+Q2PROTO_PUBLIC_API q2proto_multicast_protocol_t q2proto_get_multicast_protocol(q2proto_protocol_t *protocols,
+                                                                               size_t num_protocols,
+                                                                               q2proto_game_api_t game_api);
 
 #if defined(__cplusplus)
 } // extern "C"

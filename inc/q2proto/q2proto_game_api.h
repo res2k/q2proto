@@ -23,8 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define Q2PROTO_GAME_API_H_
 
 /// API (type) of game run by the server
-typedef enum q2proto_game_api_e
-{
+typedef enum q2proto_game_api_e {
     /// Vanilla/original/v3 game
     Q2PROTO_GAME_VANILLA = 0,
     /// "Q2PRO extended" game

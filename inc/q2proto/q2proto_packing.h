@@ -27,8 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_limits.h" // for Q2PROTO_STATS
 
 /// Packed representation of entity state. Use with only server context used for packing!
-typedef struct q2proto_packed_entity_state_s
-{
+typedef struct q2proto_packed_entity_state_s {
     uint16_t modelindex;
     uint16_t modelindex2;
     uint16_t modelindex3;
@@ -58,8 +57,7 @@ typedef struct q2proto_packed_entity_state_s
 } q2proto_packed_entity_state_t;
 
 /// Packed representation of player state. Use with only server context used for packing!
-typedef struct q2proto_packed_player_state_s
-{
+typedef struct q2proto_packed_player_state_s {
     uint8_t pm_type;
     int32_t pm_origin[3];
     int32_t pm_velocity[3];
@@ -106,37 +104,39 @@ typedef struct q2proto_packed_player_state_s
 /**\def Q2PROTO_DECLARE_ENTITY_PACKING_FUNCTION
  * Declare a function to pack an entity state in a protocol-dependent manner.
  *
- * Packed entity states can be used to later fill an "entity state delta" message, saving on data conversions required by the protocol.
- * Packing function arguments:
+ * Packed entity states can be used to later fill an "entity state delta" message, saving on data conversions required
+ * by the protocol. Packing function arguments:
  * - \c context Server communications context.
  * - \c entity_state Entity state to create a packed representation of.
  * - \c entity_packed Receives the packed entity state representation.
  *
  * To define this function include `q2proto_packing_entitystate_impl.inc`.
  */
-#define Q2PROTO_DECLARE_ENTITY_PACKING_FUNCTION(FUNCTION_NAME, ENTITYSTATE_TYPE) \
-    void FUNCTION_NAME(q2proto_servercontext_t *context, const ENTITYSTATE_TYPE entity_state, q2proto_packed_entity_state_t *entity_packed)
+#define Q2PROTO_DECLARE_ENTITY_PACKING_FUNCTION(FUNCTION_NAME, ENTITYSTATE_TYPE)              \
+    void FUNCTION_NAME(q2proto_servercontext_t *context, const ENTITYSTATE_TYPE entity_state, \
+                       q2proto_packed_entity_state_t *entity_packed)
 
 /**\def Q2PROTO_DECLARE_PLAYER_PACKING_FUNCTION
  * Declare a function to pack a player state in a protocol-dependent manner.
  * To define this function include `q2proto_packing_playerstate_impl.inc`.
 
- * Packed player states can be used to later fill an "player state delta" message, saving on data conversions required by the protocol.
+ * Packed player states can be used to later fill an "player state delta" message, saving on data conversions required
+ by the protocol.
  * Packing function arguments:
  * - \c context Server communications context.
  * - \c player_state Player state to create a packed representation of.
  * - \c player_packed Receives the player entity state representation.
  */
-#define Q2PROTO_DECLARE_PLAYER_PACKING_FUNCTION(FUNCTION_NAME, PLAYERSTATE_TYPE) \
-    void FUNCTION_NAME(q2proto_servercontext_t *context, const PLAYERSTATE_TYPE player_state, q2proto_packed_player_state_t *player_packed)
+#define Q2PROTO_DECLARE_PLAYER_PACKING_FUNCTION(FUNCTION_NAME, PLAYERSTATE_TYPE)              \
+    void FUNCTION_NAME(q2proto_servercontext_t *context, const PLAYERSTATE_TYPE player_state, \
+                       q2proto_packed_player_state_t *player_packed)
 
 /**\name Internal packing support
  * @{ */
 typedef struct q2proto_servercontext_s q2proto_servercontext_t;
 
 // Entity, player packing flavor to use, depending on server context
-typedef enum _q2proto_packing_flavor_e
-{
+typedef enum _q2proto_packing_flavor_e {
     // Pack for vanilla (and derived)
     _Q2P_PACKING_VANILLA = 0,
     // Pack for q2repro protocol
@@ -144,7 +144,8 @@ typedef enum _q2proto_packing_flavor_e
 } _q2proto_packing_flavor_t;
 
 // Call actual entity packing function
-Q2PROTO_PUBLIC_API _q2proto_packing_flavor_t _q2proto_get_packing_flavor(q2proto_servercontext_t *context, q2proto_game_api_t* game_api);
+Q2PROTO_PUBLIC_API _q2proto_packing_flavor_t _q2proto_get_packing_flavor(q2proto_servercontext_t *context,
+                                                                         q2proto_game_api_t *game_api);
 /** @} */
 
 #endif // Q2PROTO_STRUCT_PACKING_H_

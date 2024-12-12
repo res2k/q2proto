@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto/q2proto.h"
 
 #if !defined(READ_GAME_DIRECTION)
-#define READ_GAME_DIRECTION     q2proto_common_client_read_packed_direction
+#define READ_GAME_DIRECTION q2proto_common_client_read_packed_direction
 #endif
 
 #if !defined(READ_TEMP_ENTITY_DECL)
@@ -34,13 +34,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #if !defined(HANDLE_UNKNOWN_TEMP_ENTITY)
-#define HANDLE_UNKNOWN_TEMP_ENTITY(IO_ARG, TEMP_ENTITY, RESULT)     false
+#define HANDLE_UNKNOWN_TEMP_ENTITY(IO_ARG, TEMP_ENTITY, RESULT) false
 #define _HANDLE_UNKNOWN_TEMP_ENTITY_DEFAULTED
 #endif
 
-#define HANDLE_SPECIAL_TEMP_ENT_Q2PRO_EXT   _Q2PROTO_CONCAT(READ_TEMP_ENTITY_NAME, _q2pro_ext)
+#define HANDLE_SPECIAL_TEMP_ENT_Q2PRO_EXT _Q2PROTO_CONCAT(READ_TEMP_ENTITY_NAME, _q2pro_ext)
 
-static q2proto_error_t HANDLE_SPECIAL_TEMP_ENT_Q2PRO_EXT(uintptr_t io_arg, q2proto_svc_temp_entity_t *temp_entity, q2proto_error_t *result)
+static q2proto_error_t HANDLE_SPECIAL_TEMP_ENT_Q2PRO_EXT(uintptr_t io_arg, q2proto_svc_temp_entity_t *temp_entity,
+                                                         q2proto_error_t *result)
 {
     if (temp_entity->type != TE_Q2PRO_DAMAGE_DEALT)
         return false;
@@ -49,7 +50,8 @@ static q2proto_error_t HANDLE_SPECIAL_TEMP_ENT_Q2PRO_EXT(uintptr_t io_arg, q2pro
     return true;
 }
 
-READ_TEMP_ENTITY_DECL q2proto_error_t READ_TEMP_ENTITY_NAME(uintptr_t io_arg, q2proto_game_api_t game_api, q2proto_svc_temp_entity_t *temp_entity)
+READ_TEMP_ENTITY_DECL q2proto_error_t READ_TEMP_ENTITY_NAME(uintptr_t io_arg, q2proto_game_api_t game_api,
+                                                            q2proto_svc_temp_entity_t *temp_entity)
 {
     READ_CHECKED(client_read, io_arg, temp_entity->type, u8);
 
@@ -164,8 +166,7 @@ READ_TEMP_ENTITY_DECL q2proto_error_t READ_TEMP_ENTITY_NAME(uintptr_t io_arg, q2
         CHECKED(client_read, io_arg, READ_GAME_DIRECTION(io_arg, temp_entity->direction));
         READ_CHECKED(client_read, io_arg, temp_entity->color, u8);
         READ_CHECKED(client_read, io_arg, temp_entity->entity2, i16);
-        if (temp_entity->entity1 != -1)
-        {
+        if (temp_entity->entity1 != -1) {
             READ_CHECKED(client_read, io_arg, temp_entity->time, i32);
         }
         break;
@@ -189,7 +190,8 @@ READ_TEMP_ENTITY_DECL q2proto_error_t READ_TEMP_ENTITY_NAME(uintptr_t io_arg, q2
             if (tent_handled)
                 return handle_res;
             else
-                return HANDLE_ERROR(client_read, io_arg, Q2P_ERR_BAD_DATA, "%s: invalid tent %d", __func__, temp_entity->type);
+                return HANDLE_ERROR(client_read, io_arg, Q2P_ERR_BAD_DATA, "%s: invalid tent %d", __func__,
+                                    temp_entity->type);
         }
     }
 
@@ -234,8 +236,7 @@ READ_SOUND_DECL q2proto_error_t READ_SOUND_NAME(uintptr_t io_arg, q2proto_svc_so
     if (sound->flags & SND_OFFSET)
         READ_CHECKED(client_read, io_arg, sound->timeofs, u8);
 
-    if (sound->flags & SND_ENT)
-    {
+    if (sound->flags & SND_ENT) {
         // entity relative
         uint16_t channel;
         READ_CHECKED(client_read, io_arg, channel, u16);
@@ -244,8 +245,7 @@ READ_SOUND_DECL q2proto_error_t READ_SOUND_NAME(uintptr_t io_arg, q2proto_svc_so
     }
 
     // positioned in space
-    if (sound->flags & SND_POS)
-    {
+    if (sound->flags & SND_POS) {
         q2proto_vec3_t pos;
         CHECKED(client_read, io_arg, READ_GAME_POSITION(io_arg, pos));
         q2proto_var_coords_set_float(&sound->pos, pos);

@@ -28,34 +28,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * To mark a function as possibly unused (to avoid compiler warnings)
  */
 #if defined(__GNUC__)
-#define MAYBE_UNUSED    __attribute__ ((unused))
+    #define MAYBE_UNUSED __attribute__((unused))
 #else
-#define MAYBE_UNUSED
+    #define MAYBE_UNUSED
 #endif
 
 /**\def MIN
  * Helper: Minimum of X and Y
  * \warning Evaluates \c X, \c Y multiple times!
  */
-#define MIN(X, Y)  ((X) < (Y) ? (X) : (Y))
+#define MIN(X, Y)          ((X) < (Y) ? (X) : (Y))
 /**\def MAX
  * Helper: Maximum of X and Y
  * \warning Evaluates \c X, \c Y multiple times!
  */
-#define MAX(X, Y)  ((X) > (Y) ? (X) : (Y))
+#define MAX(X, Y)          ((X) > (Y) ? (X) : (Y))
 /**\def CLAMP
  * Helper: clamp \c X between \c MIN and \c MAX.
  * \warning Evaluates \c X, \c MIN, \c MAX multiple times!
  */
-#define CLAMP(X, MIN, MAX)  ((X) < (MIN) ? (MIN) : ((X) > (MAX) ? (MAX) : (X)))
+#define CLAMP(X, MIN, MAX) ((X) < (MIN) ? (MIN) : ((X) > (MAX) ? (MAX) : (X)))
 
-#define BIT(n)          (1U << (n))
-#define BIT_ULL(n)      (1ULL << (n))
+#define BIT(n)     (1U << (n))
+#define BIT_ULL(n) (1ULL << (n))
 
-#define SOUND_DEFAULT_VOLUME        255
-#define SOUND_DEFAULT_ATTENUATION   64
+#define SOUND_DEFAULT_VOLUME      255
+#define SOUND_DEFAULT_ATTENUATION 64
 
-#define _Q2PROTO_CONCAT2(X, Y)       X ## Y
-#define _Q2PROTO_CONCAT(X, Y)        _Q2PROTO_CONCAT2(X, Y)
+#define _Q2PROTO_CONCAT2(X, Y) X##Y
+#define _Q2PROTO_CONCAT(X, Y)  _Q2PROTO_CONCAT2(X, Y)
 
 #endif // Q2PROTO_INTERNAL_DEFS_H_

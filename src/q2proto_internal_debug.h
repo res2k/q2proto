@@ -30,12 +30,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  */
 #if Q2PROTO_SHOWNET
     #if defined(_MSC_VER)
-        #define SHOWNET(IO_ARG, LEVEL, OFFSET, MSG, ...)    q2protodbg_shownet((IO_ARG), (LEVEL), (OFFSET), (MSG), ##__VA_ARGS__)
+        #define SHOWNET(IO_ARG, LEVEL, OFFSET, MSG, ...) \
+            q2protodbg_shownet((IO_ARG), (LEVEL), (OFFSET), (MSG), ##__VA_ARGS__)
     #else
-        #define SHOWNET(IO_ARG, LEVEL, OFFSET, MSG, ...)    q2protodbg_shownet((IO_ARG), (LEVEL), (OFFSET), (MSG) __VA_OPT__(,) __VA_ARGS__)
+        #define SHOWNET(IO_ARG, LEVEL, OFFSET, MSG, ...) \
+            q2protodbg_shownet((IO_ARG), (LEVEL), (OFFSET), (MSG)__VA_OPT__(, ) __VA_ARGS__)
     #endif
 #else
-    #define SHOWNET(IO_ARG, LEVEL, OFFSET, MSG, ...)    (void)0
+    #define SHOWNET(IO_ARG, LEVEL, OFFSET, MSG, ...) (void)0
 #endif
 
 /**\name Debug output helpers
@@ -46,7 +48,8 @@ Q2PROTO_PRIVATE_API const char *q2proto_debug_common_svc_string(int command);
 /// Stringify entity delta bits (U_xxx) to buffer
 Q2PROTO_PRIVATE_API void q2proto_debug_common_entity_delta_bits_to_str(char *buf, size_t size, uint64_t bits);
 /// Print default "shownet" feedback for entity delta bits (U_xxx)
-static inline void q2proto_debug_shownet_entity_delta_bits(uintptr_t io_arg, const char* prefix, uint16_t entnum, uint64_t bits)
+static inline void q2proto_debug_shownet_entity_delta_bits(uintptr_t io_arg, const char *prefix, uint16_t entnum,
+                                                           uint64_t bits)
 {
 #if Q2PROTO_SHOWNET
     if (q2protodbg_shownet_check(io_arg, 2) && bits) {

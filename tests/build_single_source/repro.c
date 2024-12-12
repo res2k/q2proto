@@ -16,24 +16,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "tests/defs.h"
 #include "repro.h"
+#include "tests/defs.h"
 
-#define Q2PROTO_ENTITY_STATE_FEATURES   Q2PROTO_FEATURES_RERELEASE
-#define Q2PROTO_PLAYER_STATE_FEATURES   Q2PROTO_FEATURES_RERELEASE
-#define Q2PROTO_PUBLIC_API           static MAYBE_UNUSED
-#define Q2PROTO_PRIVATE_API          static MAYBE_UNUSED
+#define Q2PROTO_ENTITY_STATE_FEATURES Q2PROTO_FEATURES_RERELEASE
+#define Q2PROTO_PLAYER_STATE_FEATURES Q2PROTO_FEATURES_RERELEASE
+#define Q2PROTO_PUBLIC_API            static MAYBE_UNUSED
+#define Q2PROTO_PRIVATE_API           static MAYBE_UNUSED
 #include "single_source_q2proto.c"
 
 #include "tests/types/q2repro.h"
 
-#define Q2P_PACK_ENTITY_FUNCTION_NAME   ReproPackEntity
-#define Q2P_PACK_ENTITY_TYPE            q2repro_entity_state_t*
+#define Q2P_PACK_ENTITY_FUNCTION_NAME ReproPackEntity
+#define Q2P_PACK_ENTITY_TYPE          q2repro_entity_state_t *
 
 #include "q2proto/q2proto_packing_entitystate_impl.inc"
 
-#define Q2P_PACK_PLAYER_FUNCTION_NAME   ReproPackPlayer
-#define Q2P_PACK_PLAYER_TYPE            q2repro_player_state_t*
+#define Q2P_PACK_PLAYER_FUNCTION_NAME ReproPackPlayer
+#define Q2P_PACK_PLAYER_TYPE          q2repro_player_state_t *
 
 #include "q2proto/q2proto_packing_playerstate_impl.inc"
 
