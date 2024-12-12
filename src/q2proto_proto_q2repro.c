@@ -2322,8 +2322,8 @@ q2proto_error_t q2proto_q2repro_server_write_fog(uintptr_t io_arg, const q2proto
      + 8  /* model indices */         \
      + 2  /* frame */                 \
      + 4  /* skin */                  \
-     + 4  /* effects */               \
-     + 8  /* renderfx + morefx */     \
+     + 8  /* effects + morefx */      \
+     + 4  /* renderfx */              \
      + 12 /* origin */                \
      + 6  /* angles */                \
      + 12 /* old_origin */            \
