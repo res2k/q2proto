@@ -64,7 +64,7 @@ q2proto_error_t q2proto_kex_continue_serverdata(q2proto_clientcontext_t *context
 }
 
 static q2proto_error_t kex_client_read_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata);
-static q2proto_error_t kex_client_read_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, uint64_t bits, unsigned entnum, q2proto_entity_state_delta_t *entity_state);
+static q2proto_error_t kex_client_read_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, uint64_t bits, unsigned entnum, q2proto_entity_state_delta_t *entity_state, bool default_solid_nonzero);
 static q2proto_error_t kex_client_read_baseline(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_spawnbaseline_t *spawnbaseline);
 static q2proto_error_t kex_client_read_sound(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_sound_t *sound);
 static q2proto_error_t kex_client_read_frame(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_frame_t *frame);
@@ -313,7 +313,7 @@ static q2proto_error_t kex_client_next_frame_entity_delta(q2proto_clientcontext_
         return Q2P_ERR_SUCCESS;
     }
 
-    return kex_client_read_entity_delta(context, io_arg, bits, frame_entity_delta->newnum, &frame_entity_delta->entity_delta);
+    return kex_client_read_entity_delta(context, io_arg, bits, frame_entity_delta->newnum, &frame_entity_delta->entity_delta, q2proto_get_entity_bit(context->kex_demo_edict_nonzero_solid, frame_entity_delta->newnum));
 }
 
 static q2proto_error_t kex_client_read_serverdata(q2proto_clientcontext_t *context, uintptr_t io_arg, q2proto_svc_serverdata_t *serverdata)
@@ -329,7 +329,7 @@ static q2proto_error_t kex_client_read_serverdata(q2proto_clientcontext_t *conte
     return q2proto_kex_continue_serverdata(context, io_arg, serverdata);
 }
 
-static q2proto_error_t kex_client_read_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, uint64_t bits, unsigned entnum, q2proto_entity_state_delta_t *entity_state)
+static q2proto_error_t kex_client_read_entity_delta(q2proto_clientcontext_t *context, uintptr_t io_arg, uint64_t bits, unsigned entnum, q2proto_entity_state_delta_t *entity_state, bool default_solid_nonzero)
 {
     bool model16 = bits & U_MODEL16;
     if (delta_bits_check(bits, U_MODEL, &entity_state->delta_bits, Q2P_ESD_MODELINDEX))
@@ -428,7 +428,7 @@ static q2proto_error_t kex_client_read_entity_delta(q2proto_clientcontext_t *con
         q2proto_set_entity_bit(context->kex_demo_edict_nonzero_solid, entnum, nonzero_solid);
     }
     else
-        nonzero_solid = q2proto_get_entity_bit(context->kex_demo_edict_nonzero_solid, entnum);
+        nonzero_solid = default_solid_nonzero;
 
     bool high_precision_origin = context->server_protocol != Q2P_PROTOCOL_KEX_DEMOS || nonzero_solid;
     entity_state->origin.read.value.delta_bits = 0;
@@ -569,8 +569,8 @@ static q2proto_error_t kex_client_read_baseline(q2proto_clientcontext_t *context
 
     kex_debug_shownet_entity_delta_bits(io_arg, "   baseline:", spawnbaseline->entnum, bits);
 
-    q2proto_error_t result = kex_client_read_entity_delta(context, io_arg, bits, spawnbaseline->entnum, &spawnbaseline->delta_state);
-    bool nonzero_solid = spawnbaseline->delta_state.delta_bits & Q2P_ESD_SOLID && spawnbaseline->delta_state.solid != 0;
+    q2proto_error_t result = kex_client_read_entity_delta(context, io_arg, bits, spawnbaseline->entnum, &spawnbaseline->delta_state, false);
+    bool nonzero_solid = q2proto_get_entity_bit(context->kex_demo_edict_nonzero_solid, spawnbaseline->entnum);
     q2proto_set_entity_bit(context->kex_demo_baseline_nonzero_solid, spawnbaseline->entnum, nonzero_solid);
     return result;
 }
@@ -1051,7 +1051,7 @@ static q2proto_error_t kex_server_write_serverdata(q2proto_servercontext_t *cont
     return Q2P_ERR_SUCCESS;
 }
 
-static q2proto_error_t kex_server_write_entity_state_delta(q2proto_servercontext_t *context, uintptr_t io_arg, uint16_t entnum, const q2proto_entity_state_delta_t *entity_state_delta)
+static q2proto_error_t kex_server_write_entity_state_delta(q2proto_servercontext_t *context, uintptr_t io_arg, uint16_t entnum, const q2proto_entity_state_delta_t *entity_state_delta, bool default_solid_nonzero)
 {
     uint64_t bits = 0;
 
@@ -1207,7 +1207,7 @@ static q2proto_error_t kex_server_write_entity_state_delta(q2proto_servercontext
         q2proto_set_entity_bit(context->kex_demo_edict_nonzero_solid, entnum, nonzero_solid);
     }
     else
-        nonzero_solid = q2proto_get_entity_bit(context->kex_demo_edict_nonzero_solid, entnum);
+        nonzero_solid = default_solid_nonzero;
 
     bool high_precision_origin = context->protocol != Q2P_PROTOCOL_KEX_DEMOS || nonzero_solid;
     if (high_precision_origin)
@@ -1279,8 +1279,8 @@ static q2proto_error_t kex_server_write_entity_state_delta(q2proto_servercontext
 static q2proto_error_t kex_server_write_spawnbaseline(q2proto_servercontext_t *context, uintptr_t io_arg, const q2proto_svc_spawnbaseline_t *spawnbaseline)
 {
     WRITE_CHECKED(server_write, io_arg, u8, svc_spawnbaseline);
-    CHECKED(server_write, io_arg, kex_server_write_entity_state_delta(context, io_arg, spawnbaseline->entnum, &spawnbaseline->delta_state));
-    bool nonzero_solid = spawnbaseline->delta_state.delta_bits & Q2P_ESD_SOLID && spawnbaseline->delta_state.solid != 0;
+    CHECKED(server_write, io_arg, kex_server_write_entity_state_delta(context, io_arg, spawnbaseline->entnum, &spawnbaseline->delta_state, false));
+    bool nonzero_solid = q2proto_get_entity_bit(context->kex_demo_edict_nonzero_solid, spawnbaseline->entnum);
     q2proto_set_entity_bit(context->kex_demo_baseline_nonzero_solid, spawnbaseline->entnum, nonzero_solid);
     return Q2P_ERR_SUCCESS;
 }
@@ -1561,7 +1561,7 @@ static q2proto_error_t kex_server_write_frame_entity_delta(q2proto_servercontext
         return Q2P_ERR_SUCCESS;
     }
 
-    return kex_server_write_entity_state_delta(context, io_arg, frame_entity_delta->newnum, &frame_entity_delta->entity_delta);
+    return kex_server_write_entity_state_delta(context, io_arg, frame_entity_delta->newnum, &frame_entity_delta->entity_delta, q2proto_get_entity_bit(context->kex_demo_edict_nonzero_solid, frame_entity_delta->newnum));
 }
 
 #define WRITE_GAMESTATE_FUNCTION_NAME   kex_server_write_gamestate
