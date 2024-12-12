@@ -1333,11 +1333,16 @@ static q2proto_error_t kex_server_write_playerstate(q2proto_servercontext_t *con
         return Q2P_ERR_BAD_DATA;
 #endif
 
+    if (flags > UINT16_MAX)
+        flags |= PS_MOREBITS;
+
     //
     // write it
     //
     WRITE_CHECKED(server_write, io_arg, u8, svc_playerinfo);
     WRITE_CHECKED(server_write, io_arg, u16, flags);
+    if (flags & PS_MOREBITS)
+        WRITE_CHECKED(server_write, io_arg, u16, flags >> 16);
 
     if (flags & PS_M_TYPE)
         WRITE_CHECKED(server_write, io_arg, u8, playerstate->pm_type);
