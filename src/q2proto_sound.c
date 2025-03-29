@@ -88,11 +88,12 @@ void q2proto_sound_encode_message(const q2proto_sound_t *sound_data, q2proto_svc
 }
 
 #define ATTN_LOOP_NONE -1
+#define ENCODE_LOOP_NONE    192
 
 float q2proto_sound_decode_loop_attenuation(uint8_t protocol_loop_attenuation)
 {
-    if (protocol_loop_attenuation == 192)
-        return -1;
+    if (protocol_loop_attenuation == ENCODE_LOOP_NONE)
+        return ATTN_LOOP_NONE;
     else
         return protocol_loop_attenuation / 64.0f;
     /* Note: a 0 loop_attenuation is supposed to be treated as default,
@@ -106,10 +107,10 @@ uint8_t q2proto_sound_encode_loop_attenuation(float loop_attenuation)
     uint8_t out_loop_attenuation;
     // encode ATTN_STATIC (192) as 0, and ATTN_LOOP_NONE (-1) as 192
     if (loop_attenuation == ATTN_LOOP_NONE) {
-        out_loop_attenuation = 192;
+        out_loop_attenuation = ENCODE_LOOP_NONE;
     } else {
         out_loop_attenuation = (uint8_t)CLAMP(loop_attenuation * 64.0f, 0, 255);
-        if (out_loop_attenuation == 192)
+        if (out_loop_attenuation == ENCODE_LOOP_NONE)
             out_loop_attenuation = 0;
     }
     return out_loop_attenuation;
