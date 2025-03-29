@@ -80,7 +80,7 @@ static void _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME(const Q2P_PACK_ENTITY_TYPE re
 #if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
     if (game_api >= Q2PROTO_GAME_Q2PRO_EXTENDED) {
         entity_packed->loop_volume =
-            _q2proto_valenc_clamped_mul(Q2P_PACK_GET_ENTITY_VALUE(entity_state, loop_volume), 255, 0, UINT8_MAX);
+            _q2proto_valenc_entity_loop_volume2byte(Q2P_PACK_GET_ENTITY_VALUE(entity_state, loop_volume));
         entity_packed->loop_attenuation =
             q2proto_sound_encode_loop_attenuation(Q2P_PACK_GET_ENTITY_VALUE(entity_state, loop_attenuation));
         entity_packed->alpha = _q2proto_valenc_entityalpha2byte(Q2P_PACK_GET_ENTITY_VALUE(entity_state, alpha));
@@ -111,7 +111,7 @@ static void _Q2P_PACK_ENTITY_Q2REPRO_FUNCTION_NAME(const Q2P_PACK_ENTITY_TYPE re
     entity_packed->solid = (uint32_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, solid);
 #if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
     entity_packed->loop_volume =
-        _q2proto_valenc_clamped_mul(Q2P_PACK_GET_ENTITY_VALUE(entity_state, loop_volume), 255, 0, UINT8_MAX);
+        _q2proto_valenc_entity_loop_volume2byte(Q2P_PACK_GET_ENTITY_VALUE(entity_state, loop_volume));
     entity_packed->loop_attenuation =
         q2proto_sound_encode_loop_attenuation(Q2P_PACK_GET_ENTITY_VALUE(entity_state, loop_attenuation));
     entity_packed->alpha = _q2proto_valenc_entityalpha2byte(Q2P_PACK_GET_ENTITY_VALUE(entity_state, alpha));
