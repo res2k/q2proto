@@ -93,17 +93,17 @@ jobs:
           meson compile -C build-tests
 
   freebsd:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
       - name: Build tests
-        uses: cross-platform-actions/action@v0.25.0
+        uses: cross-platform-actions/action@v0.27.0
         with:
           operating_system: freebsd
           architecture: x86-64
-          version: '14.1'
+          version: '14.2'
           run: |
             sudo pkg update
             sudo pkg install -y git meson pkgconf
