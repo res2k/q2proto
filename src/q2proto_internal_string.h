@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     #if !defined(alloca)
         #define alloca _alloca
     #endif
-#elif !defined(__FreeBSD__)
+#elif !defined(__FreeBSD__) && !defined(__OpenBSD__)
     #include <alloca.h>
 #endif
 
