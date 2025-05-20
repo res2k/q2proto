@@ -109,3 +109,21 @@ jobs:
             sudo pkg install -y git meson pkgconf
             meson setup ${{ env.MESON_ARGS }} build-tests tests
             meson compile -C build-tests
+
+  openbsd:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build tests
+        uses: cross-platform-actions/action@v0.27.0
+        with:
+          operating_system: openbsd
+          architecture: x86-64
+          version: '7.6'
+          run: |
+            sudo pkg_add -u
+            sudo pkg_add git meson $(pkg_info -aqQ gcc|grep gcc-11)
+            CC=egcc meson setup ${{ env.MESON_ARGS }} build-tests tests
+            meson compile -C build-tests
