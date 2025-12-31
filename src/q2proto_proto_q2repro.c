@@ -1960,7 +1960,11 @@ static q2proto_error_t q2repro_server_write_spawnbaseline(q2proto_servercontext_
 static q2proto_error_t q2repro_server_write_download(q2proto_servercontext_t *context, uintptr_t io_arg,
                                                      const q2proto_svc_download_t *download)
 {
-    WRITE_CHECKED(server_write, io_arg, u8, download->compressed ? svc_r1q2_zdownload : svc_download);
+    // FIX(jackharrhy) previously this was setting the compressed command to svc_r1q2_zdownload,
+    // which was 22, and q2repro was not a fan of that command, svc_q2repro_zdownload is 35 which
+    // is in the expected range of commands, so lets write that instead
+    uint8_t cmd = download->compressed ? svc_q2repro_zdownload : svc_download;
+    WRITE_CHECKED(server_write, io_arg, u8, cmd);
     WRITE_CHECKED(server_write, io_arg, i16, download->size);
     WRITE_CHECKED(server_write, io_arg, u8, download->percent);
     if (download->size > 0) {

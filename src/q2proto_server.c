@@ -277,7 +277,9 @@ q2proto_error_t q2proto_server_write_zpacket(q2proto_servercontext_t *context, q
 
     // Don't double-compress messages...
     uint8_t message_type = *(const uint8_t *)packet_data;
-    if (message_type == svc_r1q2_zpacket)
+    // FIX(jackharrhy) use context->zpacket_cmd instead of hardcoded
+    // svc_r1q2_zpacket, which q2repro isn't a fan of
+    if (message_type == context->zpacket_cmd)
         return Q2P_ERR_ALREADY_COMPRESSED;
 
     size_t deflate_io_arg;
@@ -296,7 +298,9 @@ q2proto_error_t q2proto_server_write_zpacket(q2proto_servercontext_t *context, q
         return Q2P_ERR_ALREADY_COMPRESSED;
     }
 
-    WRITE_CHECKED(server_write, io_arg, u8, svc_r1q2_zpacket);
+    // FIX(jackharrhy) use context->zpacket_cmd instead of hardcoded
+    // svc_r1q2_zpacket, which q2repro isn't a fan of
+    WRITE_CHECKED(server_write, io_arg, u8, context->zpacket_cmd);
     WRITE_CHECKED(server_write, io_arg, u16, compressed_len);
     WRITE_CHECKED(server_write, io_arg, u16, packet_len);
     WRITE_CHECKED(server_write, io_arg, raw, compressed_data, compressed_len, NULL);
