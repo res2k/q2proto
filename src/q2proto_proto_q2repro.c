@@ -2696,6 +2696,12 @@ static q2proto_error_t q2repro_download_data(q2proto_server_download_state_t *st
         if (err != Q2P_ERR_SUCCESS)
             return err;
 
+        // FIX(jackharrhy) q2protoio_deflate_get_data finishes the stream,
+        // so we need to end it and mark as invalid for the next packet
+        // (which will create a new stream)
+        q2protoio_deflate_end(state->deflate_io);
+        state->deflate_io_valid = false;
+
         svc_download->compressed = true;
         svc_download->data = compressed_data;
         svc_download->size = compressed_size;
