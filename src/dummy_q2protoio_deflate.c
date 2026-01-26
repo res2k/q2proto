@@ -27,8 +27,8 @@ q2proto_error_t q2protoio_deflate_begin(q2protoio_deflate_args_t *deflate_args, 
     return Q2P_ERR_NOT_IMPLEMENTED;
 }
 
-q2proto_error_t q2protoio_deflate_get_data(uintptr_t deflate_io_arg, size_t *in_size, const void **out,
-                                           size_t *out_size)
+q2proto_error_t q2protoio_deflate_get_data(uintptr_t deflate_io_arg, q2proto_deflate_stream_mode_t stream_mode,
+                                           size_t *in_size, const void **out, size_t *out_size)
 {
     *out = NULL;
     *out_size = 0;

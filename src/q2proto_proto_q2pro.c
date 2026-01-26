@@ -2526,11 +2526,19 @@ static q2proto_error_t q2pro_download_data(q2proto_server_download_state_t *stat
         *data += in_consumed;
         *remaining -= in_consumed;
 
+        bool has_more_input = *remaining > 0;
+        q2proto_deflate_stream_mode_t stream_flag = has_more_input ? Q2P_DEFLATE_DATA_STREAM : Q2P_DEFLATE_DATA_FINISH;
         const void *compressed_data;
         size_t compressed_size;
-        q2proto_error_t err = q2protoio_deflate_get_data(state->deflate_io, NULL, &compressed_data, &compressed_size);
+        q2proto_error_t err = q2protoio_deflate_get_data(state->deflate_io, stream_flag, NULL,
+                                                         &compressed_data, &compressed_size);
         if (err != Q2P_ERR_SUCCESS)
             return err;
+
+        if (!has_more_input) {
+            q2protoio_deflate_end(state->deflate_io);
+            state->deflate_io_valid = false;
+        }
 
         svc_download->compressed = true;
         svc_download->data = compressed_data;

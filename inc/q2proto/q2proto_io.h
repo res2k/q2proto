@@ -148,6 +148,14 @@ Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_stream_ended(
  */
 Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_inflate_end(uintptr_t inflate_io_arg);
 
+/// Stream mode for retrieving deflated data.
+typedef enum q2proto_deflate_stream_mode_e {
+    /// Data to deflate is complete, finish the deflated stream
+    Q2P_DEFLATE_DATA_FINISH = 0,
+    /// Keep streaming deflated data
+    Q2P_DEFLATE_DATA_STREAM = 1,
+} q2proto_deflate_stream_mode_t;
+
 /**
  * Begin deflation.
  * \param deflate_args Deflation args. Passed through from functions providing deflation support.
@@ -167,13 +175,16 @@ q2protoio_deflate_begin(q2protoio_deflate_args_t *deflate_args, size_t max_defla
  * Consumers of the deflated data should be able to inflate all of the consumed input data without
  * requiring any more data beyond what was output.
  * \param deflate_io_arg Receives an "I/O argument" used for deflation operation.
+ * \param stream_mode Streaming mode for deflated data.
  * \param in_size Optional. Receives size of consumed input (uncompressed) data.
  * \param out Pointer to start of output data. Changed to point after the last written output byte.
  * \param out_size Amount of output data written.
  * \returns Error code
  */
-Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_deflate_get_data(uintptr_t deflate_io_arg, size_t *in_size,
-                                                                            const void **out, size_t *out_size);
+Q2PROTO_EXTERNALLY_PROVIDED_DECL q2proto_error_t q2protoio_deflate_get_data(uintptr_t deflate_io_arg,
+                                                                            q2proto_deflate_stream_mode_t stream_mode,
+                                                                            size_t *in_size, const void **out,
+                                                                            size_t *out_size);
 /**
  * End deflation.
  * \param deflate_handle "I/O argument" used for deflation operation.

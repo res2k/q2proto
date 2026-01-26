@@ -61,7 +61,8 @@ q2proto_error_t q2proto_maybe_zpacket_end(q2proto_maybe_zpacket_t *state, uintpt
 
     const void *data;
     size_t uncompressed_len = 0, compressed_len = 0;
-    q2proto_error_t err = q2protoio_deflate_get_data(new_io_arg, &uncompressed_len, &data, &compressed_len);
+    q2proto_error_t err =
+        q2protoio_deflate_get_data(new_io_arg, Q2P_DEFLATE_DATA_FINISH, &uncompressed_len, &data, &compressed_len);
     if (err != Q2P_ERR_SUCCESS)
         goto error;
 

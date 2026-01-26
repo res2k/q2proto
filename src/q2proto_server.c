@@ -290,7 +290,7 @@ q2proto_error_t q2proto_server_write_zpacket(q2proto_servercontext_t *context, q
     const void *compressed_data;
     size_t uncompressed_len, compressed_len;
     CHECKED(server_write, io_arg,
-            q2protoio_deflate_get_data(deflate_io_arg, &uncompressed_len, &compressed_data, &compressed_len));
+            q2protoio_deflate_get_data(deflate_io_arg, Q2P_DEFLATE_DATA_FINISH, &uncompressed_len, &compressed_data, &compressed_len));
 
     // Data didn't compress very well. No point to wrap it.
     if (compressed_len > uncompressed_len + 5) {

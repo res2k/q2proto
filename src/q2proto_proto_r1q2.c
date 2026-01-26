@@ -1577,9 +1577,12 @@ static q2proto_error_t r1q2_download_data(q2proto_server_download_state_t *state
 
         const void *compressed_data;
         size_t compressed_size;
-        err = q2protoio_deflate_get_data(deflate_io, NULL, &compressed_data, &compressed_size);
+        err = q2protoio_deflate_get_data(deflate_io, Q2P_DEFLATE_DATA_FINISH, NULL, &compressed_data, &compressed_size);
         if (err != Q2P_ERR_SUCCESS)
             return err;
+
+        q2protoio_deflate_end(state->deflate_io);
+        state->deflate_io_valid = false;
 
         svc_download->compressed = true;
         svc_download->data = compressed_data;
