@@ -167,7 +167,7 @@ q2protoio_deflate_begin(q2protoio_deflate_args_t *deflate_args, size_t max_defla
  * Consumers of the deflated data should be able to inflate all of the consumed input data without
  * requiring any more data beyond what was output.
  * \param deflate_io_arg Receives an "I/O argument" used for deflation operation.
- * \param in_size Optional. Receives size of input (uncompressed) data.
+ * \param in_size Optional. Receives size of consumed input (uncompressed) data.
  * \param out Pointer to start of output data. Changed to point after the last written output byte.
  * \param out_size Amount of output data written.
  * \returns Error code
