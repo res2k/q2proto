@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2024 Frank Richter
+Copyright (C) 2024-2026 Frank Richter
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -55,6 +55,9 @@ Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_client_read_entity_delta(q2pro
                                                                            q2proto_entity_state_delta_t *entity_state);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_client_read_playerfog(q2proto_clientcontext_t *context,
                                                                         uintptr_t io_arg, q2proto_svc_fog_t *fog);
+Q2PROTO_PRIVATE_API q2proto_error_t
+q2proto_q2pro_server_write_temp_entity(q2proto_protocol_t protocol, const q2proto_server_info_t *server_info,
+                                       uintptr_t io_arg, const q2proto_svc_temp_entity_t *temp_entity);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2pro_server_write_sound(q2proto_protocol_t protocol,
                                                                      const q2proto_server_info_t *server_info,
                                                                      uintptr_t io_arg,

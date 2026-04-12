@@ -1,6 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
-Copyright (C) 2024 Frank Richter
+Copyright (C) 2024-2026 Frank Richter
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -492,6 +492,31 @@ static inline q2proto_error_t server_write_q2pro_extv2_blends(uintptr_t io_arg, 
     for (int i = 0; i < 4; i++) {
         if (damage_blend->delta_bits & BIT(i))
             WRITE_CHECKED(server_write, io_arg, u8, q2proto_var_color_get_byte_comp(&damage_blend->values, i));
+    }
+    return Q2P_ERR_SUCCESS;
+}
+
+static inline q2proto_error_t server_write_short_coord(uintptr_t io_arg, const float coord[3])
+{
+    for (int i = 0; i < 3; i++) {
+        int16_t c = _q2proto_valenc_coord2short(coord[i]);
+        WRITE_CHECKED(server_write, io_arg, i16, c);
+    }
+    return Q2P_ERR_SUCCESS;
+}
+
+static inline q2proto_error_t server_write_int23_coord(uintptr_t io_arg, const float coord[3])
+{
+    for (int i = 0; i < 3; i++) {
+        int32_t c = _q2proto_valenc_coord2int(coord[i]);
+        WRITE_CHECKED(server_write, io_arg, q2pro_i23, c, 0);
+    }
+    return Q2P_ERR_SUCCESS;
+}
+static inline q2proto_error_t server_write_float_coord(uintptr_t io_arg, const float coord[3])
+{
+    for (int i = 0; i < 3; i++) {
+        WRITE_CHECKED(server_write, io_arg, float, coord[i]);
     }
     return Q2P_ERR_SUCCESS;
 }

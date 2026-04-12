@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2024 Frank Richter
+Copyright (C) 2024-2026 Frank Richter
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -67,6 +67,12 @@ static inline float _q2proto_valenc_int2coord(int32_t x) { return x * 0.125f; }
 static inline int32_t _q2proto_valenc_coord2int(float x)
 {
     return _q2proto_valenc_clamped_mul(x, 8, INT32_MIN, INT32_MAX);
+}
+
+// Encode coordinate to short
+static inline int16_t _q2proto_valenc_coord2short(float x)
+{
+    return _q2proto_valenc_clamped_mul(x, 8, INT16_MIN, INT16_MAX);
 }
 
 // Decode angle (in degrees) from 16-bit integer

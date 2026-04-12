@@ -2,7 +2,7 @@
 Copyright (C) 1997-2001 Id Software, Inc.
 Copyright (C) 2003-2011 Richard Stanway
 Copyright (C) 2003-2024 Andrey Nazarov
-Copyright (C) 2024 Frank Richter
+Copyright (C) 2024-2026 Frank Richter
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -45,6 +45,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #undef READ_TEMP_ENTITY_NAME
 #undef READ_SOUND_NAME
 #undef READ_GAME_POSITION
+
+#define WRITE_GAME_POSITION    server_write_short_coord
+#define WRITE_TEMP_ENTITY_NAME q2proto_common_server_write_temp_entity_short
+
+#include "q2proto_write_temp_entity.inc"
+
+#undef WRITE_TEMP_ENTITY_NAME
+#undef WRITE_GAME_POSITION
+
+#define WRITE_GAME_POSITION    server_write_float_coord
+#define WRITE_TEMP_ENTITY_NAME q2proto_common_server_write_temp_entity_float
+
+#include "q2proto_write_temp_entity.inc"
+
+#undef WRITE_TEMP_ENTITY_NAME
+#undef WRITE_GAME_POSITION
 
 q2proto_error_t q2proto_common_client_read_entity_bits(uintptr_t io_arg, uint64_t *bits, uint16_t *entnum)
 {
@@ -209,10 +225,33 @@ q2proto_error_t q2proto_common_client_read_packed_direction(uintptr_t io_arg, fl
     return Q2P_ERR_SUCCESS;
 }
 
+q2proto_error_t q2proto_common_server_write_muzzleflash(uintptr_t io_arg, uint8_t message,
+                                                        const q2proto_svc_muzzleflash_t *muzzleflash,
+                                                        uint16_t silenced_mask)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, message);
+    WRITE_CHECKED(server_write, io_arg, i16, muzzleflash->entity);
+    uint8_t weapon = muzzleflash->weapon;
+    if (muzzleflash->silenced)
+        weapon |= silenced_mask;
+    WRITE_CHECKED(server_write, io_arg, u8, weapon);
+    return Q2P_ERR_SUCCESS;
+}
+
 q2proto_error_t q2proto_common_server_write_layout(uintptr_t io_arg, const q2proto_svc_layout_t *layout)
 {
     WRITE_CHECKED(server_write, io_arg, u8, svc_layout);
     WRITE_CHECKED(server_write, io_arg, string, &layout->layout_str);
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_common_server_write_inventory(uintptr_t io_arg, const q2proto_svc_inventory_t *inventory)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_inventory);
+    for (int i = 0; i < Q2PROTO_INVENTORY_ITEMS; i++) {
+        WRITE_CHECKED(server_write, io_arg, i16, inventory->inventory[i]);
+    }
+
     return Q2P_ERR_SUCCESS;
 }
 
@@ -291,6 +330,24 @@ q2proto_error_t q2proto_common_server_write_centerprint(uintptr_t io_arg, const 
 {
     WRITE_CHECKED(server_write, io_arg, u8, svc_centerprint);
     WRITE_CHECKED(server_write, io_arg, string, &centerprint->message);
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_common_server_write_packed_direction(uintptr_t io_arg, const float dir[3])
+{
+    int best = 0;
+    if (dir) {
+        float bestd = 0;
+        for (int i = 0; i < NUMVERTEXNORMALS; i++) {
+            float d = dir[0] * bytedirs[i][0] + dir[1] * bytedirs[i][1] + dir[2] * bytedirs[i][2];
+            if (d > bestd) {
+                bestd = d;
+                best = i;
+            }
+        }
+    }
+
+    WRITE_CHECKED(server_write, io_arg, u8, best);
     return Q2P_ERR_SUCCESS;
 }
 

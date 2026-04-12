@@ -56,6 +56,8 @@ Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2repro_init_servercontext(q2proto_s
 
 // Functions to write messages like the rerelease game DLL
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_q2repro_server_write_fog(uintptr_t io_arg, const q2proto_svc_fog_t *fog);
+Q2PROTO_PRIVATE_API q2proto_error_t
+q2proto_q2repro_server_write_muzzleflash2(uintptr_t io_arg, const q2proto_svc_muzzleflash_t *muzzleflash);
 /** @} */
 
 #endif // Q2PROTO_PROTO_Q2REPRO_H_

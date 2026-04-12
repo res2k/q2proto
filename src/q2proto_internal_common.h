@@ -1,6 +1,6 @@
 /*
 Copyright (C) 2003-2024 Andrey Nazarov
-Copyright (C) 2024 Frank Richter
+Copyright (C) 2024-2026 Frank Richter
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -81,6 +81,8 @@ Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_read_packed_direction(
 
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_layout(uintptr_t io_arg,
                                                                        const q2proto_svc_layout_t *layout);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_inventory(uintptr_t io_arg,
+                                                                          const q2proto_svc_inventory_t *inventory);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_nop(uintptr_t io_arg);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_disconnect(uintptr_t io_arg);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_reconnect(uintptr_t io_arg);
@@ -91,10 +93,17 @@ Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_print(uintptr_t 
                                                                       const q2proto_svc_print_t *print);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_stufftext(uintptr_t io_arg,
                                                                           const q2proto_svc_stufftext_t *stufftext);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_muzzleflash(
+    uintptr_t io_arg, uint8_t message, const q2proto_svc_muzzleflash_t *muzzleflash, uint16_t silenced_mask);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_temp_entity_short(
+    uintptr_t io_arg, q2proto_game_api_t game_api, const q2proto_svc_temp_entity_t *temp_entity);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_temp_entity_float(
+    uintptr_t io_arg, q2proto_game_api_t game_api, const q2proto_svc_temp_entity_t *temp_entity);
 Q2PROTO_PRIVATE_API q2proto_error_t
 q2proto_common_server_write_configstring(uintptr_t io_arg, const q2proto_svc_configstring_t *configstring);
 Q2PROTO_PRIVATE_API q2proto_error_t
 q2proto_common_server_write_centerprint(uintptr_t io_arg, const q2proto_svc_centerprint_t *centerprint);
+Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_server_write_packed_direction(uintptr_t io_arg, const float dir[3]);
 
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_write_nop(uintptr_t io_arg);
 Q2PROTO_PRIVATE_API q2proto_error_t q2proto_common_client_write_userinfo(uintptr_t io_arg,
