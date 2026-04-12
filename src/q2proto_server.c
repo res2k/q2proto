@@ -24,6 +24,47 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "q2proto_internal.h"
 
+const char *q2proto_svc_message_str(q2proto_svc_message_type_t type)
+{
+    switch(type)
+    {
+#define S(X)          \
+    case Q2P_SVC_##X: \
+        return #X;
+
+    S(INVALID)
+    S(MUZZLEFLASH)
+    S(MUZZLEFLASH2)
+    S(TEMP_ENTITY)
+    S(NOP)
+    S(DISCONNECT)
+    S(RECONNECT)
+    S(SOUND)
+    S(PRINT)
+    S(STUFFTEXT)
+    S(SERVERDATA)
+    S(CONFIGSTRING)
+    S(SPAWNBASELINE)
+    S(CENTERPRINT)
+    S(DOWNLOAD)
+    S(FRAME)
+    S(INVENTORY)
+    S(LAYOUT)
+    S(FRAME_ENTITY_DELTA)
+    S(SETTING)
+    S(DAMAGE)
+    S(FOG)
+    S(POI)
+    S(HELP_PATH)
+    S(ACHIEVEMENT)
+    S(LOCPRINT)
+
+#undef S
+    }
+
+    return q2proto_va("%d", type);
+}
+
 static int compare_ints(const void *a, const void *b)
 {
     int arg1 = *(const int *)a;

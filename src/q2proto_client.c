@@ -27,6 +27,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <stdlib.h>
 
+const char *q2proto_clc_message_str(q2proto_clc_message_type_t type)
+{
+    switch(type)
+    {
+#define C(X)          \
+    case Q2P_CLC_##X: \
+        return #X;
+
+    C(INVALID)
+    C(NOP)
+    C(MOVE)
+    C(BATCH_MOVE)
+    C(USERINFO)
+    C(STRINGCMD)
+    C(SETTING)
+    C(USERINFO_DELTA)
+
+#undef C
+    }
+
+    return q2proto_va("%d", type);
+}
+
 // Pick "best" accepted protocol from a comma-separated list of protocol versions. Ignore unsupported/invalid versions.
 static void parse_challenge_protocol(q2proto_string_t protos_str, const q2proto_protocol_t *accepted_protocols,
                                      size_t num_accepted_protocols, q2proto_challenge_t *parsed_challenge)

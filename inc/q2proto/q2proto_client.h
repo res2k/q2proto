@@ -36,6 +36,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern "C" {
 #endif
 
+/// Return a string representation of the given server message type. Intended for diagnostic messages.
+Q2PROTO_PUBLIC_API const char *q2proto_clc_message_str(q2proto_clc_message_type_t type);
+
 /**\name Client-side communications
  * @{ */
 /// Parsed challenge string
