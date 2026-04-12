@@ -219,7 +219,7 @@ q2proto_error_t q2proto_common_client_read_packed_direction(uintptr_t io_arg, fl
 {
     uint8_t dir_idx;
     READ_CHECKED(client_read, io_arg, dir_idx, u8);
-    if (dir_idx < 0 || dir_idx >= NUMVERTEXNORMALS)
+    if (dir_idx >= NUMVERTEXNORMALS)
         return Q2P_ERR_BAD_DATA;
     memcpy(dir, bytedirs[dir_idx], sizeof(q2proto_vec3_t));
     return Q2P_ERR_SUCCESS;
