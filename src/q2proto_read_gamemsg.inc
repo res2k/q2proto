@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2024 Frank Richter
+Copyright (C) 2024-2026 Frank Richter
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -255,6 +255,6 @@ READ_SOUND_DECL q2proto_error_t READ_SOUND_NAME(uintptr_t io_arg, q2proto_svc_so
 }
 
 #if defined(_READ_SOUND_DECL_DEFAULTED)
-#undef _READ_TEMP_ENTITY_DECL_DEFAULTED
+#undef _READ_SOUND_DECL_DEFAULTED
 #undef READ_SOUND_DECL
 #endif // _READ_SOUND_DECL_DEFAULTED
