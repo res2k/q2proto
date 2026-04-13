@@ -100,7 +100,11 @@ static void _Q2P_PACK_ENTITY_Q2REPRO_FUNCTION_NAME(const Q2P_PACK_ENTITY_TYPE re
     entity_packed->modelindex4 = (uint16_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, modelindex4);
     entity_packed->frame = (uint16_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, frame);
     entity_packed->skinnum = (uint32_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, skinnum);
-    entity_packed->effects = Q2P_PACK_GET_ENTITY_VALUE(entity_state, effects);
+#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+    entity_packed->effects = (uint64_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, effects);
+#else
+    entity_packed->effects = (uint32_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, effects);
+#endif
     entity_packed->renderfx = (uint32_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, renderfx);
     _Q2P_PACKING_PACK_COORD_VEC_TO_FLOATBITS(entity_packed->origin, Q2P_PACK_GET_ENTITY_VALUE(entity_state, origin));
     _Q2P_PACKING_PACK_ANGLE_VEC_TO_INT(entity_packed->angles, Q2P_PACK_GET_ENTITY_VALUE(entity_state, angles));
