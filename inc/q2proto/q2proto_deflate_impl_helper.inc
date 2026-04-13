@@ -21,8 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "q2proto_deflate_impl_helper.h"
 
 Q2PROTO_DEFLATE_IMPL_HELPER_API void q2proto_deflate_impl_helper_init(q2proto_deflate_impl_helper_args_t *deflate_args,
-                                                              const q2proto_deflate_impl_helper_alloc_t *alloc,
-                                                              void *z_buffer, unsigned long z_buffer_size)
+                                                                      const q2proto_deflate_impl_helper_alloc_t *alloc,
+                                                                      void *z_buffer, unsigned long z_buffer_size)
 {
     memset(deflate_args, 0, sizeof(*deflate_args));
 
