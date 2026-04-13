@@ -979,6 +979,7 @@ static void kex_server_make_player_state_delta(q2proto_servercontext_t *context,
 
 static q2proto_error_t kex_server_write_serverdata(q2proto_servercontext_t *context, uintptr_t io_arg,
                                                    const q2proto_svc_serverdata_t *serverdata);
+static q2proto_error_t kex_server_write_locprint(uintptr_t io_arg, const q2proto_svc_locprint_t *locprint);
 
 static q2proto_error_t kex_server_write(q2proto_servercontext_t *context, uintptr_t io_arg,
                                         const q2proto_svc_message_t *svc_message)
@@ -1042,9 +1043,29 @@ static q2proto_error_t kex_server_write(q2proto_servercontext_t *context, uintpt
         // Usually written by game, but may be needed for demo writing
         return q2proto_common_server_write_layout(io_arg, &svc_message->layout);
 
+    case Q2P_SVC_DAMAGE:
+        // Usually written by game, but may be needed for demo writing
+        return q2proto_q2repro_server_write_damage(io_arg, &svc_message->damage);
+
+    case Q2P_SVC_LOCPRINT:
+        // Usually written by game, but may be needed for demo writing
+        return kex_server_write_locprint(io_arg, &svc_message->locprint);
+
     case Q2P_SVC_FOG:
         // Although typically written by the game, this is useful when writing demos
         return q2proto_q2repro_server_write_fog(io_arg, &svc_message->fog);
+
+    case Q2P_SVC_POI:
+        // Although typically written by the game, this is useful when writing demos
+        return q2proto_q2repro_server_write_poi(io_arg, &svc_message->poi);
+
+    case Q2P_SVC_HELP_PATH:
+        // Although typically written by the game, this is useful when writing demos
+        return q2proto_q2repro_server_write_help_path(io_arg, &svc_message->help_path);
+
+    case Q2P_SVC_ACHIEVEMENT:
+        // Although typically written by the game, this is useful when writing demos
+        return q2proto_q2repro_server_write_achievement(io_arg, &svc_message->achievement);
 
     default:
         break;
@@ -1064,6 +1085,17 @@ static q2proto_error_t kex_server_write_serverdata(q2proto_servercontext_t *cont
     WRITE_CHECKED(server_write, io_arg, string, &serverdata->gamedir);
     WRITE_CHECKED(server_write, io_arg, i16, serverdata->clientnum);
     WRITE_CHECKED(server_write, io_arg, string, &serverdata->levelname);
+    return Q2P_ERR_SUCCESS;
+}
+
+static q2proto_error_t kex_server_write_locprint(uintptr_t io_arg, const q2proto_svc_locprint_t *locprint)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_rr_locprint);
+    WRITE_CHECKED(server_write, io_arg, u8, locprint->flags);
+    WRITE_CHECKED(server_write, io_arg, string, &locprint->base);
+    WRITE_CHECKED(server_write, io_arg, u8, locprint->num_args);
+    for (int i = 0; i < locprint->num_args; i++)
+        WRITE_CHECKED(server_write, io_arg, string, &locprint->args[i]);
     return Q2P_ERR_SUCCESS;
 }
 

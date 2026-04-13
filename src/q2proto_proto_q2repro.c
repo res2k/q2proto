@@ -1714,9 +1714,25 @@ static q2proto_error_t q2repro_server_write(q2proto_servercontext_t *context, ui
         // Although typically written by the game, this is useful when writing demos
         return q2proto_common_server_write_layout(io_arg, &svc_message->layout);
 
+    case Q2P_SVC_DAMAGE:
+        // Usually written by game, but may be needed for demo writing
+        return q2proto_q2repro_server_write_damage(io_arg, &svc_message->damage);
+
     case Q2P_SVC_FOG:
         // Although typically written by the game, this is useful when writing demos
         return q2proto_q2repro_server_write_fog(io_arg, &svc_message->fog);
+
+    case Q2P_SVC_POI:
+        // Although typically written by the game, this is useful when writing demos
+        return q2proto_q2repro_server_write_poi(io_arg, &svc_message->poi);
+
+    case Q2P_SVC_HELP_PATH:
+        // Although typically written by the game, this is useful when writing demos
+        return q2proto_q2repro_server_write_help_path(io_arg, &svc_message->help_path);
+
+    case Q2P_SVC_ACHIEVEMENT:
+        // Although typically written by the game, this is useful when writing demos
+        return q2proto_q2repro_server_write_achievement(io_arg, &svc_message->achievement);
 
     default:
         break;
@@ -2242,6 +2258,30 @@ static q2proto_error_t q2repro_server_write_frame_entity_delta(
                                                            &frame_entity_delta->entity_delta);
 }
 
+q2proto_error_t q2proto_q2repro_server_write_damage(uintptr_t io_arg, const q2proto_svc_damage_t *damage)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_rr_damage);
+    WRITE_CHECKED(server_write, io_arg, u8, damage->count);
+    for (unsigned int i = 0; i < damage->count; i++) {
+        uint8_t encoded_damage = 0;
+        encoded_damage = damage->damage[i].damage & 0x1f;
+        if (damage->damage[i].health)
+            encoded_damage |= 0x20;
+        if (damage->damage[i].armor)
+            encoded_damage |= 0x40;
+        if (damage->damage[i].shield)
+            encoded_damage |= 0x80;
+        WRITE_CHECKED(server_write, io_arg, u8, encoded_damage);
+        CHECKED(server_write, io_arg,
+                q2proto_common_server_write_packed_direction(io_arg, damage->damage[i].direction));
+
+        if (i >= Q2PROTO_MAX_DAMAGE_INDICATORS)
+            break;
+    }
+
+    return Q2P_ERR_SUCCESS;
+}
+
 q2proto_error_t q2proto_q2repro_server_write_fog(uintptr_t io_arg, const q2proto_svc_fog_t *fog)
 {
     WRITE_CHECKED(server_write, io_arg, u8, svc_rr_fog);
@@ -2339,6 +2379,36 @@ q2proto_error_t q2proto_q2repro_server_write_muzzleflash2(uintptr_t io_arg,
         WRITE_CHECKED(server_write, io_arg, u16, muzzleflash->weapon);
     else
         WRITE_CHECKED(server_write, io_arg, u8, muzzleflash->weapon);
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_q2repro_server_write_poi(uintptr_t io_arg, const q2proto_svc_poi_t *poi)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_rr_poi);
+    WRITE_CHECKED(server_write, io_arg, u16, poi->key);
+    WRITE_CHECKED(server_write, io_arg, u16, poi->time);
+    CHECKED(server_write, io_arg, server_write_float_coord(io_arg, poi->pos));
+    WRITE_CHECKED(server_write, io_arg, u16, poi->image);
+    WRITE_CHECKED(server_write, io_arg, u8, poi->color);
+    WRITE_CHECKED(server_write, io_arg, u8, poi->flags);
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_q2repro_server_write_help_path(uintptr_t io_arg, const q2proto_svc_help_path_t *help_path)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_rr_help_path);
+    WRITE_CHECKED(server_write, io_arg, u8, help_path->start);
+    CHECKED(server_write, io_arg, server_write_float_coord(io_arg, help_path->pos));
+    CHECKED(server_write, io_arg,
+            q2proto_common_server_write_packed_direction(io_arg, help_path->dir));
+    return Q2P_ERR_SUCCESS;
+}
+
+q2proto_error_t q2proto_q2repro_server_write_achievement(uintptr_t io_arg,
+                                                         const q2proto_svc_achievement_t *achievement)
+{
+    WRITE_CHECKED(server_write, io_arg, u8, svc_rr_achievement);
+    WRITE_CHECKED(server_write, io_arg, string, &achievement->id);
     return Q2P_ERR_SUCCESS;
 }
 
