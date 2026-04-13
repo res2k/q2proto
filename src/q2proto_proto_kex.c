@@ -1352,7 +1352,7 @@ static q2proto_error_t kex_server_write_entity_state_delta(q2proto_servercontext
 {
     uint64_t bits = 0;
 
-    unsigned origin_changes = q2proto_maybe_diff_coords_write_differs_int(&entity_state_delta->origin);
+    unsigned origin_changes = q2proto_maybe_diff_coords_write_differs_float(&entity_state_delta->origin);
     if (origin_changes & BIT(0))
         bits |= U_ORIGIN1;
     if (origin_changes & BIT(1))
@@ -1368,7 +1368,7 @@ static q2proto_error_t kex_server_write_entity_state_delta(q2proto_servercontext
         bits |= U_ANGLE3;
 
     if (entity_state_delta->delta_bits & Q2P_ESD_SKINNUM)
-        bits |= q2proto_common_choose_width_flags(entity_state_delta->skinnum, U_SKIN8, U_SKIN16, true);
+        bits |= q2proto_common_choose_width_flags(entity_state_delta->skinnum, U_SKIN8, U_SKIN16, false);
 
     if (entity_state_delta->delta_bits & Q2P_ESD_FRAME) {
         if (entity_state_delta->frame >= 256)
@@ -1381,14 +1381,14 @@ static q2proto_error_t kex_server_write_entity_state_delta(q2proto_servercontext
 #if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
         if (entity_state_delta->effects_more != 0) {
             bits |= U_KEX_EFFECTS64;
-            bits |= q2proto_common_choose_width_flags(entity_state_delta->effects_more, U_EFFECTS8, U_EFFECTS16, true);
+            bits |= q2proto_common_choose_width_flags(entity_state_delta->effects_more, U_EFFECTS8, U_EFFECTS16, false);
         } else
 #endif
-            bits |= q2proto_common_choose_width_flags(entity_state_delta->effects, U_EFFECTS8, U_EFFECTS16, true);
+            bits |= q2proto_common_choose_width_flags(entity_state_delta->effects, U_EFFECTS8, U_EFFECTS16, false);
     }
 
     if (entity_state_delta->delta_bits & Q2P_ESD_RENDERFX)
-        bits |= q2proto_common_choose_width_flags(entity_state_delta->renderfx, U_RENDERFX8, U_RENDERFX16, true);
+        bits |= q2proto_common_choose_width_flags(entity_state_delta->renderfx, U_RENDERFX8, U_RENDERFX16, false);
 
     if (entity_state_delta->delta_bits & Q2P_ESD_SOLID)
         bits |= U_SOLID;
@@ -1421,6 +1421,12 @@ static q2proto_error_t kex_server_write_entity_state_delta(q2proto_servercontext
 
     if (entity_state_delta->delta_bits & Q2P_ESD_SCALE)
         bits |= U_SCALE;
+
+    /* WORKAROUND for KEX engine bug:
+     * apparently the lower 32 bits of the entity bits are treated as _signed_,
+     * so having U_MOREBITS4 set means _any_ of the bits past 32 end up being set... */
+    if (bits >= 0x100000000ull)
+        bits |= 0xff00000000ull;
 
     //----------
 
@@ -1566,6 +1572,35 @@ static q2proto_error_t kex_server_write_entity_state_delta(q2proto_servercontext
     if (bits & U_SCALE)
         WRITE_CHECKED(server_write, io_arg, u8, scale);
 
+    if (bits & U_KEX_INSTANCE) {
+        // FIXME
+        uint8_t instance_bits = 0;
+        WRITE_CHECKED(server_write, io_arg, u8, instance_bits);
+    }
+
+    if (bits & U_KEX_OWNER) {
+        // FIXME
+        uint16_t owner = 0;
+        WRITE_CHECKED(server_write, io_arg, u16, owner);
+    }
+
+    if (bits & U_KEX_OLDFRAME) {
+        // FIXME
+        uint16_t oldframe = 0;
+        WRITE_CHECKED(server_write, io_arg, u16, oldframe);
+    }
+
+    return Q2P_ERR_SUCCESS;
+}
+
+static q2proto_error_t kex_server_write_spawnbaseline_content(q2proto_servercontext_t *context, uintptr_t io_arg,
+                                                              const q2proto_svc_spawnbaseline_t *spawnbaseline)
+{
+    CHECKED(server_write, io_arg,
+            kex_server_write_entity_state_delta(context, io_arg, spawnbaseline->entnum, &spawnbaseline->delta_state,
+                                                false));
+    bool nonzero_solid = q2proto_get_entity_bit(context->kex_demo_edict_nonzero_solid, spawnbaseline->entnum);
+    q2proto_set_entity_bit(context->kex_demo_baseline_nonzero_solid, spawnbaseline->entnum, nonzero_solid);
     return Q2P_ERR_SUCCESS;
 }
 
@@ -1573,12 +1608,7 @@ static q2proto_error_t kex_server_write_spawnbaseline(q2proto_servercontext_t *c
                                                       const q2proto_svc_spawnbaseline_t *spawnbaseline)
 {
     WRITE_CHECKED(server_write, io_arg, u8, svc_spawnbaseline);
-    CHECKED(server_write, io_arg,
-            kex_server_write_entity_state_delta(context, io_arg, spawnbaseline->entnum, &spawnbaseline->delta_state,
-                                                false));
-    bool nonzero_solid = q2proto_get_entity_bit(context->kex_demo_edict_nonzero_solid, spawnbaseline->entnum);
-    q2proto_set_entity_bit(context->kex_demo_baseline_nonzero_solid, spawnbaseline->entnum, nonzero_solid);
-    return Q2P_ERR_SUCCESS;
+    return kex_server_write_spawnbaseline_content(context, io_arg, spawnbaseline);
 }
 
 static q2proto_error_t kex_server_write_playerstate(q2proto_servercontext_t *context, uintptr_t io_arg,
@@ -1588,9 +1618,9 @@ static q2proto_error_t kex_server_write_playerstate(q2proto_servercontext_t *con
 
     if (playerstate->delta_bits & Q2P_PSD_PM_TYPE)
         flags |= PS_M_TYPE;
-    if (q2proto_maybe_diff_coords_write_differs_int(&playerstate->pm_origin) != 0)
+    if (q2proto_maybe_diff_coords_write_differs_float(&playerstate->pm_origin) != 0)
         flags |= PS_M_ORIGIN;
-    if (q2proto_maybe_diff_coords_write_differs_int(&playerstate->pm_velocity) != 0)
+    if (q2proto_maybe_diff_coords_write_differs_float(&playerstate->pm_velocity) != 0)
         flags |= PS_M_VELOCITY;
     if (playerstate->delta_bits & Q2P_PSD_PM_TIME)
         flags |= PS_M_TIME;
@@ -1984,9 +2014,9 @@ static q2proto_error_t kex_server_write_gamestate_blast(q2proto_servercontext_t 
                 return result;
             }
 
-            CHECKED(server_write, deflate_io_arg,
-                    kex_server_write_entity_state_delta(context, deflate_io_arg, baseline->entnum,
-                                                        &baseline->delta_state, false));
+            CHECKED_IO(server_write, deflate_io_arg,
+                       kex_server_write_spawnbaseline_content(context, deflate_io_arg, baseline),
+                       "write spawnbaseline");
             context->gamestate_pos++;
         }
         q2proto_error_t result = kex_blast_end(io_arg, deflate_io_arg, svc_rr_spawnbaselineblast);
