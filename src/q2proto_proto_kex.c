@@ -1060,6 +1060,7 @@ static q2proto_error_t kex_server_write_serverdata(q2proto_servercontext_t *cont
     WRITE_CHECKED(server_write, io_arg, i32, serverdata->protocol);
     WRITE_CHECKED(server_write, io_arg, i32, serverdata->servercount);
     WRITE_CHECKED(server_write, io_arg, u8, serverdata->attractloop);
+    WRITE_CHECKED(server_write, io_arg, u8, serverdata->server_fps);
     WRITE_CHECKED(server_write, io_arg, string, &serverdata->gamedir);
     WRITE_CHECKED(server_write, io_arg, i16, serverdata->clientnum);
     WRITE_CHECKED(server_write, io_arg, string, &serverdata->levelname);
