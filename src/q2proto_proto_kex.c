@@ -50,7 +50,7 @@ q2proto_error_t q2proto_kex_continue_serverdata(q2proto_clientcontext_t *context
 
     READ_CHECKED(client_read, io_arg, serverdata->servercount, i32);
     READ_CHECKED(client_read, io_arg, serverdata->attractloop, bool);
-    READ_CHECKED(client_read, io_arg, serverdata->kex.server_fps, u8);
+    READ_CHECKED(client_read, io_arg, serverdata->server_fps, u8);
     READ_CHECKED(client_read, io_arg, serverdata->gamedir, string);
     READ_CHECKED(client_read, io_arg, serverdata->clientnum, i16);
     if (serverdata->clientnum == -2)

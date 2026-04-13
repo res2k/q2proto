@@ -295,6 +295,8 @@ typedef struct q2proto_svc_serverdata_s {
     uint16_t protocol_version;
     /// R1Q2, Q2PRO: strafejump hack enabled
     bool strafejump_hack;
+    /// Q2rePRO, KEX: Server update rate
+    uint8_t server_fps;
 
     /// R1Q2 specific serverdata
     struct {
@@ -326,8 +328,6 @@ typedef struct q2proto_svc_serverdata_s {
 
     /// Q2rePRO specific serverdata
     struct {
-        /// Server update rate
-        uint8_t server_fps;
         /**
          * game3 compatibility flag
          * Note: It's recommended you let q2proto_server_fill_serverdata() set this flag
@@ -335,12 +335,6 @@ typedef struct q2proto_svc_serverdata_s {
          */
         bool game3_compat;
     } q2repro;
-
-    /// KEX specific serverdata
-    struct {
-        /// Server update rate
-        uint8_t server_fps;
-    } kex;
 } q2proto_svc_serverdata_t;
 
 /// Rerelease fog, global part

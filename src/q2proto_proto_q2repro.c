@@ -141,12 +141,12 @@ q2proto_error_t q2proto_q2repro_continue_serverdata(q2proto_clientcontext_t *con
     serverdata->q2pro.extensions = q2repro_flags & Q2PRO_PF_EXTENSIONS;
     serverdata->q2pro.extensions_v2 = q2repro_flags & Q2PRO_PF_EXTENSIONS_2;
     serverdata->q2repro.game3_compat = q2repro_flags & Q2REPRO_PF_GAME3_COMPAT;
-    READ_CHECKED(client_read, io_arg, serverdata->q2repro.server_fps, u8);
+    READ_CHECKED(client_read, io_arg, serverdata->server_fps, u8);
     if (serverdata->attractloop) {
         /* HACK: server_fps for demos was computed using floating point math,
          * leading to some rounding errors.
          * Round FPS to nearest multiple of 10 */
-        serverdata->q2repro.server_fps = (((int)serverdata->q2repro.server_fps + 5) / 10) * 10;
+        serverdata->server_fps = (((int)serverdata->server_fps + 5) / 10) * 10;
     }
 
     context->client_read = q2repro_client_read;
@@ -1751,7 +1751,7 @@ static q2proto_error_t q2repro_server_write_serverdata(q2proto_servercontext_t *
     if (serverdata->q2repro.game3_compat)
         q2pro_flags |= Q2REPRO_PF_GAME3_COMPAT;
     WRITE_CHECKED(client_read, io_arg, u16, q2pro_flags);
-    WRITE_CHECKED(server_write, io_arg, u8, serverdata->q2repro.server_fps);
+    WRITE_CHECKED(server_write, io_arg, u8, serverdata->server_fps);
     return Q2P_ERR_SUCCESS;
 }
 
