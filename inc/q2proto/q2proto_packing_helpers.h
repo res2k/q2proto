@@ -72,16 +72,32 @@ static inline void _q2p_packing_coord_float_to_floatbits(int32_t *packed_coord, 
     packed_coord[2] = _q2proto_valenc_float2bits(src[2]);
 }
 
-static inline void _q2p_packing_angle_short_to_int(int16_t *dest, const int16_t *src)
+static inline void _q2p_packing_angle_short_to_int(int32_t *dest, const int16_t *src)
 {
-    memcpy(dest, src, sizeof(int16_t) * 3);
+    dest[0] = src[0];
+    dest[1] = src[1];
+    dest[2] = src[2];
 }
 
-static inline void _q2p_packing_angle_float_to_int(int16_t *dest, const float *src)
+static inline void _q2p_packing_angle_float_to_int(int32_t *dest, const float *src)
 {
     dest[0] = _q2proto_valenc_angle2short(src[0]);
     dest[1] = _q2proto_valenc_angle2short(src[1]);
     dest[2] = _q2proto_valenc_angle2short(src[2]);
+}
+
+static inline void _q2p_packing_angle_short_to_floatbits(int32_t *dest, const int16_t *src)
+{
+    dest[0] = _q2proto_valenc_float2bits(_q2proto_valenc_short2angle(src[0]));
+    dest[1] = _q2proto_valenc_float2bits(_q2proto_valenc_short2angle(src[1]));
+    dest[2] = _q2proto_valenc_float2bits(_q2proto_valenc_short2angle(src[2]));
+}
+
+static inline void _q2p_packing_angle_float_to_floatbits(int32_t *dest, const float *src)
+{
+    dest[0] = _q2proto_valenc_float2bits(src[0]);
+    dest[1] = _q2proto_valenc_float2bits(src[1]);
+    dest[2] = _q2proto_valenc_float2bits(src[2]);
 }
 
 // Helper macro: pack an input coordinate, based on returned data type, to encoded integer
@@ -101,6 +117,11 @@ static inline void _q2p_packing_angle_float_to_int(int16_t *dest, const float *s
     _Generic((SOURCE),                                                                     \
         const int16_t *: _q2p_packing_angle_short_to_int(DEST, (const int16_t *)(SOURCE)), \
         const float *: _q2p_packing_angle_float_to_int(DEST, (const float *)(SOURCE)))
+// Helper macro: pack an input angle, based on returned data type, to raw float
+#define _Q2P_PACKING_PACK_ANGLE_VEC_TO_FLOATBITS(DEST, SOURCE)                                   \
+    _Generic((SOURCE),                                                                           \
+        const int16_t *: _q2p_packing_angle_short_to_floatbits(DEST, (const int16_t *)(SOURCE)), \
+        const float *: _q2p_packing_angle_float_to_floatbits(DEST, (const float *)(SOURCE)))
 
 #if defined(__cplusplus)
 } // extern "C"

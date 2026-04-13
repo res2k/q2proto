@@ -56,6 +56,7 @@ void Q2P_PACK_ENTITY_FUNCTION_NAME(q2proto_servercontext_t *context, const Q2P_P
 
 #define _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME _Q2PROTO_PACKING_NAME(Q2P_PACK_ENTITY_FUNCTION_NAME, _int)
 #define _Q2P_PACK_ENTITY_Q2REPRO_FUNCTION_NAME _Q2PROTO_PACKING_NAME(Q2P_PACK_ENTITY_FUNCTION_NAME, _float)
+#define _Q2P_PACK_ENTITY_KEX_FUNCTION_NAME     _Q2PROTO_PACKING_NAME(Q2P_PACK_ENTITY_FUNCTION_NAME, _kex)
 
 static void _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME(const Q2P_PACK_ENTITY_TYPE restrict entity_state,
                                                    q2proto_game_api_t game_api,
@@ -123,6 +124,40 @@ static void _Q2P_PACK_ENTITY_Q2REPRO_FUNCTION_NAME(const Q2P_PACK_ENTITY_TYPE re
 #endif
 }
 
+static void _Q2P_PACK_ENTITY_KEX_FUNCTION_NAME(const Q2P_PACK_ENTITY_TYPE restrict entity_state,
+                                               q2proto_packed_entity_state_t *restrict entity_packed)
+{
+    memset(entity_packed, 0, sizeof(*entity_packed));
+
+    entity_packed->modelindex = (uint16_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, modelindex);
+    entity_packed->modelindex2 = (uint16_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, modelindex2);
+    entity_packed->modelindex3 = (uint16_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, modelindex3);
+    entity_packed->modelindex4 = (uint16_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, modelindex4);
+    entity_packed->frame = (uint16_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, frame);
+    entity_packed->skinnum = (uint32_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, skinnum);
+#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+    entity_packed->effects = (uint64_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, effects);
+#else
+    entity_packed->effects = (uint32_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, effects);
+#endif
+    entity_packed->renderfx = (uint32_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, renderfx);
+    _Q2P_PACKING_PACK_COORD_VEC_TO_FLOATBITS(entity_packed->origin, Q2P_PACK_GET_ENTITY_VALUE(entity_state, origin));
+    _Q2P_PACKING_PACK_ANGLE_VEC_TO_FLOATBITS(entity_packed->angles, Q2P_PACK_GET_ENTITY_VALUE(entity_state, angles));
+    _Q2P_PACKING_PACK_COORD_VEC_TO_FLOATBITS(entity_packed->old_origin,
+                                             Q2P_PACK_GET_ENTITY_VALUE(entity_state, old_origin));
+    entity_packed->sound = (uint16_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, sound);
+    entity_packed->event = (uint8_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, event);
+    entity_packed->solid = (uint32_t)Q2P_PACK_GET_ENTITY_VALUE(entity_state, solid);
+#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+    entity_packed->loop_volume =
+        _q2proto_valenc_entity_loop_volume2byte(Q2P_PACK_GET_ENTITY_VALUE(entity_state, loop_volume));
+    entity_packed->loop_attenuation =
+        q2proto_sound_encode_loop_attenuation(Q2P_PACK_GET_ENTITY_VALUE(entity_state, loop_attenuation));
+    entity_packed->alpha = _q2proto_valenc_entityalpha2byte(Q2P_PACK_GET_ENTITY_VALUE(entity_state, alpha));
+    entity_packed->scale = _q2proto_valenc_entityscale2byte(Q2P_PACK_GET_ENTITY_VALUE(entity_state, scale));
+#endif
+}
+
 void Q2P_PACK_ENTITY_FUNCTION_NAME(q2proto_servercontext_t *context, const Q2P_PACK_ENTITY_TYPE entity_state,
                                    q2proto_packed_entity_state_t *entity_packed)
 {
@@ -134,12 +169,16 @@ void Q2P_PACK_ENTITY_FUNCTION_NAME(q2proto_servercontext_t *context, const Q2P_P
     case _Q2P_PACKING_REPRO:
         _Q2P_PACK_ENTITY_Q2REPRO_FUNCTION_NAME(entity_state, entity_packed);
         return;
+    case _Q2P_PACKING_KEX:
+        _Q2P_PACK_ENTITY_KEX_FUNCTION_NAME(entity_state, entity_packed);
+        return;
     }
     _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME(entity_state, game_api, entity_packed);
 }
 
 #undef _Q2P_PACK_ENTITY_VANILLA_FUNCTION_NAME
 #undef _Q2P_PACK_ENTITY_Q2REPRO_FUNCTION_NAME
+#undef _Q2P_PACK_ENTITY_KEX_FUNCTION_NAME
 
 #if defined(_Q2P_PACK_GET_ENTITY_VALUE_DEFAULTED)
     #undef _Q2P_PACK_GET_ENTITY_VALUE_DEFAULTED

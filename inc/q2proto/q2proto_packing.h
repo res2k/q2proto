@@ -41,7 +41,7 @@ typedef struct q2proto_packed_entity_state_s {
 #endif
     uint32_t renderfx;
     int32_t origin[3];
-    int16_t angles[3];
+    int32_t angles[3];
     int32_t old_origin[3];
     uint16_t sound;
 #if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
@@ -64,20 +64,20 @@ typedef struct q2proto_packed_player_state_s {
     uint16_t pm_time;
     uint16_t pm_flags;
     int16_t pm_gravity;
-    int16_t pm_delta_angles[3];
+    int32_t pm_delta_angles[3];
 #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
     int8_t pm_viewheight;
 #endif
     int16_t viewoffset[3];
-    int16_t viewangles[3];
+    int32_t viewangles[3];
     int16_t kick_angles[3];
     uint16_t gunindex;
 #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
     uint8_t gunskin;
 #endif
     uint16_t gunframe;
-    int16_t gunoffset[3];
-    int16_t gunangles[3];
+    int32_t gunoffset[3];
+    int32_t gunangles[3];
 #if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
     uint8_t gunrate;
 #endif
@@ -141,6 +141,8 @@ typedef enum _q2proto_packing_flavor_e {
     _Q2P_PACKING_VANILLA = 0,
     // Pack for q2repro protocol
     _Q2P_PACKING_REPRO = 1,
+    // Pack for KEX protocol
+    _Q2P_PACKING_KEX = 2,
 } _q2proto_packing_flavor_t;
 
 // Call actual entity packing function

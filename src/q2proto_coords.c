@@ -151,6 +151,12 @@ void q2proto_var_angles_set_float_comp(q2proto_var_angles_t *angle, int comp, fl
     set_var_angles_comp_type(angle, comp, VAR_ANGLES_TYPE_FLOAT);
 }
 
+void q2proto_var_angles_set_int_comp(q2proto_var_angles_t *angle, int comp, int i)
+{
+    angle->comps[comp].s = i & 0xffff;
+    set_var_angles_comp_type(angle, comp, VAR_ANGLES_TYPE_SHORT);
+}
+
 void q2proto_var_angles_set_short_comp(q2proto_var_angles_t *angle, int comp, int16_t s)
 {
     angle->comps[comp].s = s;

@@ -92,6 +92,7 @@ void Q2P_PACK_PLAYER_FUNCTION_NAME(q2proto_servercontext_t *context, const Q2P_P
 
 #define _Q2P_PACK_PLAYER_VANILLA_FUNCTION_NAME _Q2PROTO_PACKING_NAME(Q2P_PACK_PLAYER_FUNCTION_NAME, _int)
 #define _Q2P_PACK_PLAYER_Q2REPRO_FUNCTION_NAME _Q2PROTO_PACKING_NAME(Q2P_PACK_PLAYER_FUNCTION_NAME, _float)
+#define _Q2P_PACK_PLAYER_KEX_FUNCTION_NAME     _Q2PROTO_PACKING_NAME(Q2P_PACK_PLAYER_FUNCTION_NAME, _kex)
 
 // Pack a player state a for Vanilla, R1Q2, Q2PRO, Q2PRO extended - they're relatively similar and can be handled with a
 // single function.
@@ -240,6 +241,68 @@ static void _Q2P_PACK_PLAYER_Q2REPRO_FUNCTION_NAME(const Q2P_PACK_PLAYER_TYPE re
 #endif
 }
 
+static void _Q2P_PACK_PLAYER_KEX_FUNCTION_NAME(const Q2P_PACK_PLAYER_TYPE restrict player_state,
+                                               q2proto_packed_player_state_t *restrict player_packed)
+{
+    memset(player_packed, 0, sizeof(*player_packed));
+
+    player_packed->pm_type = Q2P_PACK_GET_PLAYER_PMOVE_VALUE(player_state, pm_type);
+    _Q2P_PACKING_PACK_COORD_VEC_TO_FLOATBITS(player_packed->pm_origin,
+                                             Q2P_PACK_GET_PLAYER_PMOVE_VALUE(player_state, origin));
+    _Q2P_PACKING_PACK_COORD_VEC_TO_FLOATBITS(player_packed->pm_velocity,
+                                             Q2P_PACK_GET_PLAYER_PMOVE_VALUE(player_state, velocity));
+    player_packed->pm_time = Q2P_PACK_GET_PLAYER_PMOVE_VALUE(player_state, pm_time);
+    player_packed->pm_flags = Q2P_PACK_GET_PLAYER_PMOVE_VALUE(player_state, pm_flags);
+    player_packed->pm_gravity = Q2P_PACK_GET_PLAYER_PMOVE_VALUE(player_state, gravity);
+    _Q2P_PACKING_PACK_ANGLE_VEC_TO_FLOATBITS(player_packed->pm_delta_angles,
+                                             Q2P_PACK_GET_PLAYER_PMOVE_VALUE(player_state, delta_angles));
+    const float *viewoffset = Q2P_PACK_GET_PLAYER_VALUE(player_state, viewoffset);
+    player_packed->viewoffset[0] = _q2proto_valenc_q2repro_viewoffset2short(viewoffset[0]);
+    player_packed->viewoffset[1] = _q2proto_valenc_q2repro_viewoffset2short(viewoffset[1]);
+    player_packed->viewoffset[2] = _q2proto_valenc_q2repro_viewoffset2short(viewoffset[2]);
+    const float *viewangles = Q2P_PACK_GET_PLAYER_VALUE(player_state, viewangles);
+    player_packed->viewangles[0] = _q2proto_valenc_float2bits(viewangles[0]);
+    player_packed->viewangles[1] = _q2proto_valenc_float2bits(viewangles[1]);
+    player_packed->viewangles[2] = _q2proto_valenc_float2bits(viewangles[2]);
+    const float *kick_angles = Q2P_PACK_GET_PLAYER_VALUE(player_state, kick_angles);
+    player_packed->kick_angles[0] = _q2proto_valenc_q2repro_kick_angle2short(kick_angles[0]);
+    player_packed->kick_angles[1] = _q2proto_valenc_q2repro_kick_angle2short(kick_angles[1]);
+    player_packed->kick_angles[2] = _q2proto_valenc_q2repro_kick_angle2short(kick_angles[2]);
+    player_packed->gunindex = (int16_t)Q2P_PACK_GET_PLAYER_VALUE(player_state, gunindex);
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+    player_packed->gunskin = (int8_t)Q2P_PACK_GET_PLAYER_VALUE(player_state, gunskin);
+#endif
+    player_packed->gunframe = (uint8_t)Q2P_PACK_GET_PLAYER_VALUE(player_state, gunframe);
+    const float *gunoffset = Q2P_PACK_GET_PLAYER_VALUE(player_state, gunoffset);
+    player_packed->gunoffset[0] = _q2proto_valenc_float2bits(gunoffset[0]);
+    player_packed->gunoffset[1] = _q2proto_valenc_float2bits(gunoffset[1]);
+    player_packed->gunoffset[2] = _q2proto_valenc_float2bits(gunoffset[2]);
+    const float *gunangles = Q2P_PACK_GET_PLAYER_VALUE(player_state, gunangles);
+    player_packed->gunangles[0] = _q2proto_valenc_float2bits(gunangles[0]);
+    player_packed->gunangles[1] = _q2proto_valenc_float2bits(gunangles[1]);
+    player_packed->gunangles[2] = _q2proto_valenc_float2bits(gunangles[2]);
+    const float *blend = Q2P_PACK_GET_PLAYER_VALUE(player_state, blend);
+    player_packed->blend[0] = _q2proto_valenc_color2byte(blend[0]);
+    player_packed->blend[1] = _q2proto_valenc_color2byte(blend[1]);
+    player_packed->blend[2] = _q2proto_valenc_color2byte(blend[2]);
+    player_packed->blend[3] = _q2proto_valenc_color2byte(blend[3]);
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+    const float *damage_blend = Q2P_PACK_GET_PLAYER_VALUE(player_state, damage_blend);
+    player_packed->damage_blend[0] = _q2proto_valenc_color2byte(damage_blend[0]);
+    player_packed->damage_blend[1] = _q2proto_valenc_color2byte(damage_blend[1]);
+    player_packed->damage_blend[2] = _q2proto_valenc_color2byte(damage_blend[2]);
+    player_packed->damage_blend[3] = _q2proto_valenc_color2byte(damage_blend[3]);
+#endif
+    player_packed->fov = (uint8_t)Q2P_PACK_GET_PLAYER_VALUE(player_state, fov);
+    player_packed->rdflags = (uint8_t)Q2P_PACK_GET_PLAYER_VALUE(player_state, rdflags);
+    const int16_t *stats = Q2P_PACK_GET_PLAYER_VALUE(player_state, stats);
+    memcpy(&player_packed->stats, stats, sizeof(int16_t) * Q2P_PACK_PLAYER_STATS_NUM(player_state));
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
+    player_packed->gunrate = (uint8_t)Q2P_PACK_GET_PLAYER_VALUE(player_state, gunrate);
+    player_packed->pm_viewheight = Q2P_PACK_GET_PLAYER_PMOVE_VALUE(player_state, viewheight);
+#endif
+}
+
 void Q2P_PACK_PLAYER_FUNCTION_NAME(q2proto_servercontext_t *context, const Q2P_PACK_PLAYER_TYPE player_state,
                                    q2proto_packed_player_state_t *player_packed)
 {
@@ -250,6 +313,9 @@ void Q2P_PACK_PLAYER_FUNCTION_NAME(q2proto_servercontext_t *context, const Q2P_P
     case _Q2P_PACKING_REPRO:
         _Q2P_PACK_PLAYER_Q2REPRO_FUNCTION_NAME(player_state, player_packed);
         return;
+    case _Q2P_PACKING_KEX:
+        _Q2P_PACK_PLAYER_KEX_FUNCTION_NAME(player_state, player_packed);
+        return;
     }
     _Q2P_PACK_PLAYER_VANILLA_FUNCTION_NAME(player_state, player_packed);
 }
@@ -257,6 +323,7 @@ void Q2P_PACK_PLAYER_FUNCTION_NAME(q2proto_servercontext_t *context, const Q2P_P
 
 #undef _Q2P_PACK_PLAYER_VANILLA_FUNCTION_NAME
 #undef _Q2P_PACK_PLAYER_Q2REPRO_FUNCTION_NAME
+#undef _Q2P_PACK_PLAYER_KEX_FUNCTION_NAME
 
 #if defined(_Q2P_PACK_GET_PLAYER_VALUE_DEFAULTED)
     #undef _Q2P_PACK_GET_PLAYER_VALUE_DEFAULTED

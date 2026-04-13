@@ -965,8 +965,111 @@ static void kex_server_make_entity_state_delta(q2proto_servercontext_t *context,
                                                const q2proto_packed_entity_state_t *to, bool write_old_origin,
                                                q2proto_entity_state_delta_t *delta)
 {
-    q2proto_packing_make_entity_state_delta(from, to, write_old_origin,
-                                            context->server_info->game_api != Q2PROTO_GAME_VANILLA, delta);
+    memset(delta, 0, sizeof(*delta));
+
+    if (!from)
+        from = &q2proto_null_packed_entity_state;
+
+    for (int c = 0; c < 3; c++) {
+        q2proto_var_coords_set_float_comp(&delta->origin.write.prev, c, _q2proto_valenc_bits2float(from->origin[c]));
+        q2proto_var_coords_set_float_comp(&delta->origin.write.current, c, _q2proto_valenc_bits2float(to->origin[c]));
+    }
+
+    for (int c = 0; c < 3; c++) {
+        if (to->angles[c] != from->angles[c])
+            delta->angle.delta_bits |= BIT(c);
+        q2proto_var_angles_set_float_comp(&delta->angle.values, c, _q2proto_valenc_bits2float(to->angles[c]));
+    }
+
+    if (write_old_origin) {
+        delta->delta_bits |= Q2P_ESD_OLD_ORIGIN;
+        q2proto_var_coords_set_float_comp(&delta->old_origin, 0, _q2proto_valenc_bits2float(to->old_origin[0]));
+        q2proto_var_coords_set_float_comp(&delta->old_origin, 1, _q2proto_valenc_bits2float(to->old_origin[1]));
+        q2proto_var_coords_set_float_comp(&delta->old_origin, 2, _q2proto_valenc_bits2float(to->old_origin[2]));
+    }
+
+    if (to->skinnum != from->skinnum) {
+        delta->delta_bits |= Q2P_ESD_SKINNUM;
+        delta->skinnum = to->skinnum;
+    }
+
+    if (to->frame != from->frame) {
+        delta->delta_bits |= Q2P_ESD_FRAME;
+        delta->frame = to->frame;
+    }
+
+    if (to->effects != from->effects) {
+        if ((uint32_t)to->effects != (uint32_t)from->effects)
+            delta->delta_bits |= Q2P_ESD_EFFECTS;
+#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+        if ((to->effects >> 32) != (from->effects >> 32))
+            delta->delta_bits |= Q2P_ESD_EFFECTS_MORE;
+#endif
+        if (delta->delta_bits & (Q2P_ESD_EFFECTS | Q2P_ESD_EFFECTS_MORE)) {
+            delta->effects = to->effects;
+#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+            delta->effects_more = to->effects >> 32;
+#endif
+        }
+    }
+
+    if (to->renderfx != from->renderfx) {
+        delta->delta_bits |= Q2P_ESD_RENDERFX;
+        delta->renderfx = to->renderfx;
+    }
+
+    if (to->solid != from->solid) {
+        delta->delta_bits |= Q2P_ESD_SOLID;
+        delta->solid = to->solid;
+    }
+
+    // event is not delta compressed, just 0 compressed
+    if (to->event) {
+        delta->delta_bits |= Q2P_ESD_EVENT;
+        delta->event = to->event;
+    }
+
+    if (to->modelindex != from->modelindex) {
+        delta->delta_bits |= Q2P_ESD_MODELINDEX;
+        delta->modelindex = to->modelindex;
+    }
+    if (to->modelindex2 != from->modelindex2) {
+        delta->delta_bits |= Q2P_ESD_MODELINDEX2;
+        delta->modelindex2 = to->modelindex2;
+    }
+    if (to->modelindex3 != from->modelindex3) {
+        delta->delta_bits |= Q2P_ESD_MODELINDEX3;
+        delta->modelindex3 = to->modelindex3;
+    }
+    if (to->modelindex4 != from->modelindex4) {
+        delta->delta_bits |= Q2P_ESD_MODELINDEX4;
+        delta->modelindex4 = to->modelindex4;
+    }
+
+    if (to->sound != from->sound) {
+        delta->delta_bits |= Q2P_ESD_SOUND;
+        delta->sound = to->sound;
+    }
+
+#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+    if (to->loop_volume != from->loop_volume) {
+        delta->delta_bits |= Q2P_ESD_LOOP_VOLUME;
+        delta->loop_volume = to->loop_volume;
+    }
+    if (to->loop_attenuation != from->loop_attenuation) {
+        delta->delta_bits |= Q2P_ESD_LOOP_ATTENUATION;
+        delta->loop_attenuation = to->loop_attenuation;
+    }
+
+    if (to->alpha != from->alpha) {
+        delta->delta_bits |= Q2P_ESD_ALPHA;
+        delta->alpha = to->alpha;
+    }
+    if (to->scale != from->scale) {
+        delta->delta_bits |= Q2P_ESD_SCALE;
+        delta->scale = to->scale;
+    }
+#endif
 }
 
 static void kex_server_make_player_state_delta(q2proto_servercontext_t *context,
@@ -974,7 +1077,150 @@ static void kex_server_make_player_state_delta(q2proto_servercontext_t *context,
                                                const q2proto_packed_player_state_t *to,
                                                q2proto_svc_playerstate_t *delta)
 {
-    q2proto_packing_make_player_state_delta(from, to, delta);
+    memset(delta, 0, sizeof(*delta));
+
+    if (!from)
+        from = &q2proto_null_packed_player_state;
+
+    if (to->pm_type != from->pm_type) {
+        delta->delta_bits |= Q2P_PSD_PM_TYPE;
+        delta->pm_type = to->pm_type;
+    }
+
+    for (int c = 0; c < 3; c++) {
+        q2proto_var_coords_set_float_comp(&delta->pm_origin.write.prev, c,
+                                          _q2proto_valenc_bits2float(from->pm_origin[c]));
+        q2proto_var_coords_set_float_comp(&delta->pm_origin.write.current, c,
+                                          _q2proto_valenc_bits2float(to->pm_origin[c]));
+        q2proto_var_coords_set_float_comp(&delta->pm_velocity.write.prev, c,
+                                          _q2proto_valenc_bits2float(from->pm_velocity[c]));
+        q2proto_var_coords_set_float_comp(&delta->pm_velocity.write.current, c,
+                                          _q2proto_valenc_bits2float(to->pm_velocity[c]));
+    }
+
+    if (to->pm_time != from->pm_time) {
+        delta->delta_bits |= Q2P_PSD_PM_TIME;
+        delta->pm_time = to->pm_time;
+    }
+
+    if (to->pm_flags != from->pm_flags) {
+        delta->delta_bits |= Q2P_PSD_PM_FLAGS;
+        delta->pm_flags = to->pm_flags;
+    }
+
+    if (to->pm_gravity != from->pm_gravity) {
+        delta->delta_bits |= Q2P_PSD_PM_GRAVITY;
+        delta->pm_gravity = to->pm_gravity;
+    }
+
+    if (memcmp(&to->pm_delta_angles, &from->pm_delta_angles, sizeof(to->pm_delta_angles)) != 0) {
+        delta->delta_bits |= Q2P_PSD_PM_DELTA_ANGLES;
+        q2proto_var_angles_set_float_comp(&delta->pm_delta_angles, 0, _q2proto_valenc_bits2float(to->pm_delta_angles[0]));
+        q2proto_var_angles_set_float_comp(&delta->pm_delta_angles, 1, _q2proto_valenc_bits2float(to->pm_delta_angles[1]));
+        q2proto_var_angles_set_float_comp(&delta->pm_delta_angles, 2, _q2proto_valenc_bits2float(to->pm_delta_angles[2]));
+    }
+
+
+
+    if (memcmp(to->viewoffset, from->viewoffset, sizeof(to->viewoffset)) != 0)
+        delta->delta_bits |= Q2P_PSD_VIEWOFFSET;
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
+    if (to->pm_viewheight != from->pm_viewheight)
+        delta->delta_bits |= Q2P_PSD_PM_VIEWHEIGHT;
+#endif
+    if (delta->delta_bits & (Q2P_PSD_VIEWOFFSET | Q2P_PSD_PM_VIEWHEIGHT)) {
+        q2proto_var_small_offsets_set_q2repro_viewoffset_comp(&delta->viewoffset, 0, to->viewoffset[0]);
+        q2proto_var_small_offsets_set_q2repro_viewoffset_comp(&delta->viewoffset, 1, to->viewoffset[1]);
+        q2proto_var_small_offsets_set_q2repro_viewoffset_comp(&delta->viewoffset, 2, to->viewoffset[2]);
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
+        delta->pm_viewheight = to->pm_viewheight;
+#endif
+    }
+
+    delta->viewangles.delta_bits = 0;
+    for (int c = 0; c < 3; c++) {
+        if (to->viewangles[c] != from->viewangles[c])
+            delta->viewangles.delta_bits |= BIT(c);
+        q2proto_var_angles_set_float_comp(&delta->viewangles.values, c, _q2proto_valenc_bits2float(to->viewangles[c]));
+    }
+
+    if (memcmp(to->kick_angles, from->kick_angles, sizeof(to->kick_angles))) {
+        delta->delta_bits |= Q2P_PSD_KICKANGLES;
+        q2proto_var_small_angles_set_q2repro_kick_angles_comp(&delta->kick_angles, 0, to->kick_angles[0]);
+        q2proto_var_small_angles_set_q2repro_kick_angles_comp(&delta->kick_angles, 1, to->kick_angles[1]);
+        q2proto_var_small_angles_set_q2repro_kick_angles_comp(&delta->kick_angles, 2, to->kick_angles[2]);
+    }
+
+    for (int c = 0; c < 4; c++) {
+        if (to->blend[c] != from->blend[c])
+            delta->blend.delta_bits |= BIT(c);
+        q2proto_var_color_set_byte_comp(&delta->blend.values, c, to->blend[c]);
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+        if (to->damage_blend[c] != from->damage_blend[c])
+            delta->damage_blend.delta_bits |= BIT(c);
+        q2proto_var_color_set_byte_comp(&delta->damage_blend.values, c, to->damage_blend[c]);
+#endif
+    }
+
+    if (to->fov != from->fov) {
+        delta->delta_bits |= Q2P_PSD_FOV;
+        delta->fov = to->fov;
+    }
+
+    if (to->rdflags != from->rdflags) {
+        delta->delta_bits |= Q2P_PSD_RDFLAGS;
+        delta->rdflags = to->rdflags;
+    }
+
+    if (to->gunframe != from->gunframe)
+        delta->delta_bits |= Q2P_PSD_GUNFRAME;
+    delta->gunoffset.delta_bits = 0;
+    delta->gunangles.delta_bits = 0;
+    for (int c = 0; c < 3; c++) {
+        if (to->gunoffset[c] != from->gunoffset[c])
+            delta->gunoffset.delta_bits |= BIT(c);
+        if (to->gunangles[c] != from->gunangles[c])
+            delta->gunangles.delta_bits |= BIT(c);
+    }
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
+    if (to->gunrate != from->gunrate)
+        delta->delta_bits |= Q2P_PSD_GUNRATE;
+#endif
+    if ((delta->delta_bits & (Q2P_PSD_GUNFRAME | Q2P_PSD_GUNRATE)) || (delta->gunoffset.delta_bits != 0)
+        || (delta->gunangles.delta_bits != 0))
+    {
+        delta->gunframe = to->gunframe;
+        q2proto_var_small_offsets_set_float_comp(&delta->gunoffset.values, 0, _q2proto_valenc_bits2float(to->gunoffset[0]));
+        q2proto_var_small_offsets_set_float_comp(&delta->gunoffset.values, 1, _q2proto_valenc_bits2float(to->gunoffset[1]));
+        q2proto_var_small_offsets_set_float_comp(&delta->gunoffset.values, 2, _q2proto_valenc_bits2float(to->gunoffset[2]));
+        q2proto_var_small_angles_set_float_comp(&delta->gunangles.values, 0, _q2proto_valenc_bits2float(to->gunangles[0]));
+        q2proto_var_small_angles_set_float_comp(&delta->gunangles.values, 1, _q2proto_valenc_bits2float(to->gunangles[1]));
+        q2proto_var_small_angles_set_float_comp(&delta->gunangles.values, 2, _q2proto_valenc_bits2float(to->gunangles[2]));
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
+        delta->gunrate = to->gunrate;
+#endif
+    }
+
+    if (to->gunindex != from->gunindex)
+        delta->delta_bits |= Q2P_PSD_GUNINDEX;
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+    if (to->gunskin != from->gunskin)
+        delta->delta_bits |= Q2P_PSD_GUNSKIN;
+#endif
+    if (delta->delta_bits & (Q2P_PSD_GUNINDEX | Q2P_PSD_GUNSKIN)) {
+        delta->gunindex = to->gunindex;
+#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+        delta->gunskin = to->gunskin;
+#endif
+    }
+
+    for (int i = 0; i < Q2PROTO_STATS; i++) {
+        if (to->stats[i] != from->stats[i]) {
+            delta->statbits |= BIT_ULL(i);
+            delta->stats[i] = to->stats[i];
+        }
+    }
+
 }
 
 static q2proto_error_t kex_server_write_serverdata(q2proto_servercontext_t *context, uintptr_t io_arg,
@@ -1354,7 +1600,7 @@ static q2proto_error_t kex_server_write_playerstate(q2proto_servercontext_t *con
         flags |= PS_M_GRAVITY;
     if (playerstate->delta_bits & Q2P_PSD_PM_DELTA_ANGLES)
         flags |= PS_M_DELTA_ANGLES;
-    if (playerstate->delta_bits & Q2P_PSD_VIEWOFFSET)
+    if (playerstate->delta_bits & (Q2P_PSD_VIEWOFFSET | Q2P_PSD_PM_VIEWHEIGHT))
         flags |= PS_VIEWOFFSET;
     if (playerstate->viewangles.delta_bits != 0)
         flags |= PS_VIEWANGLES;

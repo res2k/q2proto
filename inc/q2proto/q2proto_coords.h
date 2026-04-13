@@ -152,6 +152,10 @@ _GENERATE_VARIANT_FUNCTIONS(var_angles, float, float, 3)
 /** @}  */
 /** 'Variant angle' functions for pre-encoded 16-bit values
  * @{ */
+_GENERATE_VARIANT_FUNCTIONS(var_angles, int, int32_t, 3)
+/** @} */
+/** 'Variant angle' functions for pre-encoded 16-bit values
+ * @{ */
 _GENERATE_VARIANT_FUNCTIONS(var_angles, short, int16_t, 3)
 /** @}  */
 /** 'Variant angle' functions for pre-encoded 8-bit values
