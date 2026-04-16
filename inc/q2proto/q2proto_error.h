@@ -55,6 +55,11 @@ typedef enum q2proto_error_e {
     /// Destination buffer too small
     Q2P_ERR_BUFFER_TOO_SMALL = -6,
 
+    /// Generic q2protoio read error
+    Q2P_ERR_IO_READ = -10,
+    /// Generic q2protoio write error
+    Q2P_ERR_IO_WRITE = -11,
+
     /// Challenge parsing: no acceptable protocol found
     Q2P_ERR_NO_ACCEPTABLE_PROTOCOL = -100,
 
