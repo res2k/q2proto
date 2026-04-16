@@ -50,7 +50,7 @@ q2proto_inflate_impl_helper_data(z_streamp z, const void *compressed_data, uint3
         return Q2P_ERR_INFLATE_FAILED;
     }
 
-    *uncompressed_size = z->avail_out;
+    *uncompressed_size = out_buffer_size - z->avail_out;
     *stream_end = ret == Z_STREAM_END;
 
     return Q2P_ERR_SUCCESS;
