@@ -41,7 +41,7 @@ q2proto_inflate_impl_helper_data(z_streamp z, const void *compressed_data, uint3
 {
     z->next_in = (Byte*)compressed_data;
     z->avail_in = compressed_size;
-    z->next_out = out_buffer;
+    z->next_out = (unsigned char*)out_buffer;
     z->avail_out = out_buffer_size;
     int ret = inflate(z, Z_SYNC_FLUSH);
     if (ret != Z_OK && ret != Z_STREAM_END && ret != Z_BUF_ERROR) {
