@@ -1,2 +1,4 @@
 .vscode
 /build-*
+/tools/subprojects/*/
+/tools/subprojects/.wraplock
