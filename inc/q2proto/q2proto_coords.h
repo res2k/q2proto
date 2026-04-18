@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "q2proto_defs.h"
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #if defined(__cplusplus)
@@ -43,24 +44,26 @@ typedef float q2proto_vec3_t[3];
  * - Full setter: `q2proto_<VEC_TYPE>_set_<TYPE_NAME>`
  * - Full getter: `q2proto_<VEC_TYPE>_get_<TYPE_NAME>`
  */
-#define _GENERATE_VARIANT_FUNCTIONS(VEC_TYPE, TYPE_NAME, TYPE_TYPE, NUM_COMPS)                                    \
-    Q2PROTO_PUBLIC_API void q2proto_##VEC_TYPE##_set_##TYPE_NAME##_comp(q2proto_##VEC_TYPE##_t *coord, int comp,  \
-                                                                        TYPE_TYPE x);                             \
-    Q2PROTO_PUBLIC_API TYPE_TYPE q2proto_##VEC_TYPE##_get_##TYPE_NAME##_comp(const q2proto_##VEC_TYPE##_t *coord, \
-                                                                             int comp);                           \
-    static inline void q2proto_##VEC_TYPE##_set_##TYPE_NAME(q2proto_##VEC_TYPE##_t *vec,                          \
-                                                            const TYPE_TYPE in[NUM_COMPS])                        \
-    {                                                                                                             \
-        for (int c = 0; c < NUM_COMPS; c++)                                                                       \
-            q2proto_##VEC_TYPE##_set_##TYPE_NAME##_comp(vec, c, in[c]);                                           \
-    }                                                                                                             \
-    static inline void q2proto_##VEC_TYPE##_get_##TYPE_NAME(const q2proto_##VEC_TYPE##_t *vec,                    \
-                                                            TYPE_TYPE out[NUM_COMPS])                             \
-    {                                                                                                             \
-        for (int c = 0; c < NUM_COMPS; c++)                                                                       \
-            out[c] = q2proto_##VEC_TYPE##_get_##TYPE_NAME##_comp(vec, c);                                         \
+#define _GENERATE_VARIANT_FUNCTIONS(VEC_TYPE, TYPE_NAME, TYPE_TYPE, NUM_COMPS)                                       \
+    Q2PROTO_PUBLIC_API bool q2proto_##VEC_TYPE##_is_comp_##TYPE_NAME(const q2proto_##VEC_TYPE##_t *coord, int comp); \
+    Q2PROTO_PUBLIC_API void q2proto_##VEC_TYPE##_set_##TYPE_NAME##_comp(q2proto_##VEC_TYPE##_t *coord, int comp,     \
+                                                                        TYPE_TYPE x);                                \
+    Q2PROTO_PUBLIC_API TYPE_TYPE q2proto_##VEC_TYPE##_get_##TYPE_NAME##_comp(const q2proto_##VEC_TYPE##_t *coord,    \
+                                                                             int comp);                              \
+    static inline void q2proto_##VEC_TYPE##_set_##TYPE_NAME(q2proto_##VEC_TYPE##_t *vec,                             \
+                                                            const TYPE_TYPE in[NUM_COMPS])                           \
+    {                                                                                                                \
+        for (int c = 0; c < NUM_COMPS; c++)                                                                          \
+            q2proto_##VEC_TYPE##_set_##TYPE_NAME##_comp(vec, c, in[c]);                                              \
+    }                                                                                                                \
+    static inline void q2proto_##VEC_TYPE##_get_##TYPE_NAME(const q2proto_##VEC_TYPE##_t *vec,                       \
+                                                            TYPE_TYPE out[NUM_COMPS])                                \
+    {                                                                                                                \
+        for (int c = 0; c < NUM_COMPS; c++)                                                                          \
+            out[c] = q2proto_##VEC_TYPE##_get_##TYPE_NAME##_comp(vec, c);                                            \
     }
 #define _GENERATE_VARIANT_FUNCTIONS_SINGLE(VEC_TYPE, TYPE_NAME, TYPE_TYPE)                                    \
+    Q2PROTO_PUBLIC_API bool q2proto_##VEC_TYPE##_is_##TYPE_NAME(const q2proto_##VEC_TYPE##_t *coord);         \
     Q2PROTO_PUBLIC_API void q2proto_##VEC_TYPE##_set_##TYPE_NAME(q2proto_##VEC_TYPE##_t *coord, TYPE_TYPE x); \
     Q2PROTO_PUBLIC_API TYPE_TYPE q2proto_##VEC_TYPE##_get_##TYPE_NAME(const q2proto_##VEC_TYPE##_t *coord);
 
