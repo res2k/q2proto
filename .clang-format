@@ -91,4 +91,4 @@ SpaceAroundPointerQualifiers: Default
 # ContinuationIndentWidth: 2
 # PointerBindsToType: true
 # PointerAlignment: Left
-# AccessModifierOffset: -2
+AccessModifierOffset: -2
