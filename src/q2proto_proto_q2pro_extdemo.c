@@ -340,7 +340,7 @@ static q2proto_error_t q2pro_extdemo_client_read_playerstate(q2proto_clientconte
         uint16_t gun_index_and_skin;
         READ_CHECKED(client_read, io_arg, gun_index_and_skin, u16);
         playerstate->gunindex = gun_index_and_skin & Q2PRO_GUNINDEX_MASK;
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_GUNSKIN
         playerstate->gunskin = gun_index_and_skin >> Q2PRO_GUNINDEX_BITS;
 #endif
     }
@@ -357,7 +357,7 @@ static q2proto_error_t q2pro_extdemo_client_read_playerstate(q2proto_clientconte
         if (has_q2pro_extensions_v2) {
             q2proto_color_delta_t damage_blend = {0};
             CHECKED(client_read, io_arg, client_read_q2pro_extv2_blends(io_arg, &playerstate->blend, &damage_blend));
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_DAMAGE_BLEND
             memcpy(&playerstate->damage_blend, &damage_blend, sizeof(damage_blend));
 #endif
         } else {
@@ -369,7 +369,7 @@ static q2proto_error_t q2pro_extdemo_client_read_playerstate(q2proto_clientconte
     if (has_playerfog && flags & PS_Q2PRO_PLAYERFOG) {
         q2proto_svc_fog_t fog = {0};
         CHECKED(client_read, io_arg, q2proto_q2pro_client_read_playerfog(context, io_arg, &fog));
-#if Q2PROTO_PLAYER_STATE_FEATURES == Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_FOG
         playerstate->fog = fog;
 #endif
     }
@@ -635,7 +635,7 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
         flags |= PS_KICKANGLES;
     if (playerstate->blend.delta_bits != 0)
         flags |= PS_BLEND;
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_DAMAGE_BLEND
     if (playerstate->damage_blend.delta_bits != 0) {
         if (has_q2pro_extensions_v2)
             flags |= PS_BLEND;
@@ -656,7 +656,7 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
         return Q2P_ERR_BAD_DATA;
     if (!has_q2pro_extensions_v2 && playerstate->statbits > UINT32_MAX)
         return Q2P_ERR_BAD_DATA;
-#if Q2PROTO_PLAYER_STATE_FEATURES == Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_FOG
     if (playerstate->fog.flags != 0 || playerstate->fog.global.color.delta_bits != 0
         || playerstate->fog.height.start_color.delta_bits != 0 || playerstate->fog.height.end_color.delta_bits != 0)
         flags |= PS_Q2PRO_PLAYERFOG;
@@ -744,7 +744,7 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
 
     if (flags & PS_WEAPONINDEX) {
         uint16_t gun_index_and_skin = playerstate->gunindex;
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_GUNSKIN
         gun_index_and_skin |= (playerstate->gunskin << Q2PRO_GUNINDEX_BITS);
 #endif
         WRITE_CHECKED(server_write, io_arg, u16, gun_index_and_skin);
@@ -769,7 +769,7 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
     if (flags & PS_BLEND) {
         if (has_q2pro_extensions_v2) {
             const q2proto_color_delta_t *damage_blend;
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_DAMAGE_BLEND
             damage_blend = &playerstate->damage_blend;
 #else
             const q2proto_color_delta_t null_blend = {0};
@@ -784,7 +784,7 @@ static q2proto_error_t q2pro_extdemo_server_write_playerstate(q2proto_servercont
         }
     }
 
-#if Q2PROTO_PLAYER_STATE_FEATURES == Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_FOG
     if (flags & PS_Q2PRO_PLAYERFOG)
         CHECKED(server_write, io_arg, q2proto_q2pro_server_write_playerfog(context, io_arg, &playerstate->fog));
 #endif

@@ -1176,7 +1176,7 @@ static q2proto_error_t r1q2_server_write_playerstate(uintptr_t io_arg, const q2p
         flags |= PS_KICKANGLES;
     if (playerstate->blend.delta_bits != 0)
         flags |= PS_BLEND;
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_DAMAGE_BLEND
     if (playerstate->damage_blend.delta_bits != 0)
         return Q2P_ERR_BAD_DATA;
 #endif
@@ -1205,7 +1205,7 @@ static q2proto_error_t r1q2_server_write_playerstate(uintptr_t io_arg, const q2p
         return Q2P_ERR_BAD_DATA;
     if (playerstate->delta_bits & Q2P_PSD_GUNRATE)
         return Q2P_ERR_BAD_DATA;
-#if Q2PROTO_PLAYER_STATE_FEATURES == Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_FOG
     if (playerstate->fog.flags != 0 || playerstate->fog.global.color.delta_bits != 0
         || playerstate->fog.height.start_color.delta_bits != 0 || playerstate->fog.height.end_color.delta_bits != 0)
         return Q2P_ERR_BAD_DATA;

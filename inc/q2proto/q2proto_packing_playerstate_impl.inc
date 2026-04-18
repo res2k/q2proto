@@ -123,7 +123,7 @@ static void _Q2P_PACK_PLAYER_VANILLA_FUNCTION_NAME(const Q2P_PACK_PLAYER_TYPE re
     player_packed->kick_angles[1] = _q2proto_valenc_smallangle2char(kick_angles[1]);
     player_packed->kick_angles[2] = _q2proto_valenc_smallangle2char(kick_angles[2]);
     player_packed->gunindex = (int16_t)Q2P_PACK_GET_PLAYER_VALUE(player_state, gunindex);
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_GUNSKIN
     player_packed->gunskin = (int8_t)Q2P_PACK_GET_PLAYER_VALUE(player_state, gunskin);
 #endif
     player_packed->gunframe = (uint8_t)Q2P_PACK_GET_PLAYER_VALUE(player_state, gunframe);
@@ -140,7 +140,7 @@ static void _Q2P_PACK_PLAYER_VANILLA_FUNCTION_NAME(const Q2P_PACK_PLAYER_TYPE re
     player_packed->blend[1] = _q2proto_valenc_color2byte(blend[1]);
     player_packed->blend[2] = _q2proto_valenc_color2byte(blend[2]);
     player_packed->blend[3] = _q2proto_valenc_color2byte(blend[3]);
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_DAMAGE_BLEND
     const float *damage_blend = Q2P_PACK_GET_PLAYER_VALUE(player_state, damage_blend);
     player_packed->damage_blend[0] = _q2proto_valenc_color2byte(damage_blend[0]);
     player_packed->damage_blend[1] = _q2proto_valenc_color2byte(damage_blend[1]);
@@ -151,7 +151,7 @@ static void _Q2P_PACK_PLAYER_VANILLA_FUNCTION_NAME(const Q2P_PACK_PLAYER_TYPE re
     player_packed->rdflags = (uint8_t)Q2P_PACK_GET_PLAYER_VALUE(player_state, rdflags);
     const int16_t *stats = Q2P_PACK_GET_PLAYER_VALUE(player_state, stats);
     memcpy(&player_packed->stats, stats, sizeof(int16_t) * Q2P_PACK_PLAYER_STATS_NUM(player_state));
-#if Q2PROTO_PLAYER_STATE_FEATURES == Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_FOG
     const float *fog_color = Q2P_PACK_GET_PLAYER_FOG_VALUE(player_state, color);
     player_packed->fog_color[0] = _q2proto_valenc_color2byte(fog_color[0]);
     player_packed->fog_color[1] = _q2proto_valenc_color2byte(fog_color[1]);
@@ -207,7 +207,7 @@ static void _Q2P_PACK_PLAYER_Q2REPRO_FUNCTION_NAME(const Q2P_PACK_PLAYER_TYPE re
     player_packed->kick_angles[1] = _q2proto_valenc_q2repro_kick_angle2short(kick_angles[1]);
     player_packed->kick_angles[2] = _q2proto_valenc_q2repro_kick_angle2short(kick_angles[2]);
     player_packed->gunindex = (int16_t)Q2P_PACK_GET_PLAYER_VALUE(player_state, gunindex);
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_GUNSKIN
     player_packed->gunskin = (int8_t)Q2P_PACK_GET_PLAYER_VALUE(player_state, gunskin);
 #endif
     player_packed->gunframe = (uint8_t)Q2P_PACK_GET_PLAYER_VALUE(player_state, gunframe);
@@ -224,7 +224,7 @@ static void _Q2P_PACK_PLAYER_Q2REPRO_FUNCTION_NAME(const Q2P_PACK_PLAYER_TYPE re
     player_packed->blend[1] = _q2proto_valenc_color2byte(blend[1]);
     player_packed->blend[2] = _q2proto_valenc_color2byte(blend[2]);
     player_packed->blend[3] = _q2proto_valenc_color2byte(blend[3]);
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_DAMAGE_BLEND
     const float *damage_blend = Q2P_PACK_GET_PLAYER_VALUE(player_state, damage_blend);
     player_packed->damage_blend[0] = _q2proto_valenc_color2byte(damage_blend[0]);
     player_packed->damage_blend[1] = _q2proto_valenc_color2byte(damage_blend[1]);
@@ -235,7 +235,7 @@ static void _Q2P_PACK_PLAYER_Q2REPRO_FUNCTION_NAME(const Q2P_PACK_PLAYER_TYPE re
     player_packed->rdflags = (uint8_t)Q2P_PACK_GET_PLAYER_VALUE(player_state, rdflags);
     const int16_t *stats = Q2P_PACK_GET_PLAYER_VALUE(player_state, stats);
     memcpy(&player_packed->stats, stats, sizeof(int16_t) * Q2P_PACK_PLAYER_STATS_NUM(player_state));
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_GUNRATE_VIEWHEIGHT
     player_packed->gunrate = (int8_t)Q2P_PACK_GET_PLAYER_VALUE(player_state, gunrate);
     player_packed->pm_viewheight = Q2P_PACK_GET_PLAYER_PMOVE_VALUE(player_state, viewheight);
 #endif

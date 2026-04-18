@@ -37,6 +37,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     #endif
     #include Q2PROTO_CONFIG_H
 #endif
+
+// Feature flags, used to assemble Q2PROTO_FEATURES_xxx values
+#define Q2PROTO_FEATURE_FLAG_PLAYER_GUNSKIN               0x1  // player state has gunskin
+#define Q2PROTO_FEATURE_FLAG_PLAYER_DAMAGE_BLEND          0x2  // player state has damage_blend
+#define Q2PROTO_FEATURE_FLAG_PLAYER_FOG                   0x4  // player state has fog
+#define Q2PROTO_FEATURE_FLAG_PLAYER_GUNRATE_VIEWHEIGHT    0x8  // player state has gunrate & viewheight
+#define Q2PROTO_FEATURE_FLAG_ENTITY_LOOP_ALPHA_SCALE_FX64 0x10 // entity has sound loop, alpha, scale, 64 effect bits
+
 /**\def Q2PROTO_FEATURES_VANILLA
  * Possible values for Q2PROTO_PLAYER_STATE_FEATURES, Q2PROTO_ENTITY_STATE_FEATURES
  * to indicate vanilla game features. */
@@ -53,7 +61,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * - loop_volume
  * - scale
  */
-#define Q2PROTO_FEATURES_Q2PRO_EXTENDED    1
+#define Q2PROTO_FEATURES_Q2PRO_EXTENDED    (Q2PROTO_FEATURE_FLAG_PLAYER_GUNSKIN | Q2PROTO_FEATURE_FLAG_ENTITY_LOOP_ALPHA_SCALE_FX64)
 /**\def Q2PROTO_FEATURES_Q2PRO_EXTENDED
  * Possible values for Q2PROTO_PLAYER_STATE_FEATURES, Q2PROTO_ENTITY_STATE_FEATURES
  * to indicate Q2PRO extended game features.
@@ -66,14 +74,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * - loop_volume
  * - scale
  */
-#define Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2 2
+#define Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2 (Q2PROTO_FEATURES_Q2PRO_EXTENDED | Q2PROTO_FEATURE_FLAG_PLAYER_DAMAGE_BLEND | Q2PROTO_FEATURE_FLAG_PLAYER_FOG)
 /**\def Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
  * Possible values for Q2PROTO_PLAYER_STATE_FEATURES, Q2PROTO_ENTITY_STATE_FEATURES
  * to indicate Q2PRO extended game V2 features.
  * Additional player state fields:
  * - damage_blend
  */
-#define Q2PROTO_FEATURES_RERELEASE         3
+#define Q2PROTO_FEATURES_RERELEASE         ((Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2 & ~Q2PROTO_FEATURE_FLAG_PLAYER_FOG) | Q2PROTO_FEATURE_FLAG_PLAYER_GUNRATE_VIEWHEIGHT)
 /**\def Q2PROTO_FEATURES_RERELEASE
  * Possible values for Q2PROTO_PLAYER_STATE_FEATURES, Q2PROTO_ENTITY_STATE_FEATURES
  * to indicate rerelease game features.
@@ -81,6 +89,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * - gunrate
  * - pm_viewheight
  */
+/**\def Q2PROTO_FEATURES_RERELEASE
+ * Possible values for Q2PROTO_PLAYER_STATE_FEATURES, Q2PROTO_ENTITY_STATE_FEATURES
+ * to indicate support for _all_ possible game features.
+ * (Note that you'll need to account for protocol-/game-specific differences,
+ * mainly how fog is handled in Q2PROTO_GAME_Q2PRO_EXTENDED_V2 vs Q2PROTO_GAME_RERELEASE.)
+ */
+#define Q2PROTO_FEATURES_ALL               ~0u
 /**\def Q2PROTO_PLAYER_STATE_FEATURES
  * Features to be supported by player state structs. */
 #if !defined(Q2PROTO_PLAYER_STATE_FEATURES)

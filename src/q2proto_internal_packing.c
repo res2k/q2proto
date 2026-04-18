@@ -65,13 +65,13 @@ void q2proto_packing_make_entity_state_delta(const q2proto_packed_entity_state_t
     if (to->effects != from->effects) {
         if ((uint32_t)to->effects != (uint32_t)from->effects)
             delta->delta_bits |= Q2P_ESD_EFFECTS;
-#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+#if Q2PROTO_ENTITY_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_ENTITY_LOOP_ALPHA_SCALE_FX64
         if (extended_state && ((to->effects >> 32) != (from->effects >> 32)))
             delta->delta_bits |= Q2P_ESD_EFFECTS_MORE;
 #endif
         if (delta->delta_bits & (Q2P_ESD_EFFECTS | Q2P_ESD_EFFECTS_MORE)) {
             delta->effects = to->effects;
-#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+#if Q2PROTO_ENTITY_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_ENTITY_LOOP_ALPHA_SCALE_FX64
             delta->effects_more = to->effects >> 32;
 #endif
         }
@@ -115,7 +115,7 @@ void q2proto_packing_make_entity_state_delta(const q2proto_packed_entity_state_t
         delta->sound = to->sound;
     }
 
-#if Q2PROTO_ENTITY_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+#if Q2PROTO_ENTITY_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_ENTITY_LOOP_ALPHA_SCALE_FX64
     if (extended_state) {
         if (to->loop_volume != from->loop_volume) {
             delta->delta_bits |= Q2P_ESD_LOOP_VOLUME;
@@ -178,7 +178,7 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
         q2proto_var_angles_set_short_comp(&delta->pm_delta_angles, 2, to->pm_delta_angles[2] & 0xffff);
     }
 
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_GUNRATE_VIEWHEIGHT
     if (to->pm_viewheight != from->pm_viewheight) {
         delta->delta_bits |= Q2P_PSD_PM_VIEWHEIGHT;
         delta->pm_viewheight = to->pm_viewheight;
@@ -206,7 +206,7 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
             q2proto_var_color_set_byte_comp(&delta->blend.values, c, to->blend[c]);
             delta->blend.delta_bits |= BIT(c);
         }
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_DAMAGE_BLEND
         if (to->damage_blend[c] != from->damage_blend[c]) {
             q2proto_var_color_set_byte_comp(&delta->damage_blend.values, c, to->damage_blend[c]);
             delta->damage_blend.delta_bits |= BIT(c);
@@ -225,7 +225,7 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
     }
     if (to->gunframe != from->gunframe)
         delta->delta_bits |= Q2P_PSD_GUNFRAME;
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_GUNRATE_VIEWHEIGHT
     if (to->gunrate != from->gunrate)
         delta->delta_bits |= Q2P_PSD_GUNRATE;
 #endif
@@ -247,20 +247,20 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
         q2proto_var_small_angles_set_char_comp(&delta->gunangles.values, 0, to->gunangles[0]);
         q2proto_var_small_angles_set_char_comp(&delta->gunangles.values, 1, to->gunangles[1]);
         q2proto_var_small_angles_set_char_comp(&delta->gunangles.values, 2, to->gunangles[2]);
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_RERELEASE
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_GUNRATE_VIEWHEIGHT
         delta->gunrate = to->gunrate;
 #endif
     }
 
     if (to->gunindex != from->gunindex)
         delta->delta_bits |= Q2P_PSD_GUNINDEX;
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_GUNSKIN
     if (to->gunskin != from->gunskin)
         delta->delta_bits |= Q2P_PSD_GUNSKIN;
 #endif
     if (delta->delta_bits & (Q2P_PSD_GUNINDEX | Q2P_PSD_GUNSKIN)) {
         delta->gunindex = to->gunindex;
-#if Q2PROTO_PLAYER_STATE_FEATURES >= Q2PROTO_FEATURES_Q2PRO_EXTENDED
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_GUNSKIN
         delta->gunskin = to->gunskin;
 #endif
     }
@@ -272,7 +272,7 @@ void q2proto_packing_make_player_state_delta(const q2proto_packed_player_state_t
         }
     }
 
-#if Q2PROTO_PLAYER_STATE_FEATURES == Q2PROTO_FEATURES_Q2PRO_EXTENDED_V2
+#if Q2PROTO_PLAYER_STATE_FEATURES & Q2PROTO_FEATURE_FLAG_PLAYER_FOG
     if (from->fog_color[0] != to->fog_color[0])
         delta->fog.global.color.delta_bits |= BIT(0);
     if (from->fog_color[1] != to->fog_color[1])
