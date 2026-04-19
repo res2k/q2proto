@@ -220,34 +220,65 @@ q2proto_error_t q2proto_init_servercontext(q2proto_servercontext_t *context, con
     return Q2P_ERR_PROTOCOL_NOT_SUPPORTED;
 }
 
+q2proto_protocol_t q2proto_get_demo_protocol(const q2proto_server_info_t *server_info)
+{
+    switch (server_info->game_api) {
+    case Q2PROTO_GAME_VANILLA:
+        return Q2P_PROTOCOL_VANILLA;
+    case Q2PROTO_GAME_Q2PRO_EXTENDED:
+        return Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO;
+    case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
+        return Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG;
+    case Q2PROTO_GAME_RERELEASE:
+        return Q2P_PROTOCOL_KEX;
+    }
+    return Q2P_PROTOCOL_INVALID;
+}
+
 #define MIN_DEMO_PACKET 512 // from Q2PRO MIN_PACKETLEN
 
-q2proto_error_t q2proto_init_servercontext_demo(q2proto_servercontext_t *context,
+q2proto_error_t q2proto_init_servercontext_demo(q2proto_servercontext_t *context, q2proto_protocol_t protocol,
                                                 const q2proto_server_info_t *server_info, size_t *max_msg_len)
 {
+    if (protocol == Q2P_PROTOCOL_INVALID) {
+        protocol = q2proto_get_demo_protocol(server_info);
+    } else {
+        bool protocol_valid = false;
+        q2proto_protocol_t valid_protocols[Q2P_NUM_PROTOCOLS];
+        size_t num_valid_protocols =
+            q2proto_get_protocols_for_gametypes(valid_protocols, Q2P_NUM_PROTOCOLS, &server_info->game_api, 1);
+        for (size_t i = 0; i < num_valid_protocols; i++)
+            protocol_valid |= protocol == valid_protocols[i];
+        if (!protocol_valid)
+            return Q2P_ERR_GAMETYPE_UNSUPPORTED;
+    }
+
     q2proto_connect_t connect_info;
     memset(&connect_info, 0, sizeof(connect_info));
 
     size_t demo_packet_size = server_info->default_packet_length ? server_info->default_packet_length
                                                                  : 1390; // Default to Vanilla Q2 limit if none is given
     demo_packet_size = MAX(server_info->default_packet_length, MIN_DEMO_PACKET); // ensure a minimal packet size
+    connect_info.protocol = protocol;
     connect_info.packet_length = demo_packet_size;
-    switch (server_info->game_api) {
-    case Q2PROTO_GAME_VANILLA:
-        connect_info.protocol = Q2P_PROTOCOL_VANILLA;
+    switch (protocol)
+    {
+    case Q2P_PROTOCOL_INVALID:
+    case Q2P_NUM_PROTOCOLS:
+        return Q2P_ERR_GAMETYPE_UNSUPPORTED;
+    case Q2P_PROTOCOL_OLD_DEMO:
+    case Q2P_PROTOCOL_VANILLA:
+    case Q2P_PROTOCOL_R1Q2:
         *max_msg_len = demo_packet_size;
         break;
-    case Q2PROTO_GAME_Q2PRO_EXTENDED:
-        connect_info.protocol = Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO;
-        *max_msg_len = 0x8000; // Write packets to the limit supported by Q2PRO
-        break;
-    case Q2PROTO_GAME_Q2PRO_EXTENDED_V2:
-        connect_info.protocol = Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG;
-        *max_msg_len = 0x8000; // Write packets to the limit supported by Q2PRO
-        break;
-    case Q2PROTO_GAME_RERELEASE:
-        connect_info.protocol = Q2P_PROTOCOL_Q2REPRO;
-        *max_msg_len = 0x8000; // Write packets to the limit supported by Q2PRO
+    case Q2P_PROTOCOL_Q2PRO:
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO:
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_V2_DEMO:
+    case Q2P_PROTOCOL_Q2PRO_EXTENDED_DEMO_PLAYERFOG:
+    case Q2P_PROTOCOL_Q2REPRO:
+    case Q2P_PROTOCOL_KEX_DEMOS:
+    case Q2P_PROTOCOL_KEX:
+        *max_msg_len = 0x8000; // Write packets to the limit supported by Q2PRO/KEX
         break;
     }
     return q2proto_init_servercontext(context, server_info, &connect_info);

@@ -159,10 +159,17 @@ Q2PROTO_PUBLIC_API q2proto_error_t q2proto_init_servercontext(q2proto_servercont
                                                               const q2proto_server_info_t *server_info,
                                                               const q2proto_connect_t *connect_info);
 
+/// Return protocol suitable for demo recording for given server
+Q2PROTO_PUBLIC_API q2proto_protocol_t q2proto_get_demo_protocol(const q2proto_server_info_t *server_info);
+
 /**
  * Set up a context for writing messages for a demo.
  * \param context Context structure, filled with context-specific data.
- * \param server_info Server info, configures demo recording protocol. Pointer will be stored in the server context for use by protocols.
+ * \param protocol Protocol to be used for demo recording. Can be Q2P_PROTOCOL_INVALID, in which case q2proto_get_demo_protocol()
+ *   will be used to determine an appropriate protocol. If a protocol was specified, may return Q2P_ERR_GAMETYPE_UNSUPPORTED
+ *   if the protocol doesn't support the game type in \a server_info.
+ * \param server_info Server info, used to validate \a protocol or select a demo recording protocol.
+ *   Pointer will be stored in the server context for use by protocols.
  *   The \c default_packet_length member controls the packet length that should be written.
  *   Be aware that different clients support different maximum demo packet lengths.
  *   A default packet length of 0 will choose a conservative default.
@@ -171,6 +178,7 @@ Q2PROTO_PUBLIC_API q2proto_error_t q2proto_init_servercontext(q2proto_servercont
  * \returns Error code
  */
 Q2PROTO_PUBLIC_API q2proto_error_t q2proto_init_servercontext_demo(q2proto_servercontext_t *context,
+                                                                   q2proto_protocol_t protocol,
                                                                    const q2proto_server_info_t *server_info,
                                                                    size_t *max_msg_len);
 
