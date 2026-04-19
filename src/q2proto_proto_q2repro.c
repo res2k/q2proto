@@ -1542,7 +1542,9 @@ static void q2repro_server_make_player_state_delta(q2proto_servercontext_t *cont
 
     if (memcmp(&to->pm_delta_angles, &from->pm_delta_angles, sizeof(to->pm_delta_angles)) != 0) {
         delta->delta_bits |= Q2P_PSD_PM_DELTA_ANGLES;
-        q2proto_var_angles_set_int(&delta->pm_delta_angles, to->pm_delta_angles);
+        q2proto_var_angles_set_short_comp(&delta->pm_delta_angles, 0, to->pm_delta_angles[0] & 0xffff);
+        q2proto_var_angles_set_short_comp(&delta->pm_delta_angles, 1, to->pm_delta_angles[1] & 0xffff);
+        q2proto_var_angles_set_short_comp(&delta->pm_delta_angles, 2, to->pm_delta_angles[2] & 0xffff);
     }
 
     if (memcmp(to->viewoffset, from->viewoffset, sizeof(to->viewoffset)) != 0) {
@@ -1552,7 +1554,7 @@ static void q2repro_server_make_player_state_delta(q2proto_servercontext_t *cont
         q2proto_var_small_offsets_set_q2repro_viewoffset_comp(&delta->viewoffset, 2, to->viewoffset[2]);
     }
 
-    Q2PROTO_SET_ANGLES_DELTA(delta->viewangles, to->viewangles, from->viewangles, int);
+    Q2PROTO_SET_ANGLES_DELTA(delta->viewangles, to->viewangles, from->viewangles, short);
 
     if (memcmp(to->kick_angles, from->kick_angles, sizeof(to->kick_angles))) {
         delta->delta_bits |= Q2P_PSD_KICKANGLES;
