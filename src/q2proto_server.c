@@ -255,6 +255,7 @@ q2proto_error_t q2proto_init_servercontext_demo(q2proto_servercontext_t *context
 
     q2proto_connect_t connect_info;
     memset(&connect_info, 0, sizeof(connect_info));
+    connect_info.has_zlib = Q2PROTO_COMPRESSION_DEFLATE;
 
     size_t demo_packet_size = server_info->default_packet_length ? server_info->default_packet_length
                                                                  : 1390; // Default to Vanilla Q2 limit if none is given
